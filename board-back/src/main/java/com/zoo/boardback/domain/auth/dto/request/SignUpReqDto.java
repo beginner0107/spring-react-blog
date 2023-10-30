@@ -1,12 +1,6 @@
-package com.zoo.boardback.domain.auth.dto;
+package com.zoo.boardback.domain.auth.dto.request;
 
-import com.zoo.boardback.domain.auth.entity.Authority;
-import com.zoo.boardback.domain.auth.entity.enums.Role;
 import com.zoo.boardback.domain.user.entity.User;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

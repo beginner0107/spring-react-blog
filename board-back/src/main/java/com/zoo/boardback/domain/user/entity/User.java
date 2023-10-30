@@ -13,6 +13,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -62,16 +63,13 @@ public class User {
   @Column(nullable = false)
   private LocalDateTime updatedAt;
 
-  @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-  @JoinTable(name = "user_authorities",
-      joinColumns = @JoinColumn(name = "email"),
-      inverseJoinColumns = @JoinColumn(name = "authority_id"))
-  private Set<Authority> authorities;
+  @OneToMany(mappedBy = "user", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+  private List<Authority> roles = new ArrayList<>();
 
   @Builder
   public User(String email, String password, String nickname, String telNumber, String address,
       String addressDetail, String profileImage, LocalDateTime createdAt, LocalDateTime updatedAt,
-      Set<Authority> authorities) {
+      List<Authority> role) {
     this.email = email;
     this.password = password;
     this.nickname = nickname;
@@ -81,13 +79,11 @@ public class User {
     this.profileImage = profileImage;
     this.createdAt = createdAt;
     this.updatedAt = updatedAt;
-    this.authorities = authorities;
+    this.roles = role;
   }
 
-  public void addAuthorities(Set<Authority> authorities) {
-    if (this.authorities == null) {
-      this.authorities = new HashSet<>();
-    }
-    this.authorities.addAll(authorities);
+  public void addRoles(List<Authority> role) {
+    this.roles = role;
+    role.forEach(o -> o.setUser(this));
   }
 }

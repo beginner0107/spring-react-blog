@@ -1,8 +1,7 @@
 package com.zoo.boardback.global.config.security.jwt;
 
-import com.zoo.boardback.domain.auth.application.AuthService;
+import com.zoo.boardback.domain.auth.application.JpaUserDetailsService;
 import com.zoo.boardback.domain.auth.entity.Authority;
-import com.zoo.boardback.domain.auth.userdetail.CustomUserDetails;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
@@ -18,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 @RequiredArgsConstructor
@@ -28,12 +28,14 @@ public class JwtProvider {
   private String salt;
 
   private Key secretKey;
+
+  // 만료시간 : 1Hour
   private final long exp = 1000L * 60 * 60;
 
-  private final AuthService authService;
+  private final JpaUserDetailsService userDetailsService;
 
   @PostConstruct
-  protected void init() { // HMAC 알고리즘 사용하여 JWT의 시크릿 키를 생성
+  protected void init() {
     secretKey = Keys.hmacShaKeyFor(salt.getBytes(StandardCharsets.UTF_8));
   }
 
@@ -53,11 +55,11 @@ public class JwtProvider {
   // 권한정보 획득
   // Spring Security 인증과정에서 권한확인을 위한 기능
   public Authentication getAuthentication(String token) {
-    CustomUserDetails userDetails = (CustomUserDetails) authService.loadUserByUsername(this.getEmail(token));
+    UserDetails userDetails = userDetailsService.loadUserByUsername(this.getEmail(token));
     return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
   }
 
-  // 토큰에 담겨있는 유저 email 획득
+  // 토큰에 담겨있는 유저 account 획득
   public String getEmail(String token) {
     return Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token).getBody().getSubject();
   }
@@ -84,3 +86,4 @@ public class JwtProvider {
     }
   }
 }
+

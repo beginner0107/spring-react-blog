@@ -63,13 +63,13 @@ public class User {
   @Column(nullable = false)
   private LocalDateTime updatedAt;
 
-  @OneToMany(mappedBy = "user", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+  @OneToMany(mappedBy = "users", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
   private List<Authority> roles = new ArrayList<>();
 
   @Builder
   public User(String email, String password, String nickname, String telNumber, String address,
       String addressDetail, String profileImage, LocalDateTime createdAt, LocalDateTime updatedAt,
-      List<Authority> role) {
+      List<Authority> roles) {
     this.email = email;
     this.password = password;
     this.nickname = nickname;
@@ -79,7 +79,7 @@ public class User {
     this.profileImage = profileImage;
     this.createdAt = createdAt;
     this.updatedAt = updatedAt;
-    this.roles = role;
+    this.roles = roles;
   }
 
   public void addRoles(List<Authority> role) {

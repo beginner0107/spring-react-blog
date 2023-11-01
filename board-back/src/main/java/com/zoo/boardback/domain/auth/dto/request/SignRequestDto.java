@@ -9,8 +9,12 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class SignInReqDto {
+public class SignRequestDto {
 
   private String email;
   private String password;
+  private String nickname;
+  private String telNumber;
+  private String address;
+  private String addressDetail;
 }

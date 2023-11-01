@@ -1,13 +1,12 @@
-package com.zoo.boardback.domain.auth.userdetail;
-
-import static java.util.stream.Collectors.*;
+package com.zoo.boardback.domain.auth.details;
 
 import com.zoo.boardback.domain.user.entity.User;
-import java.util.Collection;
-import java.util.stream.Collectors;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+
+import java.util.Collection;
+import java.util.stream.Collectors;
 
 public class CustomUserDetails implements UserDetails {
 
@@ -25,7 +24,7 @@ public class CustomUserDetails implements UserDetails {
   public Collection<? extends GrantedAuthority> getAuthorities() {
     return user.getRoles().stream().map(o -> new SimpleGrantedAuthority(
         o.getName()
-    )).collect(toList());
+    )).collect(Collectors.toList());
   }
 
   @Override

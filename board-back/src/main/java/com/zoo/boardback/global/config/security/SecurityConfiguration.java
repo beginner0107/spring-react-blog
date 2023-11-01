@@ -1,7 +1,5 @@
 package com.zoo.boardback.global.config.security;
 
-import com.zoo.boardback.domain.auth.application.AuthService;
-import com.zoo.boardback.domain.user.application.UserService;
 import com.zoo.boardback.global.config.security.filter.JwtAuthenticationFilter;
 import com.zoo.boardback.global.config.security.jwt.JwtProvider;
 import jakarta.servlet.ServletException;
@@ -18,6 +16,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.AuthenticationEntryPoint;
@@ -87,6 +86,7 @@ public class SecurityConfiguration {
       public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**") // 모든 URL에 대한 요청을 허용
             .allowedMethods("*") // GET, POST, PUT, PATCH, DELETE 등등 method 허용
+            .allowedMethods("*")
             .allowedOrigins("http://localhost:3000"); // localhost:3030에서 오는 요청 허용
       }
     };

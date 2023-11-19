@@ -1,12 +1,25 @@
 package com.zoo.boardback.global.config.security.jwt;
 
+import static com.zoo.boardback.global.config.security.data.JwtValidationType.*;
+import static com.zoo.boardback.global.config.security.data.JwtValidationType.EXPIRED;
+import static com.zoo.boardback.global.config.security.data.JwtValidationType.MALFORMED;
+import static com.zoo.boardback.global.config.security.data.JwtValidationType.UNSUPPORTED;
+
 import com.zoo.boardback.domain.auth.application.JpaUserDetailsService;
 import com.zoo.boardback.domain.auth.entity.Authority;
+import com.zoo.boardback.global.config.security.data.JwtValidationType;
+import com.zoo.boardback.global.config.security.data.TokenValidationResultDto;
+import com.zoo.boardback.global.config.security.exception.BearerTokenMissingException;
+import com.zoo.boardback.global.config.security.exception.EmptyJwtException;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.security.SignatureException;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
 import java.nio.charset.StandardCharsets;
@@ -70,19 +83,38 @@ public class JwtProvider {
   }
 
   // 토큰 검증
-  public boolean validateToken(String token) {
-    try {
+  public void validateToken(String token) {
       // Bearer 검증
       if (!token.substring(0, "BEARER ".length()).equalsIgnoreCase("BEARER ")) {
-        return false;
+        throw new BearerTokenMissingException();
       } else {
         token = token.split(" ")[1].trim();
       }
-      Jws<Claims> claims = Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token);
-      // 만료되었을 시 false
-      return !claims.getBody().getExpiration().before(new Date());
+      Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token);
+  }
+
+  public TokenValidationResultDto tryCheckTokenValid(HttpServletRequest req) {
+    try {
+      String token = resolveToken(req);
+      if (token == null) {
+        throw new EmptyJwtException();
+      }
+      validateToken(token);
+      return TokenValidationResultDto.of(true, VALID, token);
+    } catch (MalformedJwtException e) {
+      return TokenValidationResultDto.of(false, MALFORMED);
+    } catch (ExpiredJwtException e) {
+      return TokenValidationResultDto.of(false, EXPIRED);
+    } catch (UnsupportedJwtException e) {
+      return TokenValidationResultDto.of(false, UNSUPPORTED);
+    } catch (SignatureException e) {
+      return TokenValidationResultDto.of(false, WRONG_SIGNATURE);
+    } catch (EmptyJwtException e) {
+      return TokenValidationResultDto.of(false, EMPTY);
+    } catch (BearerTokenMissingException e) {
+      return TokenValidationResultDto.of(false, NOT_EXIST_BEARER);
     } catch (Exception e) {
-      return false;
+      return TokenValidationResultDto.of(false, UNKNOWN);
     }
   }
 }

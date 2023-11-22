@@ -3,7 +3,7 @@ package com.zoo.boardback.domain.auth.api;
 import com.zoo.boardback.domain.auth.application.AuthService;
 import com.zoo.boardback.domain.auth.dto.request.SignInRequestDto;
 import com.zoo.boardback.domain.auth.dto.request.SignUpRequestDto;
-import com.zoo.boardback.domain.auth.dto.response.SignResponseDto;
+import com.zoo.boardback.domain.auth.dto.response.SignInResponseDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -26,7 +26,7 @@ public class AuthController {
   }
 
   @PostMapping(value = "/sign-in")
-  public ResponseEntity<SignResponseDto> signIn(@RequestBody @Valid SignInRequestDto request) {
+  public ResponseEntity<SignInResponseDto> signIn(@RequestBody @Valid SignInRequestDto request) {
     return ResponseEntity.ok(authService.signIn(request));
   }
 }

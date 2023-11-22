@@ -6,7 +6,6 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -18,7 +17,7 @@ public class SignUpRequestDto {
 
   @Email
   private String email;
-  @Pattern(regexp = "^(?=.*?[A-Za-z])(?=.*?\\\\d).{8,20}$", message = "비밀번호는 8~20자여야 하고 영어, 숫자가 포함되어야 합니다.")
+  @Pattern(regexp = "^(?=.*?[A-Za-z])(?=.*?\\d).{8,20}$", message = "비밀번호는 8~20자여야 하고 영어, 숫자가 포함되어야 합니다.")
   @JsonProperty("password")
   private String password;
   @NotBlank(message = "닉네임은 20자 이하입니다.")

@@ -1,19 +1,21 @@
 package com.zoo.boardback.global.config.security.jwt;
 
-import static com.zoo.boardback.global.config.security.data.JwtValidationType.*;
+import static com.zoo.boardback.global.config.security.data.JwtValidationType.EMPTY;
 import static com.zoo.boardback.global.config.security.data.JwtValidationType.EXPIRED;
 import static com.zoo.boardback.global.config.security.data.JwtValidationType.MALFORMED;
+import static com.zoo.boardback.global.config.security.data.JwtValidationType.NOT_EXIST_BEARER;
+import static com.zoo.boardback.global.config.security.data.JwtValidationType.UNKNOWN;
 import static com.zoo.boardback.global.config.security.data.JwtValidationType.UNSUPPORTED;
+import static com.zoo.boardback.global.config.security.data.JwtValidationType.VALID;
+import static com.zoo.boardback.global.config.security.data.JwtValidationType.WRONG_SIGNATURE;
 
 import com.zoo.boardback.domain.auth.application.JpaUserDetailsService;
 import com.zoo.boardback.domain.auth.entity.Authority;
-import com.zoo.boardback.global.config.security.data.JwtValidationType;
 import com.zoo.boardback.global.config.security.data.TokenValidationResultDto;
 import com.zoo.boardback.global.config.security.exception.BearerTokenMissingException;
 import com.zoo.boardback.global.config.security.exception.EmptyJwtException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureAlgorithm;

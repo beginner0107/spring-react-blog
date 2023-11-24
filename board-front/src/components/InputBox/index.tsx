@@ -37,8 +37,10 @@ const InputBox = forwardRef<HTMLInputElement, Props>((props, ref) => {
   //         render: Input Box 컴포넌트          //
   return (
     <div className="inputbox">
-      <div className="inputbox-label">{"비밀번호*"}</div>
-      <div className="error ? {'inputbox-container-error' : 'inputbox-container'}">
+      <div className="inputbox-label">{label}</div>
+      <div
+        className={error ? "inputbox-container-error" : "inputbox-container"}
+      >
         <input
           ref={ref}
           type={type}

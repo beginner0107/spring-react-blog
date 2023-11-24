@@ -1,3 +1,12 @@
+.icon-box {
+  width: 24px;
+  height: 24px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .icon-button {
   border-radius: 50% 50%;
 
@@ -33,4 +42,16 @@
 
 .eye-right-light-icon {
   background-image: url("assets/image/expand-right-light.png");
+}
+
+.logo-light-icon {
+  background-image: url("assets/image/logo-light.png");
+}
+
+.insta-icon {
+  background-image: url("assets/image/insta.png");
+}
+
+.naver-blog-icon {
+  background-image: url("assets/image/naver-blog.png");
 }

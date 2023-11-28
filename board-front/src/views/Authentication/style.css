@@ -1,0 +1,69 @@
+#auth-wrapper {
+  padding: 100px 0px 150px;
+  min-width: 1440px;
+  height: calc(100vh - 68px - 100px - 150px);
+  min-height: 960px;
+
+  display: flex;
+
+  justify-content: center;
+  align-items: center;
+
+  background-image: url("assets/image/auth-background.png");
+  background-position: 50% 50%;
+  background-repeat: no-repeat;
+  background-size: auto;
+}
+
+.auth-conatiner {
+  width: 1200px;
+  height: 100%;
+
+  display: grid;
+  grid-template-columns: 7fr 5fr;
+  column-gap: 78px;
+}
+
+.auth-jumbotron-box {
+  grid-column: 1 / 2;
+
+  height: 100%;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.auth-jumbotron-contents {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.auth-logo-icon {
+  width: 50px;
+  height: 50px;
+
+  background-image: url("assets/image/auth-logo.png");
+  background-position: 50% 50%;
+  background-size: 100% 100%;
+}
+
+.auth-jumbotron-text-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.auth-jumbotron-text {
+  color: rgba(255, 255, 255, 1);
+
+  font-family: "GimhaeGaya";
+  font-size: 40px;
+  font-weight: 400;
+  line-height: 140%;
+  letter-spacing: -1.2px;
+  text-align: center;
+}

@@ -1,4 +1,4 @@
-import React, { ChangeEvent, KeyboardEvent, Dispatch, forwardRef } from "react";
+import React, { ChangeEvent, KeyboardEvent, forwardRef } from "react";
 import "./style.css";
 //          interface:: Input Box 컴포넌트  Properties          //
 interface Props {
@@ -6,7 +6,7 @@ interface Props {
   type: "text" | "password";
   placeholder: string;
   value: string;
-  setValue: Dispatch<React.SetStateAction<string>>;
+  onChange: (event: ChangeEvent<HTMLInputElement>) => void;
   error: boolean;
 
   icon?: "eye-light-off-icon" | "eye-light-on-icon" | "expand-right-light-icon";
@@ -21,13 +21,8 @@ interface Props {
 const InputBox = forwardRef<HTMLInputElement, Props>((props, ref) => {
   //         state: properties           //
   const { label, type, placeholder, value, error, icon, message } = props;
-  const { setValue, onButtonClick, onKeyDown } = props;
+  const { onChange, onButtonClick, onKeyDown } = props;
 
-  //         event handler: input 값 변경 이벤트 처리 함수          //
-  const onChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
-    const value = event.target.value;
-    setValue(value);
-  };
   //         event handler: input 키 처리 이벤트          //
   const onKeyDownHandler = (event: KeyboardEvent<HTMLInputElement>) => {
     if (!onKeyDown) return;
@@ -47,7 +42,7 @@ const InputBox = forwardRef<HTMLInputElement, Props>((props, ref) => {
           className="input"
           placeholder={placeholder}
           value={value}
-          onChange={onChangeHandler}
+          onChange={onChange}
           onKeyDown={onKeyDownHandler}
         />
         {onButtonClick !== undefined && (

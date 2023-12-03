@@ -44,7 +44,7 @@ public class SecurityConfiguration {
             auth
                 .requestMatchers(mvc.pattern("/")).permitAll()
                 .requestMatchers(mvc.pattern("/api/v1/auth/**")).permitAll()
-                .requestMatchers(mvc.pattern("/api/v1/user/*")).permitAll()
+                .requestMatchers(mvc.pattern("/api/v1/user/**")).permitAll()
                 .requestMatchers(PathRequest.toH2Console()).permitAll()
                 .anyRequest().authenticated()
         )
@@ -67,8 +67,7 @@ public class SecurityConfiguration {
       public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**") // 모든 URL에 대한 요청을 허용
             .allowedMethods("*") // GET, POST, PUT, PATCH, DELETE 등등 method 허용
-            .allowedMethods("*")
-            .allowedOrigins("http://localhost:3000"); // localhost:3030에서 오는 요청 허용
+            .allowedOrigins("http://localhost:3000");
       }
     };
   }

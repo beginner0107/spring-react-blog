@@ -61,12 +61,18 @@ export default function Authentication() {
       useState<string>("");
 
     //          function: sign in response 처리 함수          //
-    const signInResponse = (responseBody: SignInResponseDto | null | 401) => {
+    const signInResponse = (
+      responseBody: SignInResponseDto | null | 401 | 404 | 400
+    ) => {
       if (!responseBody) {
         alert("네트워크 이상입니다.");
         return;
       }
-      if (responseBody === 401) {
+      if (
+        responseBody === 401 ||
+        responseBody === 404 ||
+        responseBody === 400
+      ) {
         setError(true);
         return;
       }
@@ -304,15 +310,19 @@ export default function Authentication() {
       if (responseBody.field === "email" && responseBody.status === 409) {
         setEmailError(true);
         setEmailErrorMessage(responseBody.message);
+        setPage(1);
+        setEmail("");
       }
 
       if (responseBody.field === "nickname" && responseBody.status === 409) {
         setNicknameError(true);
         setNicknameErrorMessage(responseBody.message);
+        setNickaname("");
       }
       if (responseBody.field === "telNumber" && responseBody.status === 409) {
         setTelNumberError(true);
         setTelNumberErrorMessage(responseBody.message);
+        setTelNumber("");
       }
       if (
         responseBody.field === "email" ||

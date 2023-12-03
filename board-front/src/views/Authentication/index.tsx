@@ -1,4 +1,10 @@
-import React, { useState, KeyboardEvent, useRef, ChangeEvent } from "react";
+import React, {
+  useState,
+  KeyboardEvent,
+  useRef,
+  ChangeEvent,
+  useEffect,
+} from "react";
 import "./style.css";
 import InputBox from "components/InputBox";
 import SignInRequestDto from "../../apis/request/auth/sign-in.request.dto";
@@ -6,8 +12,10 @@ import { SignInResponseDto } from "apis/response/auth";
 import { useCookies } from "react-cookie";
 import { MAIN_PATH } from "constant";
 import { useNavigate } from "react-router-dom";
-import { signInRequest } from "apis";
+import { signInRequest, signUpRequest } from "apis";
 import { Address, useDaumPostcodePopup } from "react-daum-postcode";
+import { SignUpRequestDto } from "apis/request/auth";
+import ResponseDto from "apis/response/response.dto";
 
 //          component: 인증 화면 컴포넌트         //
 export default function Authentication() {
@@ -41,14 +49,30 @@ export default function Authentication() {
     //          state: 패스워드 타입 상태          //
     const [error, setError] = useState<boolean>(false);
 
+    //           state: 이메일 에러 상태           //
+    const [isEmailError, setEmailError] = useState<boolean>(false);
+    //           state: 패스워드 에러 상태           //
+    const [isPasswordError, setPasswordError] = useState<boolean>(false);
+
+    //          state: 이메일 에러 메시지 상태           //
+    const [emailErrorMessage, setEmailErrorMessage] = useState<string>("");
+    //          state: 패스워드 에러 메시지 상태           //
+    const [passwordErrorMessage, setPasswordErrorMessage] =
+      useState<string>("");
+
     //          function: sign in response 처리 함수          //
-    const signInResponse = (responseBody: SignInResponseDto | null) => {
+    const signInResponse = (responseBody: SignInResponseDto | null | 401) => {
       if (!responseBody) {
+        alert("네트워크 이상입니다.");
+        return;
+      }
+      if (responseBody === 401) {
         setError(true);
         return;
       }
 
       const { token, expirationTime } = responseBody; // 강제 형변환(as SignInResponseDto) 제거
+      if (token === "" || expirationTime === 0) return;
       const now = new Date().getTime();
       const expires = new Date(now + expirationTime * 1000);
 
@@ -72,6 +96,24 @@ export default function Authentication() {
 
     //           event handler: 로그인 버튼 클릭 이벤트 처리          //
     const onSignInButtonClickHandler = () => {
+      const emailPattern = /^[a-zA-Z0-9]*@([-.]?[a-zA-Z0-9])*\.[a-zA-Z]{2,4}$/;
+      const isEmailPattern = emailPattern.test(email);
+      if (!isEmailPattern) {
+        setEmailError(true);
+        setEmailErrorMessage("이메일 주소 형식이 맞지 않습니다.");
+      }
+      const passwordPattern = /^(?=.*?[A-Za-z])(?=.*?\d).{8,20}$/;
+      const isPasswordPattern = passwordPattern.test(password.trim());
+
+      if (!isPasswordPattern) {
+        setPasswordError(true);
+        setPasswordErrorMessage(
+          "비밀번호는 8~20자여야 하고 영어, 숫자가 포함되어야 합니다."
+        );
+      }
+
+      if (!isEmailPattern || !isPasswordPattern) return;
+
       const requestBody: SignInRequestDto = { email, password };
       signInRequest(requestBody).then(signInResponse);
     };
@@ -186,7 +228,7 @@ export default function Authentication() {
     const addressDetailRef = useRef<HTMLInputElement | null>(null);
 
     //           state: 페이지 번호 상태           //
-    const [page, setPage] = useState<1 | 2>(2);
+    const [page, setPage] = useState<1 | 2>(1);
     //           state: 이메일 상태           //
     const [email, setEmail] = useState<string>("");
     //           state: 패스워드 상태           //
@@ -252,6 +294,38 @@ export default function Authentication() {
 
     //          function: 다음 주소 검색 팝업 오픈 함수           //
     const open = useDaumPostcodePopup();
+
+    //          function: sign up response 처리 함수           //
+    const signUpResponse = (responseBody: ResponseDto | null) => {
+      if (!responseBody) {
+        alert("네트워크 이상입니다.");
+        return;
+      }
+      if (responseBody.field === "email" && responseBody.status === 409) {
+        setEmailError(true);
+        setEmailErrorMessage(responseBody.message);
+      }
+
+      if (responseBody.field === "nickname" && responseBody.status === 409) {
+        setNicknameError(true);
+        setNicknameErrorMessage(responseBody.message);
+      }
+      if (responseBody.field === "telNumber" && responseBody.status === 409) {
+        setTelNumberError(true);
+        setTelNumberErrorMessage(responseBody.message);
+      }
+      if (
+        responseBody.field === "email" ||
+        (responseBody.field == "password" && responseBody.status === 400)
+      ) {
+        alert(responseBody.message);
+      }
+      if (responseBody.status == 200) {
+        setView("sign-in");
+      } else {
+        return;
+      }
+    };
 
     //           event handler: 이메일 변경 이벤트 처리           //
     const onEmailChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
@@ -424,13 +498,78 @@ export default function Authentication() {
     };
     //          event handler: 회원가입 버튼 클릭 이벤트 처리          //
     const onSignUpButtonClickHandler = () => {
-      alert("회원가입 버튼!!!");
+      const emailPattern = /^[a-zA-Z0-9]*@([-.]?[a-zA-Z0-9])*\.[a-zA-Z]{2,4}$/;
+      const isEmailPattern = emailPattern.test(email);
+      if (!isEmailPattern) {
+        setEmailError(true);
+        setEmailErrorMessage("이메일 주소 형식이 맞지 않습니다.");
+      }
+      const passwordPattern = /^(?=.*?[A-Za-z])(?=.*?\d).{8,20}$/;
+      const isPasswordPattern = passwordPattern.test(password.trim());
+
+      if (!isPasswordPattern) {
+        setPasswordError(true);
+        setPasswordErrorMessage(
+          "비밀번호는 8~20자여야 하고 영어, 숫자가 포함되어야 합니다."
+        );
+      }
+
+      const isEqualPassword = password === passwordCheck;
+      if (!isEqualPassword) {
+        setPasswordCheckError(true);
+        setPasswordCheckErrorMessage("비밀번호가 일치하지 않습니다.");
+      }
+
+      if (!isEmailPattern || !isPasswordPattern || !isEqualPassword) {
+        setPage(1);
+        return;
+      }
+
+      const hasNickname = nickname.trim().length > 0;
+      if (!hasNickname) {
+        setNicknameError(true);
+        setNicknameErrorMessage("닉네임을 입력해주세요.");
+      }
+
+      const telNumberPattern = /[0-9]{11,13}$/;
+      const isTelNumberPattern = telNumberPattern.test(telNumber);
+      if (!isTelNumberPattern) {
+        setTelNumberError(true);
+        setTelNumberErrorMessage("숫자만 입력해주세요.");
+      }
+
+      const hasAddress = address.trim().length > 0;
+      if (!hasAddress) {
+        setAddressError(true);
+        setAddressErrorMessage("주소를 입력해주세요.");
+      }
+
+      if (!hasNickname || !isTelNumberPattern) return;
+
+      const requestBody: SignUpRequestDto = {
+        email,
+        password,
+        nickname,
+        telNumber,
+        address,
+        addressDetail,
+      };
+
+      signUpRequest(requestBody).then(signUpResponse);
     };
 
     //          event handler: 로그인 링크 클릭 이벤트 처리          //
     const onSignInLinkClickHandler = () => {
       setView("sign-in");
     };
+
+    //          effect: 페이지가 변경될 때 마다 실행될 함수          //
+    useEffect(() => {
+      if (page === 2) {
+        if (!nicknameRef.current) return;
+        nicknameRef.current.focus();
+      }
+    }, [page]);
 
     //        render: sign up card 컴포넌트 렌더링          //
     return (

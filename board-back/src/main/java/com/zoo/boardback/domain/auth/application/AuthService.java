@@ -1,6 +1,8 @@
 package com.zoo.boardback.domain.auth.application;
 
-import static com.zoo.boardback.global.error.ErrorCode.*;
+import static com.zoo.boardback.global.error.ErrorCode.USER_EMAIL_DUPLICATE;
+import static com.zoo.boardback.global.error.ErrorCode.USER_NOT_FOUND;
+import static com.zoo.boardback.global.error.ErrorCode.USER_WRONG_PASSWORD;
 
 import com.zoo.boardback.domain.auth.dto.request.SignInRequestDto;
 import com.zoo.boardback.domain.auth.dto.request.SignUpRequestDto;

@@ -3,10 +3,13 @@ package com.zoo.boardback.domain.board.api;
 import com.zoo.boardback.domain.auth.details.CustomUserDetails;
 import com.zoo.boardback.domain.board.application.BoardService;
 import com.zoo.boardback.domain.board.dto.request.PostCreateRequestDto;
+import com.zoo.boardback.domain.board.dto.response.PostDetailResponseDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,4 +31,11 @@ public class BoardController {
     return ResponseEntity.ok().build();
   }
 
+  @GetMapping("/{boardNumber}")
+  public ResponseEntity<PostDetailResponseDto> getPost(
+      @PathVariable int boardNumber
+  ) {
+    PostDetailResponseDto postDetailResponseDto = boardService.find(boardNumber);
+    return ResponseEntity.ok().body(postDetailResponseDto);
+  }
 }

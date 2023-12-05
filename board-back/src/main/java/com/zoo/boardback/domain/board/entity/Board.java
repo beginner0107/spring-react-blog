@@ -67,4 +67,8 @@ public class Board {
     this.user = user;
     this.commentCount = commentCount;
   }
+
+  public void increaseViewCount() {
+    this.viewCount++;
+  }
 }

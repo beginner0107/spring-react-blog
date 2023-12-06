@@ -52,7 +52,6 @@ public class BoardService {
         new BusinessException(boardNumber, "boardNumber", BOARD_NOT_FOUND));
 
     board.increaseViewCount();
-    boardRepository.save(board);
     List<Image> imageList = imageRepository.findByBoard(board);
     List<String> boardImageList = new ArrayList<>();
     for (Image image : imageList) {

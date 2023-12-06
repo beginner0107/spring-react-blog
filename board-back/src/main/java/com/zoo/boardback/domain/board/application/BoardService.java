@@ -8,11 +8,15 @@ import com.zoo.boardback.domain.board.dao.BoardRepository;
 import com.zoo.boardback.domain.board.dto.request.PostCreateRequestDto;
 import com.zoo.boardback.domain.board.dto.response.PostDetailResponseDto;
 import com.zoo.boardback.domain.board.entity.Board;
+import com.zoo.boardback.domain.favorite.dao.FavoriteRepository;
+import com.zoo.boardback.domain.favorite.entity.Favorite;
+import com.zoo.boardback.domain.favorite.entity.primaryKey.FavoritePk;
 import com.zoo.boardback.domain.image.dao.ImageRepository;
 import com.zoo.boardback.domain.image.entity.Image;
 import com.zoo.boardback.domain.user.dao.UserRepository;
 import com.zoo.boardback.domain.user.entity.User;
 import com.zoo.boardback.global.error.BusinessException;
+import jakarta.persistence.EntityManager;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +31,7 @@ public class BoardService {
   private final BoardRepository boardRepository;
   private final UserRepository userRepository;
   private final ImageRepository imageRepository;
+  private final FavoriteRepository favoriteRepository;
 
   @Transactional
   public void create(PostCreateRequestDto request, String email) {
@@ -59,5 +64,26 @@ public class BoardService {
       boardImageList.add(imageUrl);
     }
     return PostDetailResponseDto.of(board, boardImageList);
+  }
+
+  @Transactional
+  public void putFavorite(int boardNumber, String email) {
+    Board board = boardRepository.findByBoardNumber(boardNumber).orElseThrow(() ->
+        new BusinessException(boardNumber, "boardNumber", BOARD_NOT_FOUND));
+
+    User user = userRepository.findByEmail(email).orElseThrow(() ->
+        new BusinessException(email, "email", USER_NOT_FOUND));
+    FavoritePk favoritePk = new FavoritePk(board, user);
+    Favorite favorite = favoriteRepository.findByFavoritePk(favoritePk);
+    if (favorite == null) {
+      favorite = Favorite.builder()
+          .favoritePk(favoritePk)
+          .build();
+      favoriteRepository.save(favorite);
+      board.increaseFavoriteCount();
+    } else {
+      favoriteRepository.delete(favorite);
+      board.decreaseFavoriteCount();
+    }
   }
 }

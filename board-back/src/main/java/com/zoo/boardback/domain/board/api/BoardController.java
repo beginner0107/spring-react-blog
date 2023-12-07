@@ -11,6 +11,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -37,5 +38,13 @@ public class BoardController {
   ) {
     PostDetailResponseDto postDetailResponseDto = boardService.find(boardNumber);
     return ResponseEntity.ok().body(postDetailResponseDto);
+  }
+
+  @PutMapping("/{boardNumber}/favorite")
+  public ResponseEntity<Void> putFavorite(
+      @PathVariable int boardNumber,
+      @AuthenticationPrincipal CustomUserDetails userDetails) {
+      boardService.putFavorite(boardNumber, userDetails.getUsername());
+      return ResponseEntity.ok().build();
   }
 }

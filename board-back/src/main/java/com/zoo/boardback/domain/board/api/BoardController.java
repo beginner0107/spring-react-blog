@@ -3,6 +3,7 @@ package com.zoo.boardback.domain.board.api;
 import com.zoo.boardback.domain.auth.details.CustomUserDetails;
 import com.zoo.boardback.domain.board.application.BoardService;
 import com.zoo.boardback.domain.board.dto.request.PostCreateRequestDto;
+import com.zoo.boardback.domain.favorite.dto.response.FavoriteListResponseDto;
 import com.zoo.boardback.domain.board.dto.response.PostDetailResponseDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -46,5 +47,12 @@ public class BoardController {
       @AuthenticationPrincipal CustomUserDetails userDetails) {
       boardService.putFavorite(boardNumber, userDetails.getUsername());
       return ResponseEntity.ok().build();
+  }
+
+  @GetMapping("/{boardNumber}/favorite-list")
+  public ResponseEntity<FavoriteListResponseDto> getFavoriteList(
+      @PathVariable int boardNumber
+  ) {
+    return ResponseEntity.ok(boardService.getFavoriteList(boardNumber));
   }
 }

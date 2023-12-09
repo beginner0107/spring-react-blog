@@ -91,7 +91,7 @@ public class BoardService {
   public FavoriteListResponseDto getFavoriteList(int boardNumber) {
     Board board = boardRepository.findByBoardNumber(boardNumber).orElseThrow(() ->
         new BusinessException(boardNumber, "boardNumber", BOARD_NOT_FOUND));
-    List<FavoriteQueryDto> favoriteList = favoriteRepository.findRecommendersByBoard(board);
+    List<Favorite> favoriteList = favoriteRepository.findByFavoritePkBoard(board);
     return FavoriteListResponseDto.from(favoriteList);
   }
 }

@@ -1,13 +1,12 @@
 package com.zoo.boardback.domain.favorite.entity.primaryKey;
 
 import static jakarta.persistence.CascadeType.ALL;
-import static jakarta.persistence.FetchType.*;
+import static jakarta.persistence.FetchType.LAZY;
 import static lombok.AccessLevel.PROTECTED;
 
 import com.zoo.boardback.domain.board.entity.Board;
 import com.zoo.boardback.domain.user.entity.User;
 import jakarta.persistence.Embeddable;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;

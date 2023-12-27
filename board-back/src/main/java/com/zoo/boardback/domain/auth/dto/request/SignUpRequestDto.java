@@ -5,14 +5,13 @@ import com.zoo.boardback.domain.user.entity.User;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
-import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Getter
 @NoArgsConstructor
-@AllArgsConstructor
 public class SignUpRequestDto {
 
   @Email
@@ -27,6 +26,17 @@ public class SignUpRequestDto {
   @NotBlank
   private String address;
   private String addressDetail;
+
+  @Builder
+  public SignUpRequestDto(String email, String password, String nickname, String telNumber,
+      String address, String addressDetail) {
+    this.email = email;
+    this.password = password;
+    this.nickname = nickname;
+    this.telNumber = telNumber;
+    this.address = address;
+    this.addressDetail = addressDetail;
+  }
 
   public User toEntity(PasswordEncoder passwordEncoder) {
     return User.builder()

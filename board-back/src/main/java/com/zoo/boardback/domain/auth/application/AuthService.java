@@ -1,6 +1,8 @@
 package com.zoo.boardback.domain.auth.application;
 
 import static com.zoo.boardback.global.error.ErrorCode.USER_EMAIL_DUPLICATE;
+import static com.zoo.boardback.global.error.ErrorCode.USER_LOGIN_ID_DUPLICATE;
+import static com.zoo.boardback.global.error.ErrorCode.USER_LOGIN_TEL_NUMBER_DUPLICATE;
 import static com.zoo.boardback.global.error.ErrorCode.USER_NOT_FOUND;
 import static com.zoo.boardback.global.error.ErrorCode.USER_WRONG_PASSWORD;
 
@@ -15,6 +17,7 @@ import com.zoo.boardback.global.error.BusinessException;
 import jakarta.transaction.Transactional;
 import java.util.Collections;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -25,6 +28,9 @@ public class AuthService {
   private final UserRepository userRepository;
   private final PasswordEncoder passwordEncoder;
   private final JwtProvider jwtProvider;
+
+  @Value("${jwt.expirationTime}")
+  private int expirationTime;
 
   @Transactional
   public void signUp(SignUpRequestDto request) {
@@ -48,18 +54,18 @@ public class AuthService {
       throw new BusinessException(null, "password", USER_WRONG_PASSWORD);
     }
 
-    return SignInResponseDto.of(jwtProvider.createToken(user.getEmail(), user.getRoles()));
+    return SignInResponseDto.of(jwtProvider.createToken(user.getEmail(), user.getRoles()), expirationTime);
   }
 
   private void checkIsDuplicationTelNumber(String telNumber) {
     if (userRepository.existsByTelNumber(telNumber)) {
-      throw new BusinessException(telNumber, "telNumber", USER_EMAIL_DUPLICATE);
+      throw new BusinessException(telNumber, "telNumber", USER_LOGIN_TEL_NUMBER_DUPLICATE);
     }
   }
 
   private void checkIsDuplicationNickname(String nickname) {
     if (userRepository.existsByNickname(nickname)) {
-      throw new BusinessException(nickname, "nickname", USER_EMAIL_DUPLICATE);
+      throw new BusinessException(nickname, "nickname", USER_LOGIN_ID_DUPLICATE);
     }
   }
 

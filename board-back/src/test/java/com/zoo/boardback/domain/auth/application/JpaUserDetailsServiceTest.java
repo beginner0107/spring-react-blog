@@ -58,7 +58,7 @@ class JpaUserDetailsServiceTest extends IntegrationTestSupport {
         .email(userEmail)
         .password("testpassword123")
         .nickname("test12")
-        .telNumber("010-1111-1111")
+        .telNumber("01011111111")
         .address("경기도 용인시 기흥구")
         .build();
   }

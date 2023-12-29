@@ -1,11 +1,11 @@
 package com.zoo.boardback.domain.auth.dto.response;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
-@AllArgsConstructor
 @NoArgsConstructor
 public class SignInResponseDto {
 
@@ -14,5 +14,11 @@ public class SignInResponseDto {
 
   public static SignInResponseDto of(String token, int expirationTime) {
     return new SignInResponseDto(token, expirationTime);
+  }
+
+  @Builder
+  public SignInResponseDto(String token, int expirationTime) {
+    this.token = token;
+    this.expirationTime = expirationTime;
   }
 }

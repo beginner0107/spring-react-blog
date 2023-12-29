@@ -1,5 +1,7 @@
 package com.zoo.boardback.domain.auth.api;
 
+import static org.mockito.BDDMockito.any;
+import static org.mockito.BDDMockito.given;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -7,7 +9,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.zoo.boardback.ControllerTestSupport;
+import com.zoo.boardback.domain.auth.dto.request.SignInRequestDto;
 import com.zoo.boardback.domain.auth.dto.request.SignUpRequestDto;
+import com.zoo.boardback.domain.auth.dto.response.SignInResponseDto;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -138,6 +142,75 @@ class AuthControllerTest extends ControllerTestSupport {
         .andExpect(status().isBadRequest())
         .andExpect(jsonPath("$.message").value(String.format("[%s] %s: %s", telNumber, "telNumber",
             "전화번호는 11자에서 13자 사이의 숫자만 가능합니다.")));
+  }
+
+  @DisplayName("이메일과 비밀번호를 입력시 로그인에 성공한다.")
+  @Test
+  void signIn() throws Exception{
+    // given
+    SignInRequestDto signInRequest = createSignInRequest("test123@naver.com", "test12324dpass");
+    given(authService.signIn(any())).willReturn(
+        SignInResponseDto.of("sdfsdfsdfsdfsdf", 0));
+
+    // when & then
+    mockMvc.perform(
+        post("/api/v1/auth/sign-in")
+            .content(objectMapper.writeValueAsString(signInRequest))
+            .contentType(MediaType.APPLICATION_JSON)
+            .with(csrf())
+        )
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.token").value("sdfsdfsdfsdfsdf"))
+        .andExpect(jsonPath("$.expirationTime").value(0));
+  }
+
+  @DisplayName("이메일 형식이 틀리면 회원가입을 할 수 없다.")
+  @Test
+  void signInFailEmailFormatFalse() throws Exception{
+    // given
+    String email = "test123";
+    SignInRequestDto signInRequest = createSignInRequest(email, "testpassworrd123");
+
+    // when & then
+    mockMvc.perform(
+            post("/api/v1/auth/sign-in")
+                .content(objectMapper.writeValueAsString(signInRequest))
+                .contentType(MediaType.APPLICATION_JSON)
+                .with(csrf())
+        )
+        .andDo(print())
+        .andExpect(status().isBadRequest())
+        .andExpect(jsonPath("$.message").value(String.format("[%s] %s: %s", email, "email",
+            "이메일 형식을 맞춰주세요")));
+
+  }
+
+  @DisplayName("비밀번호 형식이 틀리면 회원가입을 할 수 없다.")
+  @MethodSource("providerPassword")
+  @ParameterizedTest
+  void signInFailPasswordFormatFalse(String password) throws Exception{
+    // given
+    SignInRequestDto signInRequest = createSignInRequest("test@naver.com", password);
+
+    // when & then
+    mockMvc.perform(
+            post("/api/v1/auth/sign-in")
+                .content(objectMapper.writeValueAsString(signInRequest))
+                .contentType(MediaType.APPLICATION_JSON)
+                .with(csrf())
+        )
+        .andDo(print())
+        .andExpect(status().isBadRequest())
+        .andExpect(jsonPath("$.message").value(String.format("[%s] %s: %s", password, "password",
+            "비밀번호는 8~20자여야 하고 영어, 숫자가 포함되어야 합니다.")));
+  }
+
+  private SignInRequestDto createSignInRequest(String email, String password) {
+    return SignInRequestDto.builder()
+        .email(email)
+        .password(password)
+        .build();
   }
 
   private SignUpRequestDto createSignUpRequest(String userEmail, String password, String nickname, String telNumber) {

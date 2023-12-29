@@ -1,0 +1,10 @@
+[[auth-sign-in]]
+=== 로그인
+
+==== HTTP Request
+include::{snippets}/auth-sign-in/http-request.adoc[]
+include::{snippets}/auth-sign-in/request-fields.adoc[]
+
+==== HTTP Response
+include::{snippets}/auth-sign-in/http-response.adoc[]
+include::{snippets}/auth-sign-in/response-fields.adoc[]

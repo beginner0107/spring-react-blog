@@ -13,6 +13,7 @@ endif::[]
 == AUTH API
 
 include::api/auth-sign-up.adoc[]
+include::api/auth-sign-in.adoc[]
 
 == BOARD API
 

@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 public class SignInRequestDto {
-  @Email
+  @Email(message = "이메일 형식을 맞춰주세요")
   private String email;
   @Pattern(regexp = "^(?=.*?[A-Za-z])(?=.*?\\d).{8,20}$", message = "비밀번호는 8~20자여야 하고 영어, 숫자가 포함되어야 합니다.")
   @JsonProperty("password")

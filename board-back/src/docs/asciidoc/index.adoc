@@ -1,0 +1,19 @@
+ifndef::snippets[]
+:snippets: ../../build/generated-snippets
+endif::[]
+= CafeKiosk REST API 문서
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+:sectlinks:
+
+[[ZoosBlog-API]]
+== AUTH API
+
+include::api/auth-sign-up.adoc[]
+include::api/auth-sign-in.adoc[]
+
+== BOARD API
+

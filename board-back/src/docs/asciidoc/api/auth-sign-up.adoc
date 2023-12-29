@@ -1,0 +1,9 @@
+[[auth-sign-up]]
+=== 회원 가입
+
+==== HTTP Request
+include::{snippets}/auth-sign-up/http-request.adoc[]
+include::{snippets}/auth-sign-up/request-fields.adoc[]
+
+==== HTTP Response
+include::{snippets}/auth-sign-up/http-response.adoc[]

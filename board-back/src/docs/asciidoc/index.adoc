@@ -10,6 +10,9 @@ endif::[]
 :sectlinks:
 
 [[ZoosBlog-API]]
-== USER API
+== AUTH API
+
+include::api/auth-sign-up.adoc[]
+
 == BOARD API
 

@@ -76,6 +76,6 @@ public class Board {
     this.favoriteCount++;
   }
   public void decreaseFavoriteCount() {
-    this.favoriteCount++;
+    this.favoriteCount--;
   }
 }

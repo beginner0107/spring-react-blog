@@ -5,16 +5,21 @@ import static java.util.stream.Collectors.toList;
 import com.zoo.boardback.domain.favorite.dto.object.FavoriteListItem;
 import com.zoo.boardback.domain.favorite.dto.query.FavoriteQueryDto;
 import java.util.List;
-import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
-@AllArgsConstructor
 public class FavoriteListResponseDto {
   private List<FavoriteListItem> favoriteList;
   private boolean isEmpty;
+
+  @Builder
+  public FavoriteListResponseDto(List<FavoriteListItem> favoriteList, boolean isEmpty) {
+    this.favoriteList = favoriteList;
+    this.isEmpty = isEmpty;
+  }
 
   public static FavoriteListResponseDto from(List<FavoriteQueryDto> favorites) {
     List<FavoriteListItem> favoriteList = null;

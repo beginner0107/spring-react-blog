@@ -1,0 +1,10 @@
+[[board-postDeatil]]
+=== 게시글 상세보기
+
+==== HTTP Request
+include::{snippets}/board-postDetail/http-request.adoc[]
+include::{snippets}/board-postDetail/path-parameters.adoc[]
+
+==== HTTP Response
+include::{snippets}/board-postDetail/http-response.adoc[]
+include::{snippets}/board-postDetail/response-fields.adoc[]

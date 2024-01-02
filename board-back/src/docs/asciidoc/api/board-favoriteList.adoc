@@ -1,0 +1,10 @@
+[[board-favoriteList]]
+=== 좋아요 누른 회원 목록
+
+==== HTTP Request
+include::{snippets}/board-favoriteList/http-request.adoc[]
+include::{snippets}/board-favoriteList/path-parameters.adoc[]
+
+==== HTTP Response
+include::{snippets}/board-favoriteList/http-response.adoc[]
+include::{snippets}/board-favoriteList/response-fields.adoc[]

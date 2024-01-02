@@ -6,12 +6,12 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import java.util.List;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
-@AllArgsConstructor
 public class PostCreateRequestDto {
 
   @NotBlank(message = "게시글 제목을 입력해주세요.")
@@ -20,6 +20,13 @@ public class PostCreateRequestDto {
   private String content;
   @NotNull
   private List<String> boardImageList;
+
+  @Builder
+  public PostCreateRequestDto(String title, String content, List<String> boardImageList) {
+    this.title = title;
+    this.content = content;
+    this.boardImageList = boardImageList;
+  }
 
   public Board toEntity(User user) {
     return Board.builder()

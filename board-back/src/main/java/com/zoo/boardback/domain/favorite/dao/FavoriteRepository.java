@@ -16,6 +16,8 @@ public interface FavoriteRepository extends JpaRepository<Favorite, FavoritePk> 
   @Query("SELECT new com.zoo.boardback.domain.favorite.dto.query.FavoriteQueryDto(u.email, u.nickname, u.profileImage) " +
       "FROM Favorite f " +
       "JOIN f.favoritePk.user u " +
-      "WHERE f.favoritePk.board = :board")
+      "WHERE f.favoritePk.board = :board " +
+      "ORDER BY f.createdAt DESC"
+  )
   List<FavoriteQueryDto> findRecommendersByBoard(@Param("board") Board board);
 }

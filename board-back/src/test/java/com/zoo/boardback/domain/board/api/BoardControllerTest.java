@@ -2,6 +2,7 @@ package com.zoo.boardback.domain.board.api;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.springframework.http.HttpStatus.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -18,6 +19,7 @@ import com.zoo.boardback.domain.favorite.dto.response.FavoriteListResponseDto;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
 class BoardControllerTest extends ControllerTestSupport {
@@ -54,10 +56,11 @@ class BoardControllerTest extends ControllerTestSupport {
             .contentType(MediaType.APPLICATION_JSON))
         .andDo(print())
         .andExpect(status().isBadRequest())
-        .andExpect(jsonPath("$.message").value(
-            String.format("[%s] %s: %s", title, "title",
-                "게시글 제목을 입력해주세요.")
-        ));
+        .andExpect(jsonPath("$.code").value(400))
+        .andExpect(jsonPath("$.status").value("BAD_REQUEST"))
+        .andExpect(jsonPath("$.message").value("게시글 제목을 입력해주세요."))
+        .andExpect(jsonPath("$.field").value("title"))
+        .andExpect(jsonPath("$.data").isEmpty());
   }
 
   @DisplayName("게시글의 내용이 빈 값이라면 게시글을 저장할 수 없다.")
@@ -75,10 +78,11 @@ class BoardControllerTest extends ControllerTestSupport {
             .contentType(MediaType.APPLICATION_JSON))
         .andDo(print())
         .andExpect(status().isBadRequest())
-        .andExpect(jsonPath("$.message").value(
-            String.format("[%s] %s: %s", content, "content",
-                "must not be blank")
-        ));
+        .andExpect(jsonPath("$.code").value(400))
+        .andExpect(jsonPath("$.status").value("BAD_REQUEST"))
+        .andExpect(jsonPath("$.message").value("must not be blank"))
+        .andExpect(jsonPath("$.field").value("content"))
+        .andExpect(jsonPath("$.data").isEmpty());
   }
 
   @DisplayName("게시글 번호를 넘기면 게시글 상세 내용을 볼 수 있다.")
@@ -96,12 +100,15 @@ class BoardControllerTest extends ControllerTestSupport {
     // when & then
     mockMvc.perform(get("/api/v1/board/" + boardNumber))
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.boardNumber").value(boardNumber))
-        .andExpect(jsonPath("$.title").value("테스트1"))
-        .andExpect(jsonPath("$.content").value("테스트내용1"))
-        .andExpect(jsonPath("$.boardImageList[0]").value(imageUrl))
-        .andExpect(jsonPath("$.writerEmail").value("test123@naver.com"))
-        .andExpect(jsonPath("$.writerNickname").value("개구리왕눈이"));
+        .andExpect(jsonPath("$.code").value(200))
+        .andExpect(jsonPath("$.status").value("OK"))
+        .andExpect(jsonPath("$.message").value("OK"))
+        .andExpect(jsonPath("$.data.boardNumber").value(boardNumber))
+        .andExpect(jsonPath("$.data.title").value("테스트1"))
+        .andExpect(jsonPath("$.data.content").value("테스트내용1"))
+        .andExpect(jsonPath("$.data.boardImageList[0]").value(imageUrl))
+        .andExpect(jsonPath("$.data.writerEmail").value("test123@naver.com"))
+        .andExpect(jsonPath("$.data.writerNickname").value("개구리왕눈이"));
   }
 
   @DisplayName("상세 게시글 페이지에서 좋아요(△, ▽) 버튼을 누를 수 있다.")
@@ -133,10 +140,13 @@ class BoardControllerTest extends ControllerTestSupport {
     // when & then
     mockMvc.perform(get("/api/v1/board/" + boardNumber + "/favorite-list"))
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.favoriteList").hasJsonPath())
-        .andExpect(jsonPath("$.favoriteList[0].email").value("test123@naver.com"))
-        .andExpect(jsonPath("$.favoriteList[0].nickname").value("개구리왕눈이"))
-        .andExpect(jsonPath("$.favoriteList[0].profileImage").value("https://profileImage.png"));
+        .andExpect(jsonPath("$.code").value(200))
+        .andExpect(jsonPath("$.status").value("OK"))
+        .andExpect(jsonPath("$.message").value("OK"))
+        .andExpect(jsonPath("$.data.favoriteList").hasJsonPath())
+        .andExpect(jsonPath("$.data.favoriteList[0].email").value("test123@naver.com"))
+        .andExpect(jsonPath("$.data.favoriteList[0].nickname").value("개구리왕눈이"))
+        .andExpect(jsonPath("$.data.favoriteList[0].profileImage").value("https://profileImage.png"));
   }
 
   private static PostDetailResponseDto createPostDetailResponse(int boardNumber, List<String> imageUrls

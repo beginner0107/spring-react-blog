@@ -95,9 +95,18 @@ public class AuthControllerDocsTest extends RestDocsSupport {
                     .description("비밀번호")
             ),
             responseFields(
-                fieldWithPath("token").type(JsonFieldType.STRING)
+                fieldWithPath("code").type(JsonFieldType.NUMBER)
+                    .description("코드"),
+                fieldWithPath("status").type(JsonFieldType.STRING)
+                    .description("상태"),
+                fieldWithPath("message").type(JsonFieldType.STRING)
+                    .description("메시지"),
+                fieldWithPath("field").type(JsonFieldType.STRING)
+                    .optional()
+                    .description("에러 발생 필드명"),
+                fieldWithPath("data.token").type(JsonFieldType.STRING)
                     .description("엑세스 토큰"),
-                fieldWithPath("expirationTime").type(JsonFieldType.NUMBER)
+                fieldWithPath("data.expirationTime").type(JsonFieldType.NUMBER)
                     .description("토큰 만료시간")
             )
         ));

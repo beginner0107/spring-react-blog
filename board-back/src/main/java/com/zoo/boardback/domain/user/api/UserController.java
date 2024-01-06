@@ -1,5 +1,6 @@
 package com.zoo.boardback.domain.user.api;
 
+import com.zoo.boardback.domain.ApiResponse;
 import com.zoo.boardback.domain.auth.details.CustomUserDetails;
 import com.zoo.boardback.domain.user.application.UserService;
 import com.zoo.boardback.domain.user.dto.response.GetSignUserResponseDto;
@@ -17,9 +18,9 @@ public class UserController {
   private final UserService userService;
 
   @GetMapping("")
-  public ResponseEntity<GetSignUserResponseDto> getSignInUser(
+  public ApiResponse<GetSignUserResponseDto> getSignInUser(
       @AuthenticationPrincipal CustomUserDetails user
   ) {
-    return ResponseEntity.ok(userService.getSignUser(user.getUsername()));
+    return ApiResponse.ok(userService.getSignUser(user.getUsername()));
   }
 }

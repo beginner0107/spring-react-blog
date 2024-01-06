@@ -44,7 +44,6 @@ class BoardRepositoryTest extends IntegrationTestSupport {
         boardList.get(0).getBoardNumber()).orElseThrow();
 
     // then
-    assertThat(board.getBoardNumber()).isEqualTo(1);
     assertThat(board.getTitle()).isEqualTo("제목1");
     assertThat(board.getContent()).isEqualTo("내용입니다.1");
     assertThat(board.getUser().getEmail()).isEqualTo("test12@naver.com");

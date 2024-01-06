@@ -1,5 +1,9 @@
 package com.zoo.boardback.global.error;
 
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
+
+import com.zoo.boardback.domain.ApiResponse;
+import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindException;
@@ -11,32 +15,23 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class ExceptionAdvice {
 
   @ExceptionHandler(BindException.class)
-  public ResponseEntity<ErrorResponse> bindException(BindException e) {
-    String errorMessage = getErrorMessage(e);
-    return ResponseEntity.badRequest()
-        .body(ErrorResponse.from(errorMessage));
+  public ResponseEntity<ApiResponse<Object>> bindException(BindException e) {
+    List<ApiResponse<Object>> errorMessage = getErrorMessage(e);
+    return ResponseEntity.status(BAD_REQUEST).body(errorMessage.get(0));
   }
 
   @ExceptionHandler(BusinessException.class)
-  public ResponseEntity<ErrorResponse> businessException(BusinessException e) {
-    String errorMessage = getErrorMessage(e.getInvalidValue(), e.getFieldName(), e.getMessage());
+  public ResponseEntity<ApiResponse<Void>> businessException(BusinessException e) {
     return ResponseEntity.status(e.getHttpStatus())
-        .body(ErrorResponse.from(errorMessage));
+        .body(ApiResponse.of(e.getHttpStatus(), e.getMessage(), e.getFieldName()));
   }
 
-  private static String getErrorMessage(BindException e) {
+  private static List<ApiResponse<Object>> getErrorMessage(BindException e) {
     BindingResult bindingResult = e.getBindingResult();
 
     return bindingResult.getFieldErrors()
         .stream()
-        .map(fieldError -> getErrorMessage((String) fieldError.getRejectedValue(),
-            fieldError.getField(),
-            fieldError.getDefaultMessage()))
-        .collect(Collectors.joining(", "));
-  }
-
-  public static String getErrorMessage(String invalidValue, String errorField,
-      String errorMessage) {
-    return String.format("[%s] %s: %s", invalidValue, errorField, errorMessage);
+        .map(error -> ApiResponse.of(BAD_REQUEST, error.getDefaultMessage(), error.getField()))
+        .collect(Collectors.toList());
   }
 }

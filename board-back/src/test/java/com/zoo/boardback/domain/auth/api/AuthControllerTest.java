@@ -57,8 +57,10 @@ class AuthControllerTest extends ControllerTestSupport {
         )
         .andDo(print())
         .andExpect(status().isBadRequest())
-        .andExpect(jsonPath("$.message").value(String.format("[%s] %s: %s", email, "email",
-            "이메일 형식을 맞춰주세요")));
+        .andExpect(jsonPath("$.code").value(400))
+        .andExpect(jsonPath("$.status").value("BAD_REQUEST"))
+        .andExpect(jsonPath("$.message").value("이메일 형식을 맞춰주세요"))
+        .andExpect(jsonPath("$.field").value("email"));
   }
 
   private static Stream<Arguments> providerPassword() {
@@ -88,8 +90,10 @@ class AuthControllerTest extends ControllerTestSupport {
         )
         .andDo(print())
         .andExpect(status().isBadRequest())
-        .andExpect(jsonPath("$.message").value(String.format("[%s] %s: %s", password, "password",
-            "비밀번호는 8~20자여야 하고 영어, 숫자가 포함되어야 합니다.")));
+        .andExpect(jsonPath("$.code").value(400))
+        .andExpect(jsonPath("$.status").value("BAD_REQUEST"))
+        .andExpect(jsonPath("$.message").value("비밀번호는 8~20자여야 하고 영어, 숫자가 포함되어야 합니다."))
+        .andExpect(jsonPath("$.field").value("password"));
   }
 
   @DisplayName("닉네임의 형식이 틀리면 회원가입을 할 수 없다.")
@@ -109,8 +113,10 @@ class AuthControllerTest extends ControllerTestSupport {
         )
         .andDo(print())
         .andExpect(status().isBadRequest())
-        .andExpect(jsonPath("$.message").value(String.format("[%s] %s: %s", nickname, "nickname",
-            "닉네임은 20자 이하입니다.")));
+        .andExpect(jsonPath("$.code").value(400))
+        .andExpect(jsonPath("$.status").value("BAD_REQUEST"))
+        .andExpect(jsonPath("$.message").value( "닉네임은 20자 이하입니다."))
+        .andExpect(jsonPath("$.field").value("nickname"));
   }
 
   private static Stream<Arguments> providerTelNumber() {
@@ -140,8 +146,10 @@ class AuthControllerTest extends ControllerTestSupport {
         )
         .andDo(print())
         .andExpect(status().isBadRequest())
-        .andExpect(jsonPath("$.message").value(String.format("[%s] %s: %s", telNumber, "telNumber",
-            "전화번호는 11자에서 13자 사이의 숫자만 가능합니다.")));
+        .andExpect(jsonPath("$.code").value(400))
+        .andExpect(jsonPath("$.status").value("BAD_REQUEST"))
+        .andExpect(jsonPath("$.message").value( "전화번호는 11자에서 13자 사이의 숫자만 가능합니다."))
+        .andExpect(jsonPath("$.field").value("telNumber"));
   }
 
   @DisplayName("이메일과 비밀번호를 입력시 로그인에 성공한다.")
@@ -161,8 +169,11 @@ class AuthControllerTest extends ControllerTestSupport {
         )
         .andDo(print())
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.token").value("sdfsdfsdfsdfsdf"))
-        .andExpect(jsonPath("$.expirationTime").value(0));
+        .andExpect(jsonPath("$.code").value("200"))
+        .andExpect(jsonPath("$.status").value("OK"))
+        .andExpect(jsonPath("$.message").value("OK"))
+        .andExpect(jsonPath("$.data.token").value("sdfsdfsdfsdfsdf"))
+        .andExpect(jsonPath("$.data.expirationTime").value(0));
   }
 
   @DisplayName("이메일 형식이 틀리면 회원가입을 할 수 없다.")
@@ -181,9 +192,10 @@ class AuthControllerTest extends ControllerTestSupport {
         )
         .andDo(print())
         .andExpect(status().isBadRequest())
-        .andExpect(jsonPath("$.message").value(String.format("[%s] %s: %s", email, "email",
-            "이메일 형식을 맞춰주세요")));
-
+        .andExpect(jsonPath("$.code").value(400))
+        .andExpect(jsonPath("$.status").value("BAD_REQUEST"))
+        .andExpect(jsonPath("$.message").value( "이메일 형식을 맞춰주세요"))
+        .andExpect(jsonPath("$.field").value("email"));
   }
 
   @DisplayName("비밀번호 형식이 틀리면 회원가입을 할 수 없다.")
@@ -202,8 +214,10 @@ class AuthControllerTest extends ControllerTestSupport {
         )
         .andDo(print())
         .andExpect(status().isBadRequest())
-        .andExpect(jsonPath("$.message").value(String.format("[%s] %s: %s", password, "password",
-            "비밀번호는 8~20자여야 하고 영어, 숫자가 포함되어야 합니다.")));
+        .andExpect(jsonPath("$.code").value(400))
+        .andExpect(jsonPath("$.status").value("BAD_REQUEST"))
+        .andExpect(jsonPath("$.message").value( "비밀번호는 8~20자여야 하고 영어, 숫자가 포함되어야 합니다."))
+        .andExpect(jsonPath("$.field").value("password"));
   }
 
   private SignInRequestDto createSignInRequest(String email, String password) {

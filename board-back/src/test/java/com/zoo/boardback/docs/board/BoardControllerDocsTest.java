@@ -81,15 +81,33 @@ public class BoardControllerDocsTest extends RestDocsSecuritySupport {
                 parameterWithName("boardNumber").description("Board Id")
             ),
             responseFields(
-                fieldWithPath("boardNumber").type(JsonFieldType.NUMBER).description("Board Id"),
-                fieldWithPath("title").type(JsonFieldType.STRING).description("글 제목"),
-                fieldWithPath("content").type(JsonFieldType.STRING).description("글 내용"),
-                fieldWithPath("boardImageList").type(JsonFieldType.ARRAY).description("이미지 경로 목록[String]"),
-                fieldWithPath("createdAt").type(JsonFieldType.STRING).description("글 작성일자"),
-                fieldWithPath("updatedAt").type(JsonFieldType.STRING).description("글 수정일자"),
-                fieldWithPath("writerEmail").type(JsonFieldType.STRING).description("작성자 이메일"),
-                fieldWithPath("writerNickname").type(JsonFieldType.STRING).description("작성자 닉네임"),
-                fieldWithPath("writerProfileImage").type(JsonFieldType.STRING).description("작성자 프로필 이미지 경로[String]")
+                fieldWithPath("code").type(JsonFieldType.NUMBER)
+                    .description("코드"),
+                fieldWithPath("status").type(JsonFieldType.STRING)
+                    .description("상태"),
+                fieldWithPath("message").type(JsonFieldType.STRING)
+                    .description("메시지"),
+                fieldWithPath("field").type(JsonFieldType.STRING)
+                    .optional()
+                    .description("에러 발생 필드명"),
+                fieldWithPath("data.boardNumber").type(JsonFieldType.NUMBER)
+                    .description("Board Id"),
+                fieldWithPath("data.title").type(JsonFieldType.STRING)
+                    .description("글 제목"),
+                fieldWithPath("data.content").type(JsonFieldType.STRING)
+                    .description("글 내용"),
+                fieldWithPath("data.boardImageList").type(JsonFieldType.ARRAY)
+                    .description("이미지 경로 목록[String]"),
+                fieldWithPath("data.createdAt").type(JsonFieldType.STRING)
+                    .description("글 작성일자"),
+                fieldWithPath("data.updatedAt").type(JsonFieldType.STRING)
+                    .description("글 수정일자"),
+                fieldWithPath("data.writerEmail").type(JsonFieldType.STRING)
+                    .description("작성자 이메일"),
+                fieldWithPath("data.writerNickname").type(JsonFieldType.STRING)
+                    .description("작성자 닉네임"),
+                fieldWithPath("data.writerProfileImage").type(JsonFieldType.STRING)
+                    .description("작성자 프로필 이미지 경로[String]")
             )
             ))
     ;
@@ -133,11 +151,25 @@ public class BoardControllerDocsTest extends RestDocsSecuritySupport {
                     parameterWithName("boardNumber").description("Board Id")
                 ),
             responseFields(
-                fieldWithPath("favoriteList").type(JsonFieldType.ARRAY).description("좋아요 누른 회원의 목록"),
-                fieldWithPath("favoriteList[].email").type(JsonFieldType.STRING).description("좋아요 누른 회원의 이메일"),
-                fieldWithPath("favoriteList[].nickname").type(JsonFieldType.STRING).description("좋아요 누른 회원의 닉네임"),
-                fieldWithPath("favoriteList[].profileImage").type(JsonFieldType.STRING).description("좋아요 누른 회원의 프로필 이미지"),
-                fieldWithPath("empty").type(JsonFieldType.BOOLEAN).description("빈 값 여부")
+                fieldWithPath("code").type(JsonFieldType.NUMBER)
+                    .description("코드"),
+                fieldWithPath("status").type(JsonFieldType.STRING)
+                    .description("상태"),
+                fieldWithPath("message").type(JsonFieldType.STRING)
+                    .description("메시지"),
+                fieldWithPath("field").type(JsonFieldType.STRING)
+                    .optional()
+                    .description("에러 발생 필드명"),
+                fieldWithPath("data.favoriteList").type(JsonFieldType.ARRAY)
+                    .description("좋아요 누른 회원의 목록"),
+                fieldWithPath("data.favoriteList[].email").type(JsonFieldType.STRING)
+                    .description("좋아요 누른 회원의 이메일"),
+                fieldWithPath("data.favoriteList[].nickname").type(JsonFieldType.STRING)
+                    .description("좋아요 누른 회원의 닉네임"),
+                fieldWithPath("data.favoriteList[].profileImage").type(JsonFieldType.STRING)
+                    .description("좋아요 누른 회원의 프로필 이미지"),
+                fieldWithPath("data.empty").type(JsonFieldType.BOOLEAN)
+                    .description("빈 값 여부")
             )
         ));
   }

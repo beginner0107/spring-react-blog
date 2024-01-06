@@ -1,0 +1,9 @@
+[[user-myInfo]]
+=== 좋아요 누른 회원 목록
+
+==== HTTP Request
+include::{snippets}/user-info/http-request.adoc[]
+
+==== HTTP Response
+include::{snippets}/user-info/http-response.adoc[]
+include::{snippets}/user-info/response-fields.adoc[]

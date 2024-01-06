@@ -1,5 +1,6 @@
 package com.zoo.boardback.domain.auth.api;
 
+import com.zoo.boardback.domain.ApiResponse;
 import com.zoo.boardback.domain.auth.application.AuthService;
 import com.zoo.boardback.domain.auth.dto.request.SignInRequestDto;
 import com.zoo.boardback.domain.auth.dto.request.SignUpRequestDto;
@@ -20,14 +21,14 @@ public class AuthController {
   private final AuthService authService;
 
   @PostMapping(value = "/sign-up")
-  public ResponseEntity<Void> signUp(@RequestBody @Valid SignUpRequestDto request) {
+  public ApiResponse<Void> signUp(@RequestBody @Valid SignUpRequestDto request) {
     authService.signUp(request);
-    return ResponseEntity.ok().build();
+    return ApiResponse.ok(null);
   }
 
   @PostMapping(value = "/sign-in")
-  public ResponseEntity<SignInResponseDto> signIn(@RequestBody @Valid SignInRequestDto request) {
-    return ResponseEntity.ok(authService.signIn(request));
+  public ApiResponse<SignInResponseDto> signIn(@RequestBody @Valid SignInRequestDto request) {
+    return ApiResponse.ok(authService.signIn(request));
   }
 }
 

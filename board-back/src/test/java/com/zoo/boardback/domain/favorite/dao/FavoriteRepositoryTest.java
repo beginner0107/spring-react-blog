@@ -1,6 +1,6 @@
 package com.zoo.boardback.domain.favorite.dao;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import com.zoo.boardback.IntegrationTestSupport;
 import com.zoo.boardback.domain.auth.entity.Authority;
@@ -11,6 +11,7 @@ import com.zoo.boardback.domain.favorite.entity.Favorite;
 import com.zoo.boardback.domain.favorite.entity.primaryKey.FavoritePk;
 import com.zoo.boardback.domain.user.dao.UserRepository;
 import com.zoo.boardback.domain.user.entity.User;
+import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
@@ -84,7 +85,8 @@ class FavoriteRepositoryTest extends IntegrationTestSupport {
     Favorite saveFavorite1 = createFavorite(favoritePk1);
     FavoritePk favoritePk2 = new FavoritePk(board1, user2);
     Favorite saveFavorite2 = createFavorite(favoritePk2);
-    favoriteRepository.saveAll(List.of(saveFavorite1, saveFavorite2));
+    favoriteRepository.save(saveFavorite1);
+    favoriteRepository.save(saveFavorite2);
 
     // when
     List<FavoriteQueryDto> recommenderUserList = favoriteRepository.findRecommendersByBoard(board1);

@@ -1,5 +1,6 @@
 package com.zoo.boardback.domain.board.api;
 
+import com.zoo.boardback.domain.ApiResponse;
 import com.zoo.boardback.domain.auth.details.CustomUserDetails;
 import com.zoo.boardback.domain.board.application.BoardService;
 import com.zoo.boardback.domain.board.dto.request.PostCreateRequestDto;
@@ -27,34 +28,34 @@ public class BoardController {
   private final FavoriteService favoriteService;
 
   @PostMapping("")
-  public ResponseEntity<Void> createBoard(
+  public ApiResponse<Void> createBoard(
       @RequestBody @Valid PostCreateRequestDto requestDto,
       @AuthenticationPrincipal CustomUserDetails userDetails
   ) {
     boardService.create(requestDto, userDetails.getUsername());
-    return ResponseEntity.ok().build();
+    return ApiResponse.ok(null);
   }
 
   @GetMapping("/{boardNumber}")
-  public ResponseEntity<PostDetailResponseDto> getPost(
+  public ApiResponse<PostDetailResponseDto> getPost(
       @PathVariable int boardNumber
   ) {
     PostDetailResponseDto postDetailResponseDto = boardService.find(boardNumber);
-    return ResponseEntity.ok().body(postDetailResponseDto);
+    return ApiResponse.ok(postDetailResponseDto);
   }
 
   @PutMapping("/{boardNumber}/favorite")
-  public ResponseEntity<Void> putFavorite(
+  public ApiResponse<Void> putFavorite(
       @PathVariable int boardNumber,
       @AuthenticationPrincipal CustomUserDetails userDetails) {
       favoriteService.putFavorite(boardNumber, userDetails.getUsername());
-      return ResponseEntity.ok().build();
+      return ApiResponse.ok(null);
   }
 
   @GetMapping("/{boardNumber}/favorite-list")
-  public ResponseEntity<FavoriteListResponseDto> getFavoriteList(
+  public ApiResponse<FavoriteListResponseDto> getFavoriteList(
       @PathVariable int boardNumber
   ) {
-    return ResponseEntity.ok(favoriteService.getFavoriteList(boardNumber));
+    return ApiResponse.ok(favoriteService.getFavoriteList(boardNumber));
   }
 }

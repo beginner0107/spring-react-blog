@@ -61,6 +61,9 @@ public class FileControllerDocsTest extends RestDocsSupport {
                     .description("상태"),
                 fieldWithPath("message").type(JsonFieldType.STRING)
                     .description("메시지"),
+                fieldWithPath("field").type(JsonFieldType.STRING)
+                    .optional()
+                    .description("에러 발생 필드명"),
                 fieldWithPath("data").type(JsonFieldType.STRING)
                     .description("파일이 업로드된 경로")
             )

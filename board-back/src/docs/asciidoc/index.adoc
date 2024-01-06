@@ -21,4 +21,8 @@ include::api/board-postDetail.adoc[]
 include::api/board-favorite-button-click.adoc[]
 include::api/board-favoriteList.adoc[]
 
+== FILE API
+include::api/file-upload.adoc[]
+include::api/file-showImage.adoc[]
+
 

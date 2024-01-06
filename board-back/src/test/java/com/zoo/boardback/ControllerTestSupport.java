@@ -6,6 +6,8 @@ import com.zoo.boardback.domain.auth.application.AuthService;
 import com.zoo.boardback.domain.board.api.BoardController;
 import com.zoo.boardback.domain.board.application.BoardService;
 import com.zoo.boardback.domain.favorite.application.FavoriteService;
+import com.zoo.boardback.domain.file.api.FileController;
+import com.zoo.boardback.global.util.file.FileUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -15,7 +17,8 @@ import org.springframework.test.web.servlet.MockMvc;
 @AutoConfigureMockMvc(addFilters = false)
 @WebMvcTest(controllers = {
     AuthController.class,
-    BoardController.class
+    BoardController.class,
+    FileController.class
 })
 public abstract class ControllerTestSupport {
   @Autowired
@@ -31,5 +34,8 @@ public abstract class ControllerTestSupport {
 
   @MockBean
   protected FavoriteService favoriteService;
+
+  @MockBean
+  protected FileUtil fileUtil;
 }
 

@@ -1,0 +1,10 @@
+[[file-upload]]
+=== 파일 업로드
+
+==== HTTP Request
+include::{snippets}/file-upload/http-request.adoc[]
+include::{snippets}/file-upload/httpie-request.adoc[]
+
+==== HTTP Response
+include::{snippets}/file-upload/http-response.adoc[]
+include::{snippets}/file-upload/response-fields.adoc[]

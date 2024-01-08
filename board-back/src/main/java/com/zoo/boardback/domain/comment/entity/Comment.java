@@ -5,6 +5,7 @@ import static lombok.AccessLevel.PROTECTED;
 
 import com.zoo.boardback.domain.board.entity.Board;
 import com.zoo.boardback.domain.user.entity.User;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
@@ -32,9 +33,10 @@ public class Comment {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private int commentNumber;
 
+  @Column(name = "content", nullable = false, columnDefinition = "TEXT")
   private String content;
 
-  @ManyToOne(fetch = LAZY)
+  @ManyToOne(fetch = LAZY, cascade = CascadeType.REMOVE)
   @JoinColumn(name = "boardNumber")
   private Board board;
 

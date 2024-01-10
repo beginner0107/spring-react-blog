@@ -8,6 +8,7 @@ import com.zoo.boardback.domain.user.entity.User;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -23,6 +24,12 @@ public class CommentCreateRequestDto {
   @NotBlank(message = "댓글 내용을 입력해주세요")
   @Size(max = MAX_REQUEST_COMMENT_LENGTH, message = "댓글 내용은 300자 이하로 입력해주세요.")
   private String content;
+
+  @Builder
+  public CommentCreateRequestDto(int boardNumber, String content) {
+    this.boardNumber = boardNumber;
+    this.content = content;
+  }
 
   public Comment toEntity(User user, Board board) {
     return Comment.builder()

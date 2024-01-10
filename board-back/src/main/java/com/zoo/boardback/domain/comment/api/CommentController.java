@@ -44,7 +44,7 @@ public class CommentController {
     return ApiResponse.ok(comments);
   }
 
-  @PutMapping("/{commentNumber}/editComment")
+  @PutMapping("/{commentNumber}")
   public ApiResponse<Void> editComment(
       @PathVariable int commentNumber,
       @RequestBody @Valid CommentUpdateRequestDto commentUpdateRequestDto
@@ -53,9 +53,12 @@ public class CommentController {
     return ApiResponse.ok(null);
   }
 
-  @DeleteMapping("/{commentNumber}/deleteComment")
-  public ApiResponse<Void> deleteComment(@PathVariable int commentNumber) {
-    commentService.deleteComment(commentNumber);
+  @DeleteMapping("/{commentNumber}/board/{boardNumber}")
+  public ApiResponse<Void> deleteComment(
+      @PathVariable int commentNumber,
+      @PathVariable int boardNumber
+  ) {
+    commentService.deleteComment(commentNumber, boardNumber);
     return ApiResponse.of(HttpStatus.NO_CONTENT, null);
   }
 }

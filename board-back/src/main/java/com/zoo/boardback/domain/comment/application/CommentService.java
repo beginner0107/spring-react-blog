@@ -50,9 +50,11 @@ public class CommentService {
   }
 
   @Transactional
-  public void deleteComment(int commentNumber) {
+  public void deleteComment(int commentNumber, int boardNumber) {
     Comment comment = commentRepository.findById(commentNumber).orElseThrow(
         () -> new BusinessException(commentNumber, "commentNumber", COMMENT_NOT_FOUND));
+    Board board = comment.getBoard();
+    board.decreaseCommentCount();
     commentRepository.deleteById(commentNumber);
   }
 }

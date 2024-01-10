@@ -4,6 +4,7 @@ import static jakarta.persistence.FetchType.LAZY;
 import static lombok.AccessLevel.PROTECTED;
 
 import com.zoo.boardback.domain.board.entity.Board;
+import com.zoo.boardback.domain.comment.dto.request.CommentUpdateRequestDto;
 import com.zoo.boardback.domain.user.entity.User;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -36,7 +37,7 @@ public class Comment {
   @Column(name = "content", nullable = false, columnDefinition = "TEXT")
   private String content;
 
-  @ManyToOne(fetch = LAZY, cascade = CascadeType.REMOVE)
+  @ManyToOne(fetch = LAZY)
   @JoinColumn(name = "boardNumber")
   private Board board;
 
@@ -61,5 +62,9 @@ public class Comment {
     this.user = user;
     this.createdAt = createdAt;
     this.updatedAt = updatedAt;
+  }
+
+  public void editComment(CommentUpdateRequestDto commentUpdateRequestDto) {
+    this.content = commentUpdateRequestDto.getContent();
   }
 }

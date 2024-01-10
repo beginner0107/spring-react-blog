@@ -4,9 +4,11 @@ import com.zoo.boardback.domain.ApiResponse;
 import com.zoo.boardback.domain.auth.details.CustomUserDetails;
 import com.zoo.boardback.domain.comment.application.CommentService;
 import com.zoo.boardback.domain.comment.dto.request.CommentCreateRequestDto;
+import com.zoo.boardback.domain.comment.dto.request.CommentUpdateRequestDto;
 import com.zoo.boardback.domain.comment.dto.response.CommentListResponseDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -43,14 +45,17 @@ public class CommentController {
   }
 
   @PutMapping("/{commentNumber}/editComment")
-  public ApiResponse<Void> editComment(@PathVariable int commentNumber) {
-    commentService.editComment(commentNumber);
+  public ApiResponse<Void> editComment(
+      @PathVariable int commentNumber,
+      @RequestBody @Valid CommentUpdateRequestDto commentUpdateRequestDto
+      ) {
+    commentService.editComment(commentNumber, commentUpdateRequestDto);
     return ApiResponse.ok(null);
   }
 
   @DeleteMapping("/{commentNumber}/deleteComment")
   public ApiResponse<Void> deleteComment(@PathVariable int commentNumber) {
     commentService.deleteComment(commentNumber);
-    return ApiResponse.ok(null);
+    return ApiResponse.of(HttpStatus.NO_CONTENT, null);
   }
 }

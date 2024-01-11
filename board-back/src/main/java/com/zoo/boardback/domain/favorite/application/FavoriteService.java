@@ -1,15 +1,19 @@
 package com.zoo.boardback.domain.favorite.application;
 
+import static com.zoo.boardback.global.error.ErrorCode.BOARD_NOT_CUD_MATCHING_USER;
 import static com.zoo.boardback.global.error.ErrorCode.BOARD_NOT_FOUND;
 import static com.zoo.boardback.global.error.ErrorCode.USER_NOT_FOUND;
 
 import com.zoo.boardback.domain.board.dao.BoardRepository;
 import com.zoo.boardback.domain.board.entity.Board;
+import com.zoo.boardback.domain.comment.dao.CommentRepository;
+import com.zoo.boardback.domain.comment.dto.response.CommentResponse;
 import com.zoo.boardback.domain.favorite.dao.FavoriteRepository;
 import com.zoo.boardback.domain.favorite.dto.query.FavoriteQueryDto;
 import com.zoo.boardback.domain.favorite.dto.response.FavoriteListResponseDto;
 import com.zoo.boardback.domain.favorite.entity.Favorite;
 import com.zoo.boardback.domain.favorite.entity.primaryKey.FavoritePk;
+import com.zoo.boardback.domain.image.dao.ImageRepository;
 import com.zoo.boardback.domain.user.dao.UserRepository;
 import com.zoo.boardback.domain.user.entity.User;
 import com.zoo.boardback.global.error.BusinessException;

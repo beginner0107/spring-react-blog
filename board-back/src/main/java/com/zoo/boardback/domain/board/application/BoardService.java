@@ -1,5 +1,6 @@
 package com.zoo.boardback.domain.board.application;
 
+import static com.zoo.boardback.global.error.ErrorCode.BOARD_NOT_CUD_MATCHING_USER;
 import static com.zoo.boardback.global.error.ErrorCode.BOARD_NOT_FOUND;
 import static com.zoo.boardback.global.error.ErrorCode.USER_NOT_FOUND;
 import static java.util.stream.Collectors.toList;
@@ -8,6 +9,7 @@ import com.zoo.boardback.domain.board.dao.BoardRepository;
 import com.zoo.boardback.domain.board.dto.request.PostCreateRequestDto;
 import com.zoo.boardback.domain.board.dto.response.PostDetailResponseDto;
 import com.zoo.boardback.domain.board.entity.Board;
+import com.zoo.boardback.domain.comment.dao.CommentRepository;
 import com.zoo.boardback.domain.favorite.dao.FavoriteRepository;
 import com.zoo.boardback.domain.favorite.dto.query.FavoriteQueryDto;
 import com.zoo.boardback.domain.favorite.dto.response.FavoriteListResponseDto;
@@ -32,6 +34,8 @@ public class BoardService {
   private final BoardRepository boardRepository;
   private final UserRepository userRepository;
   private final ImageRepository imageRepository;
+  private final CommentRepository commentRepository;
+  private final FavoriteRepository favoriteRepository;
 
   @Transactional
   public void create(PostCreateRequestDto request, String email) {
@@ -64,5 +68,22 @@ public class BoardService {
       boardImageList.add(imageUrl);
     }
     return PostDetailResponseDto.of(board, boardImageList);
+  }
+
+  @Transactional
+  public void deletePost(int boardNumber, String email) {
+    Board board = boardRepository.findByBoardNumber(boardNumber).orElseThrow(() ->
+        new BusinessException(boardNumber, "boardNumber", BOARD_NOT_FOUND));
+    isPostWriterMatches(email, board);
+    imageRepository.deleteByBoard(board);
+    commentRepository.deleteByBoard(board);
+    favoriteRepository.deleteByBoard(board);
+    boardRepository.delete(board);
+  }
+
+  private void isPostWriterMatches(String email, Board board) {
+    if (!board.getUser().getEmail().equals(email)) {
+      throw new BusinessException(email, "email", BOARD_NOT_CUD_MATCHING_USER);
+    }
   }
 }

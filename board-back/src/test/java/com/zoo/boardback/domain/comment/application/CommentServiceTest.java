@@ -141,7 +141,7 @@ class CommentServiceTest extends IntegrationTestSupport {
     Comment newComment = commentRepository.save(comment);
 
     // when
-    commentService.deleteComment(newComment.getCommentNumber(), newBoard.getBoardNumber());
+    commentService.deleteComment(newComment.getCommentNumber(), "test12@naver.com");
 
     // then
     List<Comment> comments = commentRepository.findAll();

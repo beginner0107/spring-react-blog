@@ -3,6 +3,7 @@ package com.zoo.boardback.domain.board.api;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.http.HttpStatus.*;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -21,6 +22,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 
 class BoardControllerTest extends ControllerTestSupport {
 
@@ -147,6 +149,21 @@ class BoardControllerTest extends ControllerTestSupport {
         .andExpect(jsonPath("$.data.favoriteList[0].email").value("test123@naver.com"))
         .andExpect(jsonPath("$.data.favoriteList[0].nickname").value("개구리왕눈이"))
         .andExpect(jsonPath("$.data.favoriteList[0].profileImage").value("https://profileImage.png"));
+  }
+
+  @DisplayName("회원은 본인이 작성한 게시글을 삭제할 수 있습니다.")
+  @WithAuthUser(email = "test123@naver.com", role = "ROLE_USER")
+  @Test
+  void deletePost() throws Exception {
+    // given
+    final int boardNumber = 1;
+
+    // when & then
+    mockMvc.perform(delete("/api/v1/board/{boardNumber}", boardNumber))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.code").value(204))
+        .andExpect(jsonPath("$.status").value("NO_CONTENT"))
+        .andExpect(jsonPath("$.message").value("NO_CONTENT"));
   }
 
   private static PostDetailResponseDto createPostDetailResponse(int boardNumber, List<String> imageUrls

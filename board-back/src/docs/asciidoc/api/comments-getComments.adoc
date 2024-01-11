@@ -1,0 +1,10 @@
+[[comments-getComments]]
+=== 댓글 목록
+
+==== HTTP Request
+include::{snippets}/comments-getComments/http-request.adoc[]
+include::{snippets}/comments-getComments/path-parameters.adoc[]
+
+==== HTTP Response
+include::{snippets}/comments-getComments/http-response.adoc[]
+include::{snippets}/comments-getComments/response-fields.adoc[]

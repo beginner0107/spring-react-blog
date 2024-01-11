@@ -1,8 +1,8 @@
 ifndef::snippets[]
 :snippets: ../../build/generated-snippets
 endif::[]
-= CafeKiosk REST API 문서
-:doctype: book
+= Zoos BLOG REST API 문서
+:doctype: zoos
 :icons: font
 :source-highlighter: highlightjs
 :toc: left
@@ -20,6 +20,12 @@ include::api/board-create.adoc[]
 include::api/board-postDetail.adoc[]
 include::api/board-favorite-button-click.adoc[]
 include::api/board-favoriteList.adoc[]
+
+== BOARD API
+include::api/comments-create.adoc[]
+include::api/comments-getComments.adoc[]
+include::api/comments-editComment.adoc[]
+include::api/comments-delete.adoc[]
 
 == FILE API
 include::api/file-upload.adoc[]

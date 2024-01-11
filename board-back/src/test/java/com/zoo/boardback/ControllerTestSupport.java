@@ -5,6 +5,8 @@ import com.zoo.boardback.domain.auth.api.AuthController;
 import com.zoo.boardback.domain.auth.application.AuthService;
 import com.zoo.boardback.domain.board.api.BoardController;
 import com.zoo.boardback.domain.board.application.BoardService;
+import com.zoo.boardback.domain.comment.api.CommentController;
+import com.zoo.boardback.domain.comment.application.CommentService;
 import com.zoo.boardback.domain.favorite.application.FavoriteService;
 import com.zoo.boardback.domain.file.api.FileController;
 import com.zoo.boardback.domain.user.api.UserController;
@@ -21,7 +23,8 @@ import org.springframework.test.web.servlet.MockMvc;
     AuthController.class,
     BoardController.class,
     FileController.class,
-    UserController.class
+    UserController.class,
+    CommentController.class
 })
 public abstract class ControllerTestSupport {
   @Autowired
@@ -43,5 +46,8 @@ public abstract class ControllerTestSupport {
 
   @MockBean
   protected UserService userService;
+
+  @MockBean
+  protected CommentService commentService;
 }
 

@@ -1,6 +1,8 @@
 package com.zoo.boardback.domain.comment.application;
 
+import static com.zoo.boardback.global.error.ErrorCode.BOARD_NOT_CUD_MATCHING_USER;
 import static com.zoo.boardback.global.error.ErrorCode.BOARD_NOT_FOUND;
+import static com.zoo.boardback.global.error.ErrorCode.COMMENT_NOT_CUD_MATCHING_USER;
 import static com.zoo.boardback.global.error.ErrorCode.COMMENT_NOT_FOUND;
 
 import com.zoo.boardback.domain.board.dao.BoardRepository;
@@ -50,11 +52,18 @@ public class CommentService {
   }
 
   @Transactional
-  public void deleteComment(int commentNumber, int boardNumber) {
+  public void deleteComment(int commentNumber, String email) {
     Comment comment = commentRepository.findById(commentNumber).orElseThrow(
         () -> new BusinessException(commentNumber, "commentNumber", COMMENT_NOT_FOUND));
     Board board = comment.getBoard();
+    isCommentWriterMatches(email, comment);
     board.decreaseCommentCount();
     commentRepository.deleteById(commentNumber);
+  }
+
+  private void isCommentWriterMatches(String email, Comment comment) {
+    if (!comment.getUser().getEmail().equals(email)) {
+      throw new BusinessException(comment, "comment", COMMENT_NOT_CUD_MATCHING_USER);
+    }
   }
 }

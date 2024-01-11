@@ -53,12 +53,12 @@ public class CommentController {
     return ApiResponse.ok(null);
   }
 
-  @DeleteMapping("/{commentNumber}/board/{boardNumber}")
+  @DeleteMapping("/{commentNumber}")
   public ApiResponse<Void> deleteComment(
-      @PathVariable int commentNumber,
-      @PathVariable int boardNumber
+      @AuthenticationPrincipal CustomUserDetails userDetails,
+      @PathVariable int commentNumber
   ) {
-    commentService.deleteComment(commentNumber, boardNumber);
+    commentService.deleteComment(commentNumber, userDetails.getUsername());
     return ApiResponse.of(HttpStatus.NO_CONTENT, null);
   }
 }

@@ -167,6 +167,7 @@ public class CommentControllerDocsTest extends RestDocsSecuritySupport {
   }
 
   @DisplayName("회원은 댓글을 삭제할 수 있다.")
+  @WithAuthUser(email = "test123@naver.com", role = "ROLE_USER")
   @Test
   void deleteComment() throws Exception {
     // given
@@ -174,7 +175,7 @@ public class CommentControllerDocsTest extends RestDocsSecuritySupport {
     int boardNumber = 1;
 
     // when & then
-    mockMvc.perform(delete("/api/v1/comments/{commentNumber}/board/{boardNumber}"
+    mockMvc.perform(delete("/api/v1/comments/{commentNumber}"
             , commentNumber, boardNumber)
         )
         .andExpect(status().isOk())
@@ -182,8 +183,7 @@ public class CommentControllerDocsTest extends RestDocsSecuritySupport {
             preprocessRequest(prettyPrint()),
             preprocessResponse(prettyPrint()),
             pathParameters(
-                parameterWithName("commentNumber").description("Comment Id"),
-                parameterWithName("boardNumber").description("Board Id")
+                parameterWithName("commentNumber").description("Comment Id")
             ),
             responseFields(
                 fieldWithPath("code").type(JsonFieldType.NUMBER)

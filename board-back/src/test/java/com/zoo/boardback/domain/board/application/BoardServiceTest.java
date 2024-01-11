@@ -11,11 +11,14 @@ import com.zoo.boardback.domain.board.dao.BoardRepository;
 import com.zoo.boardback.domain.board.dto.request.PostCreateRequestDto;
 import com.zoo.boardback.domain.board.dto.response.PostDetailResponseDto;
 import com.zoo.boardback.domain.board.entity.Board;
+import com.zoo.boardback.domain.comment.dao.CommentRepository;
+import com.zoo.boardback.domain.comment.entity.Comment;
 import com.zoo.boardback.domain.image.dao.ImageRepository;
 import com.zoo.boardback.domain.image.entity.Image;
 import com.zoo.boardback.domain.user.dao.UserRepository;
 import com.zoo.boardback.domain.user.entity.User;
 import com.zoo.boardback.global.error.BusinessException;
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.AfterEach;
@@ -32,11 +35,14 @@ class BoardServiceTest extends IntegrationTestSupport {
   @Autowired
   private ImageRepository imageRepository;
   @Autowired
+  private CommentRepository commentRepository;
+  @Autowired
   private BoardService boardService;
 
   @AfterEach
   void tearDown() {
     imageRepository.deleteAllInBatch();
+    commentRepository.deleteAllInBatch();
     boardRepository.deleteAllInBatch();
     userRepository.deleteAllInBatch();
   }
@@ -126,6 +132,38 @@ class BoardServiceTest extends IntegrationTestSupport {
         .hasMessageContaining(BOARD_NOT_FOUND.getMessage());
   }
 
+  @DisplayName("회원 본인이 작성한 게시글을 삭제할 수 있다.")
+  @Test
+  void deleteComment() {
+    // given
+    String email = "test12@naver.com";
+    String nickname = "개구리왕눈이";
+    User user = createUser(email, "testpassword123"
+        , "01022222222", nickname);
+    User newUser = userRepository.save(user);
+
+    String title = "테스트 글의 제목";
+    String content = "테스트 글의 내용";
+    Board board = createBoard(title, content, user);
+    Board newBoard = boardRepository.save(board);
+
+    String imageUrl = "https://testImage.png";
+    Image image = createImage(imageUrl, board);
+    imageRepository.save(image);
+
+    LocalDateTime createdAt = LocalDateTime.now();
+    LocalDateTime updatedAt = LocalDateTime.now();
+    Comment comment = createComment("댓글을 답니다1.!", newBoard, newUser, createdAt, updatedAt);
+    commentRepository.save(comment);
+
+    // when
+    boardService.deletePost(newBoard.getBoardNumber(), email);
+
+    // then
+    List<Board> posts = boardRepository.findAll();
+    assertThat(posts).hasSize(0);
+  }
+
   private static Image createImage(String imageUrl, Board board) {
     return Image.builder()
         .imageUrl(imageUrl)
@@ -166,5 +204,16 @@ class BoardServiceTest extends IntegrationTestSupport {
 
   private List<Authority> initRole() {
     return Collections.singletonList(Authority.builder().name("ROLE_USER").build());
+  }
+
+  private Comment createComment(String content, Board board, User user
+      , LocalDateTime createdAt, LocalDateTime updatedAt) {
+    return Comment.builder()
+        .content(content)
+        .board(board)
+        .user(user)
+        .createdAt(createdAt)
+        .updatedAt(updatedAt)
+        .build();
   }
 }

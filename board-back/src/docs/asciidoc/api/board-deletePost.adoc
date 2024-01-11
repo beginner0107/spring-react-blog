@@ -1,0 +1,10 @@
+[[board-create]]
+=== 게시글 삭제
+
+==== HTTP Request
+include::{snippets}/board-deletePost/http-request.adoc[]
+include::{snippets}/board-deletePost/path-parameters.adoc[]
+
+==== HTTP Response
+include::{snippets}/board-deletePost/http-response.adoc[]
+include::{snippets}/board-deletePost/response-fields.adoc[]

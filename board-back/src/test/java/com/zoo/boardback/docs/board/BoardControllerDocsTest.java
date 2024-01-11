@@ -4,6 +4,7 @@ package com.zoo.boardback.docs.board;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.put;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessRequest;
@@ -15,6 +16,7 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.response
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.zoo.boardback.WithAuthUser;
@@ -170,6 +172,38 @@ public class BoardControllerDocsTest extends RestDocsSecuritySupport {
                     .description("좋아요 누른 회원의 프로필 이미지"),
                 fieldWithPath("data.empty").type(JsonFieldType.BOOLEAN)
                     .description("빈 값 여부")
+            )
+        ));
+  }
+
+  @DisplayName("회원은 본인이 작성한 게시글을 삭제할 수 있습니다.")
+  @WithAuthUser(email = "test123@naver.com", role = "ROLE_USER")
+  @Test
+  void deletePost() throws Exception {
+    // given
+    final int boardNumber = 1;
+
+    // when & then
+    mockMvc.perform(delete("/api/v1/board/{boardNumber}", boardNumber))
+        .andExpect(status().isOk())
+        .andDo(document("board-deletePost",
+            preprocessResponse(prettyPrint()),
+            pathParameters(
+                parameterWithName("boardNumber").description("Board Id")
+            ),
+            responseFields(
+                fieldWithPath("code").type(JsonFieldType.NUMBER)
+                    .description("코드"),
+                fieldWithPath("status").type(JsonFieldType.STRING)
+                    .description("상태"),
+                fieldWithPath("message").type(JsonFieldType.STRING)
+                    .description("메시지"),
+                fieldWithPath("field").type(JsonFieldType.STRING)
+                    .optional()
+                    .description("에러 발생 필드명"),
+                fieldWithPath("data").type(JsonFieldType.NULL)
+                    .optional()
+                    .description("빈 값")
             )
         ));
   }

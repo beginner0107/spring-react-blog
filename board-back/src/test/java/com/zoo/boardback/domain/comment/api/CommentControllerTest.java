@@ -2,6 +2,7 @@ package com.zoo.boardback.domain.comment.api;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.times;
@@ -165,22 +166,22 @@ class CommentControllerTest extends ControllerTestSupport {
   }
 
   @DisplayName("회원은 댓글을 삭제할 수 있다.")
+  @WithAuthUser(email = "test123@naver.com", role = "ROLE_USER")
   @Test
   void deleteComment() throws Exception {
     // given
     int commentNumber = 1;
-    int boardNumber = 1;
 
     // when & then
-    mockMvc.perform(delete("/api/v1/comments/{commentNumber}/board/{boardNumber}"
-            , commentNumber, boardNumber)
+    mockMvc.perform(delete("/api/v1/comments/{commentNumber}"
+            , commentNumber)
         )
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.code").value(204))
         .andExpect(jsonPath("$.status").value("NO_CONTENT"))
         .andExpect(jsonPath("$.message").value("NO_CONTENT"));
-    then(commentService).should(times(1)).deleteComment(anyInt(), anyInt());
+    then(commentService).should(times(1)).deleteComment(anyInt(), anyString());
   }
 
   private CommentCreateRequestDto createComment(Integer boardNumber, String content) {

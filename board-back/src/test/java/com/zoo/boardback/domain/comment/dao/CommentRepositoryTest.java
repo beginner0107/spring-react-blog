@@ -6,10 +6,11 @@ import com.zoo.boardback.IntegrationTestSupport;
 import com.zoo.boardback.domain.auth.entity.Authority;
 import com.zoo.boardback.domain.board.dao.BoardRepository;
 import com.zoo.boardback.domain.board.entity.Board;
-import com.zoo.boardback.domain.comment.dto.response.CommentResponse;
+import com.zoo.boardback.domain.comment.dto.query.CommentQueryDto;
 import com.zoo.boardback.domain.comment.entity.Comment;
 import com.zoo.boardback.domain.user.dao.UserRepository;
 import com.zoo.boardback.domain.user.entity.User;
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
@@ -42,7 +43,7 @@ class CommentRepositoryTest extends IntegrationTestSupport {
     commentRepository.save(comment2);
 
     // when
-    List<CommentResponse> comments = commentRepository.getCommentsList(newBoard);
+    List<CommentQueryDto> comments = commentRepository.getCommentsList(newBoard);
 
     // then
     assertThat(comments).hasSize(2);
@@ -70,6 +71,7 @@ class CommentRepositoryTest extends IntegrationTestSupport {
         .content(content)
         .board(board)
         .user(user)
+        .createdAt(LocalDateTime.now())
         .build();
   }
 

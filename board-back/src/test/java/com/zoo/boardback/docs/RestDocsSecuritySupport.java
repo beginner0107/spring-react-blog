@@ -5,6 +5,8 @@ import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.docu
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zoo.boardback.domain.board.api.BoardController;
 import com.zoo.boardback.domain.board.application.BoardService;
+import com.zoo.boardback.domain.comment.api.CommentController;
+import com.zoo.boardback.domain.comment.application.CommentService;
 import com.zoo.boardback.domain.favorite.application.FavoriteService;
 import com.zoo.boardback.domain.user.api.UserController;
 import com.zoo.boardback.domain.user.application.UserService;
@@ -25,7 +27,8 @@ import org.springframework.web.context.WebApplicationContext;
 @Import(HttpEncodingAutoConfiguration.class)
 @WebMvcTest({
     BoardController.class,
-    UserController.class
+    UserController.class,
+    CommentController.class
 })
 @ExtendWith({RestDocumentationExtension.class, SpringExtension.class})
 public abstract class RestDocsSecuritySupport {
@@ -42,6 +45,9 @@ public abstract class RestDocsSecuritySupport {
 
   @MockBean
   protected UserService userService;
+
+  @MockBean
+  protected CommentService commentService;
 
   @BeforeEach
   void setUp(WebApplicationContext webApplicationContext

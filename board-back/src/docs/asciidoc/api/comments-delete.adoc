@@ -1,0 +1,10 @@
+[[comments-deleteComment]]
+=== 댓글 등록
+
+==== HTTP Request
+include::{snippets}/comments-deleteComment/http-request.adoc[]
+include::{snippets}/comments-deleteComment/path-parameters.adoc[]
+
+==== HTTP Response
+include::{snippets}/comments-deleteComment/http-response.adoc[]
+include::{snippets}/comments-deleteComment/response-fields.adoc[]

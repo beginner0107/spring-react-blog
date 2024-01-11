@@ -1,0 +1,10 @@
+[[comments-editComment]]
+=== 댓글 수정
+
+==== HTTP Request
+include::{snippets}/comments-editComment/http-request.adoc[]
+include::{snippets}/comments-editComment/path-parameters.adoc[]
+
+==== HTTP Response
+include::{snippets}/comments-editComment/http-response.adoc[]
+include::{snippets}/comments-editComment/response-fields.adoc[]

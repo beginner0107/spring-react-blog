@@ -1,5 +1,6 @@
-package com.zoo.boardback.domain.comment.dto.response;
+package com.zoo.boardback.domain.comment.dto.query;
 
+import java.time.LocalDateTime;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -7,16 +8,16 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @Builder
-public class CommentResponse {
+public class CommentQueryDto {
   private int commentNumber;
   private String nickname;
   private String profileImage;
   private String content;
-  private String createdAt;
-  private String updatedAt;
+  private LocalDateTime createdAt;
+  private LocalDateTime updatedAt;
 
-  public CommentResponse(int commentNumber, String nickname, String profileImage, String content
-      , String createdAt, String updatedAt
+  public CommentQueryDto(int commentNumber, String nickname, String profileImage, String content
+      , LocalDateTime createdAt, LocalDateTime updatedAt
   ) {
     this.commentNumber = commentNumber;
     this.nickname = nickname;

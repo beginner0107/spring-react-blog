@@ -14,6 +14,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
+import java.util.List;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -83,5 +84,10 @@ public class Board {
   }
   public void decreaseCommentCount() {
     this.commentCount--;
+  }
+
+  public void editPost(String title, String content) {
+    this.title = title;
+    this.content = content;
   }
 }

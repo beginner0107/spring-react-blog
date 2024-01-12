@@ -6,6 +6,7 @@ import com.zoo.boardback.domain.ApiResponse;
 import com.zoo.boardback.domain.auth.details.CustomUserDetails;
 import com.zoo.boardback.domain.board.application.BoardService;
 import com.zoo.boardback.domain.board.dto.request.PostCreateRequestDto;
+import com.zoo.boardback.domain.board.dto.request.PostUpdateRequestDto;
 import com.zoo.boardback.domain.board.dto.response.PostDetailResponseDto;
 import com.zoo.boardback.domain.favorite.application.FavoriteService;
 import com.zoo.boardback.domain.favorite.dto.response.FavoriteListResponseDto;
@@ -30,11 +31,12 @@ public class BoardController {
   private final FavoriteService favoriteService;
 
   @PostMapping("")
-  public ApiResponse<Void> createBoard(
+  public ApiResponse<Void> createPost(
       @RequestBody @Valid PostCreateRequestDto requestDto,
       @AuthenticationPrincipal CustomUserDetails userDetails
   ) {
-    boardService.create(requestDto, userDetails.getUsername());
+    String email = userDetails.getUsername();
+    boardService.create(requestDto, email);
     return ApiResponse.ok(null);
   }
 
@@ -50,15 +52,28 @@ public class BoardController {
   public ApiResponse<Void> putFavorite(
       @PathVariable int boardNumber,
       @AuthenticationPrincipal CustomUserDetails userDetails) {
-      favoriteService.putFavorite(boardNumber, userDetails.getUsername());
-      return ApiResponse.ok(null);
+    String email = userDetails.getUsername();
+    favoriteService.putFavorite(boardNumber, email);
+    return ApiResponse.ok(null);
+  }
+
+  @PutMapping("/{boardNumber}")
+  public ApiResponse<Void> editPost(
+      @PathVariable int boardNumber,
+      @AuthenticationPrincipal CustomUserDetails userDetails,
+      @RequestBody @Valid PostUpdateRequestDto postUpdateRequestDto
+  ) {
+    String email = userDetails.getUsername();
+    boardService.editPost(boardNumber, email, postUpdateRequestDto);
+    return ApiResponse.ok(null);
   }
 
   @DeleteMapping("/{boardNumber}")
   public ApiResponse<Void> deletePost(
       @PathVariable int boardNumber,
       @AuthenticationPrincipal CustomUserDetails userDetails) {
-    boardService.deletePost(boardNumber, userDetails.getUsername());
+    String email = userDetails.getUsername();
+    boardService.deletePost(boardNumber, email);
     return ApiResponse.of(NO_CONTENT, null);
   }
 

@@ -7,6 +7,7 @@ import static java.util.stream.Collectors.toList;
 
 import com.zoo.boardback.domain.board.dao.BoardRepository;
 import com.zoo.boardback.domain.board.dto.request.PostCreateRequestDto;
+import com.zoo.boardback.domain.board.dto.request.PostUpdateRequestDto;
 import com.zoo.boardback.domain.board.dto.response.PostDetailResponseDto;
 import com.zoo.boardback.domain.board.entity.Board;
 import com.zoo.boardback.domain.comment.dao.CommentRepository;
@@ -46,13 +47,7 @@ public class BoardService {
     boardRepository.save(board);
 
     List<String> boardImageList = request.getBoardImageList();
-    List<Image> images = boardImageList.stream()
-        .map(image -> Image.builder()
-            .board(board)
-            .imageUrl(image)
-            .build())
-        .collect(toList());
-    imageRepository.saveAll(images);
+    saveImages(boardImageList, board);
   }
 
   @Transactional
@@ -61,13 +56,21 @@ public class BoardService {
         new BusinessException(boardNumber, "boardNumber", BOARD_NOT_FOUND));
 
     board.increaseViewCount();
-    List<Image> imageList = imageRepository.findByBoard(board);
-    List<String> boardImageList = new ArrayList<>();
-    for (Image image : imageList) {
-      String imageUrl = image.getImageUrl();
-      boardImageList.add(imageUrl);
-    }
+    List<String> boardImageList = findBoardImages(board);
     return PostDetailResponseDto.of(board, boardImageList);
+  }
+
+  @Transactional
+  public void editPost(int boardNumber, String email, PostUpdateRequestDto requestDto) {
+    Board board = boardRepository.findByBoardNumber(boardNumber).orElseThrow(() ->
+        new BusinessException(boardNumber, "boardNumber", BOARD_NOT_FOUND));
+    isPostWriterMatches(email, board);
+    board.editPost(requestDto.getTitle(), requestDto.getContent());
+
+    List<String> boardImageList = requestDto.getBoardImageList();
+    List<Image> imageEntities = new ArrayList<>();
+
+    editImages(board, boardImageList, imageEntities);
   }
 
   @Transactional
@@ -81,9 +84,41 @@ public class BoardService {
     boardRepository.delete(board);
   }
 
+  private void saveImages(List<String> boardImageList, Board board) {
+    List<Image> images = boardImageList.stream()
+        .map(image -> Image.builder()
+            .board(board)
+            .imageUrl(image)
+            .build())
+        .collect(toList());
+    imageRepository.saveAll(images);
+  }
+
   private void isPostWriterMatches(String email, Board board) {
     if (!board.getUser().getEmail().equals(email)) {
       throw new BusinessException(email, "email", BOARD_NOT_CUD_MATCHING_USER);
     }
+  }
+
+  private List<String> findBoardImages(Board board) {
+    List<Image> imageList = imageRepository.findByBoard(board);
+    List<String> boardImageList = new ArrayList<>();
+    for (Image image : imageList) {
+      String imageUrl = image.getImageUrl();
+      boardImageList.add(imageUrl);
+    }
+    return boardImageList;
+  }
+
+  private void editImages(Board board, List<String> boardImageList, List<Image> imageEntities) {
+    imageRepository.deleteByBoard(board);
+    for (String image : boardImageList) {
+      Image imageEntity = Image.builder()
+          .board(board)
+          .imageUrl(image)
+          .build();
+      imageEntities.add(imageEntity);
+    }
+    imageRepository.saveAll(imageEntities);
   }
 }

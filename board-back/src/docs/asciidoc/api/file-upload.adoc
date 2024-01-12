@@ -3,7 +3,7 @@
 
 ==== HTTP Request
 include::{snippets}/file-upload/http-request.adoc[]
-include::{snippets}/file-upload/httpie-request.adoc[]
+include::{snippets}/file-upload/request-parts.adoc[]
 
 ==== HTTP Response
 include::{snippets}/file-upload/http-response.adoc[]

@@ -1,4 +1,4 @@
-[[board-create]]
+[[board-deletePost]]
 === 게시글 삭제
 
 ==== HTTP Request

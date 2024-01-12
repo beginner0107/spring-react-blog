@@ -3,6 +3,7 @@
 
 ==== HTTP Request
 include::{snippets}/comments-editComment/http-request.adoc[]
+include::{snippets}/comments-editComment/request-fields.adoc[]
 include::{snippets}/comments-editComment/path-parameters.adoc[]
 
 ==== HTTP Response

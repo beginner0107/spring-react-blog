@@ -1,5 +1,6 @@
 package com.zoo.boardback.domain.board.application;
 
+import static com.zoo.boardback.global.error.ErrorCode.BOARD_NOT_CUD_MATCHING_USER;
 import static com.zoo.boardback.global.error.ErrorCode.BOARD_NOT_FOUND;
 import static com.zoo.boardback.global.error.ErrorCode.USER_NOT_FOUND;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -9,6 +10,7 @@ import com.zoo.boardback.IntegrationTestSupport;
 import com.zoo.boardback.domain.auth.entity.Authority;
 import com.zoo.boardback.domain.board.dao.BoardRepository;
 import com.zoo.boardback.domain.board.dto.request.PostCreateRequestDto;
+import com.zoo.boardback.domain.board.dto.request.PostUpdateRequestDto;
 import com.zoo.boardback.domain.board.dto.response.PostDetailResponseDto;
 import com.zoo.boardback.domain.board.entity.Board;
 import com.zoo.boardback.domain.comment.dao.CommentRepository;
@@ -132,9 +134,85 @@ class BoardServiceTest extends IntegrationTestSupport {
         .hasMessageContaining(BOARD_NOT_FOUND.getMessage());
   }
 
+  @DisplayName("회원 본인이 작성한 게시글을 수정할 수 있다.")
+  @Test
+  void editPost() {
+    // given
+    String email = "test12@naver.com";
+    String nickname = "개구리왕눈이";
+    User user = createUser(email, "testpassword123"
+        , "01022222222", nickname);
+    User newUser = userRepository.save(user);
+
+    String title = "테스트 글의 제목";
+    String content = "테스트 글의 내용";
+    Board board = createBoard(title, content, newUser);
+    Board newBoard = boardRepository.save(board);
+
+    String imageUrl = "https://testImage.png";
+    Image image = createImage(imageUrl, board);
+    imageRepository.save(image);
+
+    String editTitle = "테스트 수정 글의 제목";
+    String editContent = "테스트 수정 글의 내용";
+    String updateImageUrl1 = "https://updateImage1.png";
+    String updateImageUrl2 = "https://updateImage2.png";
+    List<String> updateImages = List.of(updateImageUrl1,
+        updateImageUrl2);
+    PostUpdateRequestDto request = createPostUpdateRequest(editTitle, editContent, updateImages);
+
+    // when
+    boardService.editPost(newBoard.getBoardNumber(), email, request);
+
+    // then
+    List<Board> posts = boardRepository.findAll();
+    assertThat(posts).hasSize(1);
+    assertThat(posts.get(0).getTitle()).isEqualTo(editTitle);
+    assertThat(posts.get(0).getContent()).isEqualTo(editContent);
+
+    List<Image> images = imageRepository.findByBoard(posts.get(0));
+    assertThat(images.get(0).getImageUrl()).isEqualTo(updateImageUrl1);
+    assertThat(images.get(1).getImageUrl()).isEqualTo(updateImageUrl2);
+  }
+
+  @DisplayName("회원 본인이 작성하지 않은 게시글을 수정할 수 없다.")
+  @Test
+  void editPostNotAuthorized() {
+    // given
+    String email = "test12@naver.com";
+    String email2 = "hacker@naver.com";
+    String nickname = "개구리왕눈이";
+    User user = createUser(email, "testpassword123"
+        , "01022222222", nickname);
+    User newUser = userRepository.save(user);
+
+    String title = "테스트 글의 제목";
+    String content = "테스트 글의 내용";
+    Board board = createBoard(title, content, newUser);
+    Board newBoard = boardRepository.save(board);
+
+    String imageUrl = "https://testImage.png";
+    Image image = createImage(imageUrl, board);
+    imageRepository.save(image);
+
+    String editTitle = "테스트 수정 글의 제목";
+    String editContent = "테스트 수정 글의 내용";
+    String updateImageUrl1 = "https://updateImage1.png";
+    String updateImageUrl2 = "https://updateImage2.png";
+    List<String> updateImages = List.of(updateImageUrl1,
+        updateImageUrl2);
+    PostUpdateRequestDto request = createPostUpdateRequest(editTitle, editContent, updateImages);
+
+    // when & then
+    assertThatThrownBy(() ->
+        boardService.editPost(newBoard.getBoardNumber(), email2, request))
+        .isInstanceOf(BusinessException.class)
+        .hasMessage(BOARD_NOT_CUD_MATCHING_USER.getMessage());
+  }
+
   @DisplayName("회원 본인이 작성한 게시글을 삭제할 수 있다.")
   @Test
-  void deleteComment() {
+  void deletePost() {
     // given
     String email = "test12@naver.com";
     String nickname = "개구리왕눈이";
@@ -164,6 +242,38 @@ class BoardServiceTest extends IntegrationTestSupport {
     assertThat(posts).hasSize(0);
   }
 
+  @DisplayName("회원 본인이 작성하지 않은 게시글을 삭제할 수 없다.")
+  @Test
+  void deletePostNotAuthorized() {
+    // given
+    String email = "test12@naver.com";
+    String email2 = "hacker@naver.com";
+    String nickname = "개구리왕눈이";
+    User user = createUser(email, "testpassword123"
+        , "01022222222", nickname);
+    User newUser = userRepository.save(user);
+
+    String title = "테스트 글의 제목";
+    String content = "테스트 글의 내용";
+    Board board = createBoard(title, content, user);
+    Board newBoard = boardRepository.save(board);
+
+    String imageUrl = "https://testImage.png";
+    Image image = createImage(imageUrl, board);
+    imageRepository.save(image);
+
+    LocalDateTime createdAt = LocalDateTime.now();
+    LocalDateTime updatedAt = LocalDateTime.now();
+    Comment comment = createComment("댓글을 답니다1.!", newBoard, newUser, createdAt, updatedAt);
+    commentRepository.save(comment);
+
+    // when & then
+    assertThatThrownBy(() ->
+        boardService.deletePost(newBoard.getBoardNumber(), email2))
+        .isInstanceOf(BusinessException.class)
+        .hasMessage(BOARD_NOT_CUD_MATCHING_USER.getMessage());
+  }
+
   private static Image createImage(String imageUrl, Board board) {
     return Image.builder()
         .imageUrl(imageUrl)
@@ -182,7 +292,7 @@ class BoardServiceTest extends IntegrationTestSupport {
         .build();
   }
 
-  private static PostCreateRequestDto createPostCreateRequest(String title, String content) {
+  private PostCreateRequestDto createPostCreateRequest(String title, String content) {
     return PostCreateRequestDto.builder()
         .title(title)
         .content(content)
@@ -190,6 +300,16 @@ class BoardServiceTest extends IntegrationTestSupport {
             "https://testImage3.png"))
         .build();
   }
+
+  private PostUpdateRequestDto createPostUpdateRequest(String title, String content
+      , List<String> updateImages) {
+    return PostUpdateRequestDto.builder()
+        .title(title)
+        .content(content)
+        .boardImageList(updateImages)
+        .build();
+  }
+
 
   private User createUser(String email, String password, String telNumber, String nickname) {
     return User.builder()

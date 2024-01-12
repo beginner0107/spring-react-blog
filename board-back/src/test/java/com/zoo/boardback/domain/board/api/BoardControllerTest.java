@@ -14,6 +14,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.zoo.boardback.ControllerTestSupport;
 import com.zoo.boardback.WithAuthUser;
 import com.zoo.boardback.domain.board.dto.request.PostCreateRequestDto;
+import com.zoo.boardback.domain.board.dto.request.PostUpdateRequestDto;
 import com.zoo.boardback.domain.board.dto.response.PostDetailResponseDto;
 import com.zoo.boardback.domain.favorite.dto.object.FavoriteListItem;
 import com.zoo.boardback.domain.favorite.dto.response.FavoriteListResponseDto;
@@ -151,7 +152,30 @@ class BoardControllerTest extends ControllerTestSupport {
         .andExpect(jsonPath("$.data.favoriteList[0].profileImage").value("https://profileImage.png"));
   }
 
-  @DisplayName("회원은 본인이 작성한 게시글을 삭제할 수 있습니다.")
+  @DisplayName("회원은 게시글을 수정할 수 있습니다.")
+  @WithAuthUser(email = "test123@naver.com", role = "ROLE_USER")
+  @Test
+  void editPost() throws Exception {
+    // given
+    final int boardNumber = 1;
+    String editTitle = "테스트 수정 글의 제목";
+    String editContent = "테스트 수정 글의 내용";
+    PostUpdateRequestDto request = createPostUpdateRequest(editTitle, editContent);
+
+    // when & then
+    mockMvc.perform(put("/api/v1/board/{boardNumber}", boardNumber)
+            .content(objectMapper.writeValueAsString(request))
+            .contentType(MediaType.APPLICATION_JSON))
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.code").value(200))
+        .andExpect(jsonPath("$.status").value("OK"))
+        .andExpect(jsonPath("$.message").value("OK"))
+        .andExpect(jsonPath("$.field").isEmpty())
+        .andExpect(jsonPath("$.data").isEmpty());
+  }
+
+  @DisplayName("회원은 게시글을 삭제할 수 있습니다.")
   @WithAuthUser(email = "test123@naver.com", role = "ROLE_USER")
   @Test
   void deletePost() throws Exception {
@@ -185,4 +209,14 @@ class BoardControllerTest extends ControllerTestSupport {
         .boardImageList(List.of("https://testImage.png"))
         .build();
   }
+
+  private PostUpdateRequestDto createPostUpdateRequest(String title, String content) {
+    return PostUpdateRequestDto.builder()
+        .title(title)
+        .content(content)
+        .boardImageList(List.of("https://updateImage1.png",
+            "https://updateImage2.png"))
+        .build();
+  }
+
 }

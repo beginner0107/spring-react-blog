@@ -2,8 +2,10 @@ package com.zoo.boardback.docs.board;
 
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.*;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.put;
@@ -23,6 +25,7 @@ import com.zoo.boardback.WithAuthUser;
 import com.zoo.boardback.docs.RestDocsSecuritySupport;
 import com.zoo.boardback.domain.auth.entity.Authority;
 import com.zoo.boardback.domain.board.dto.request.PostCreateRequestDto;
+import com.zoo.boardback.domain.board.dto.request.PostUpdateRequestDto;
 import com.zoo.boardback.domain.board.dto.response.PostDetailResponseDto;
 import com.zoo.boardback.domain.favorite.dto.object.FavoriteListItem;
 import com.zoo.boardback.domain.favorite.dto.response.FavoriteListResponseDto;
@@ -31,9 +34,11 @@ import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.BDDMockito;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.restdocs.payload.JsonFieldType;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 public class BoardControllerDocsTest extends RestDocsSecuritySupport {
 
@@ -75,7 +80,7 @@ public class BoardControllerDocsTest extends RestDocsSecuritySupport {
 
     given(boardService.find(any(Integer.class))).willReturn(response);
 
-    mockMvc.perform(RestDocumentationRequestBuilders.get("/api/v1/board/{boardNumber}", boardNumber))
+    mockMvc.perform(get("/api/v1/board/{boardNumber}", boardNumber))
         .andExpect(status().isOk())
         .andDo(document("board-postDetail",
             preprocessResponse(prettyPrint()),
@@ -144,7 +149,7 @@ public class BoardControllerDocsTest extends RestDocsSecuritySupport {
     given(favoriteService.getFavoriteList(any(Integer.class)))
         .willReturn(response);
 
-    mockMvc.perform(RestDocumentationRequestBuilders.get("/api/v1/board/{boardNumber}/favorite-list", boardNumber))
+    mockMvc.perform(get("/api/v1/board/{boardNumber}/favorite-list", boardNumber))
         .andExpect(status().isOk())
         .andDo(print())
         .andDo(document("board-favoriteList",
@@ -176,14 +181,57 @@ public class BoardControllerDocsTest extends RestDocsSecuritySupport {
         ));
   }
 
-  @DisplayName("회원은 본인이 작성한 게시글을 삭제할 수 있습니다.")
+  @DisplayName("회원은 게시글을 수정할 수 있습니다.")
+  @WithAuthUser(email = "test123@naver.com", role = "ROLE_USER")
+  @Test
+  void editPost() throws Exception {
+    final int boardNumber = 1;
+    final String editTitle = "테스트 수정 글의 제목";
+    final String editContent = "테스트 수정 글의 내용";
+    PostUpdateRequestDto request = createPostUpdateRequest(editTitle, editContent);
+
+    mockMvc.perform(put("/api/v1/board/{boardNumber}", boardNumber)
+            .content(objectMapper.writeValueAsString(request))
+            .contentType(MediaType.APPLICATION_JSON))
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andDo(document("board-editPost",
+            preprocessRequest(prettyPrint()),
+            preprocessResponse(prettyPrint()),
+            pathParameters(
+                parameterWithName("boardNumber").description("Board Id")
+            ),
+            requestFields(
+                fieldWithPath("title").type(JsonFieldType.STRING)
+                    .description("게시글 제목"),
+                fieldWithPath("content").type(JsonFieldType.STRING)
+                    .description("게시글 내용"),
+                fieldWithPath("boardImageList").type(JsonFieldType.ARRAY)
+                    .description("게시글 이미지 목록(URL 경로 목록)")
+            ),
+            responseFields(
+                fieldWithPath("code").type(JsonFieldType.NUMBER)
+                    .description("코드"),
+                fieldWithPath("status").type(JsonFieldType.STRING)
+                    .description("상태"),
+                fieldWithPath("message").type(JsonFieldType.STRING)
+                    .description("메시지"),
+                fieldWithPath("field").type(JsonFieldType.STRING)
+                    .optional()
+                    .description("에러 발생 필드명"),
+                fieldWithPath("data").type(JsonFieldType.NULL)
+                    .optional()
+                    .description("빈 값")
+            )
+        ));
+  }
+
+  @DisplayName("회원은 게시글을 삭제할 수 있습니다.")
   @WithAuthUser(email = "test123@naver.com", role = "ROLE_USER")
   @Test
   void deletePost() throws Exception {
-    // given
     final int boardNumber = 1;
 
-    // when & then
     mockMvc.perform(delete("/api/v1/board/{boardNumber}", boardNumber))
         .andExpect(status().isOk())
         .andDo(document("board-deletePost",
@@ -243,6 +291,15 @@ public class BoardControllerDocsTest extends RestDocsSecuritySupport {
         .writerProfileImage("http://writerprofileImage.png")
         .createdAt("2023-12-22")
         .updatedAt("2023-12-23")
+        .build();
+  }
+
+  private PostUpdateRequestDto createPostUpdateRequest(String title, String content) {
+    return PostUpdateRequestDto.builder()
+        .title(title)
+        .content(content)
+        .boardImageList(List.of("https://updateImage1.png",
+            "https://updateImage2.png"))
         .build();
   }
 }

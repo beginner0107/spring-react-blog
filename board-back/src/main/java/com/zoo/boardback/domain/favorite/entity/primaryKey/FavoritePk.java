@@ -10,6 +10,8 @@ import jakarta.persistence.Embeddable;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
+import java.io.Serializable;
+import java.util.Objects;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,7 +20,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = PROTECTED)
 @AllArgsConstructor
 @Embeddable
-public class FavoritePk  {
+public class FavoritePk implements Serializable {
 
   @ManyToOne(fetch = LAZY, cascade = ALL)
   @JoinColumn(name = "boardNumber")
@@ -27,4 +29,21 @@ public class FavoritePk  {
   @OneToOne(fetch = LAZY, cascade = ALL)
   @JoinColumn(name = "id")
   private User user;
+
+  @Override
+  public boolean equals(Object object) {
+    if (this == object) {
+      return true;
+    }
+    if (object == null || getClass() != object.getClass()) {
+      return false;
+    }
+    FavoritePk that = (FavoritePk) object;
+    return Objects.equals(board, that.board) && Objects.equals(user, that.user);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(board, user);
+  }
 }

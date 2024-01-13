@@ -19,14 +19,14 @@ public class CommentCreateRequestDto {
   public static final int MAX_REQUEST_COMMENT_LENGTH = 300;
 
   @NotNull(message = "게시글 번호를 입력해주세요")
-  private int boardNumber;
+  private Long boardNumber;
 
   @NotBlank(message = "댓글 내용을 입력해주세요")
   @Size(max = MAX_REQUEST_COMMENT_LENGTH, message = "댓글 내용은 300자 이하로 입력해주세요.")
   private String content;
 
   @Builder
-  public CommentCreateRequestDto(int boardNumber, String content) {
+  public CommentCreateRequestDto(Long boardNumber, String content) {
     this.boardNumber = boardNumber;
     this.content = content;
   }

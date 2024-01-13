@@ -72,13 +72,13 @@ public class BoardControllerDocsTest extends RestDocsSecuritySupport {
   @DisplayName("게시글 번호를 넘기면 게시글 상세 내용을 볼 수 있다.")
   @Test
   void getPost() throws Exception {
-    final int boardNumber = 1;
+    final Long boardNumber = 1L;
     String imageUrl = "https://testImage1.png";
     List<String> imageUrls = List.of(imageUrl);
     PostDetailResponseDto response = createPostDetailResponse(boardNumber, imageUrls
         , "테스트1", "테스트내용1", "test123@naver.com", "개구리왕눈이");
 
-    given(boardService.find(any(Integer.class))).willReturn(response);
+    given(boardService.find(any(Long.class))).willReturn(response);
 
     mockMvc.perform(get("/api/v1/board/{boardNumber}", boardNumber))
         .andExpect(status().isOk())
@@ -146,7 +146,7 @@ public class BoardControllerDocsTest extends RestDocsSecuritySupport {
             .profileImage("http://profileImage.png")
             .build())
     ).isEmpty(false).build();
-    given(favoriteService.getFavoriteList(any(Integer.class)))
+    given(favoriteService.getFavoriteList(any(Long.class)))
         .willReturn(response);
 
     mockMvc.perform(get("/api/v1/board/{boardNumber}/favorite-list", boardNumber))
@@ -279,7 +279,7 @@ public class BoardControllerDocsTest extends RestDocsSecuritySupport {
     return Collections.singletonList(Authority.builder().name("ROLE_USER").build());
   }
 
-  private static PostDetailResponseDto createPostDetailResponse(int boardNumber, List<String> imageUrls
+  private static PostDetailResponseDto createPostDetailResponse(Long boardNumber, List<String> imageUrls
       , String title, String content, String email, String nickname) {
     return PostDetailResponseDto.builder()
         .boardNumber(boardNumber)

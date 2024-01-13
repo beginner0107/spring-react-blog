@@ -1,33 +1,33 @@
 package com.zoo.boardback.domain.user.entity;
 
+import static jakarta.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PROTECTED;
 
 import com.zoo.boardback.domain.auth.entity.Authority;
+import com.zoo.boardback.global.entity.BaseEntity;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EntityListeners;
 import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Getter
 @NoArgsConstructor(access = PROTECTED)
 @Entity
-@EntityListeners(AuditingEntityListener.class)
 @Table(name = "Users")
-public class User {
-  @Id
+public class User extends BaseEntity {
+
+  @Id @GeneratedValue(strategy = IDENTITY)
+  private Long id;
+
   @Column(name = "email", length = 50)
   private String email;
 
@@ -49,21 +49,13 @@ public class User {
   @Column(name = "profileImage")
   private String profileImage;
 
-  @CreatedDate
-  @Column(nullable = false)
-  private LocalDateTime createdAt;
-
-  @LastModifiedDate
-  @Column(nullable = false)
-  private LocalDateTime updatedAt;
-
   @OneToMany(mappedBy = "users", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
   private List<Authority> roles = new ArrayList<>();
 
   @Builder
   public User(String email, String password, String nickname, String telNumber, String address,
-      String addressDetail, String profileImage, LocalDateTime createdAt, LocalDateTime updatedAt,
-      List<Authority> roles) {
+      String addressDetail, String profileImage, List<Authority> roles)
+  {
     this.email = email;
     this.password = password;
     this.nickname = nickname;
@@ -71,8 +63,6 @@ public class User {
     this.address = address;
     this.addressDetail = addressDetail;
     this.profileImage = profileImage;
-    this.createdAt = createdAt;
-    this.updatedAt = updatedAt;
     this.roles = roles;
   }
 

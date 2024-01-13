@@ -30,14 +30,14 @@ public class CommentService {
 
   @Transactional
   public void create(User user, CommentCreateRequestDto commentRequestDto) {
-    int boardNumber = commentRequestDto.getBoardNumber();
+    Long boardNumber = commentRequestDto.getBoardNumber();
     Board board = boardRepository.findById(boardNumber).orElseThrow(
         () -> new BusinessException(boardNumber, "boardNumber", BOARD_NOT_FOUND));
     board.increaseCommentCount();
     commentRepository.save(commentRequestDto.toEntity(user, board));
   }
 
-  public CommentListResponseDto getComments(int boardNumber) {
+  public CommentListResponseDto getComments(Long boardNumber) {
     Board board = boardRepository.findById(boardNumber).orElseThrow(
         () -> new BusinessException(boardNumber, "boardNumber", BOARD_NOT_FOUND));
     List<CommentQueryDto> comments = commentRepository.getCommentsList(board);
@@ -45,14 +45,14 @@ public class CommentService {
   }
 
   @Transactional
-  public void editComment(int commentNumber, CommentUpdateRequestDto commentUpdateRequestDto) {
+  public void editComment(Long commentNumber, CommentUpdateRequestDto commentUpdateRequestDto) {
     Comment comment = commentRepository.findById(commentNumber).orElseThrow(
         () -> new BusinessException(commentNumber, "commentNumber", COMMENT_NOT_FOUND));
     comment.editComment(commentUpdateRequestDto);
   }
 
   @Transactional
-  public void deleteComment(int commentNumber, String email) {
+  public void deleteComment(Long commentNumber, String email) {
     Comment comment = commentRepository.findById(commentNumber).orElseThrow(
         () -> new BusinessException(commentNumber, "commentNumber", COMMENT_NOT_FOUND));
     Board board = comment.getBoard();

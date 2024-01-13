@@ -2,6 +2,7 @@ package com.zoo.boardback.domain.searchLog.entity;
 
 import static lombok.AccessLevel.PROTECTED;
 
+import com.zoo.boardback.global.entity.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
@@ -18,14 +19,13 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Getter
-@EntityListeners(AuditingEntityListener.class)
 @NoArgsConstructor(access = PROTECTED)
 @Entity
 @Table(name = "search_log")
-public class SearchLog {
+public class SearchLog extends BaseEntity {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private int sequence;
+  private Long sequence;
 
   private String searchWord;
 
@@ -42,14 +42,12 @@ public class SearchLog {
   private LocalDateTime updatedAt;
 
   @Builder
-  public SearchLog(int sequence, String searchWord, String relationWord, boolean relation,
-      LocalDateTime createdAt, LocalDateTime updatedAt) {
+  public SearchLog(Long sequence, String searchWord, String relationWord, boolean relation
+  ) {
     this.sequence = sequence;
     this.searchWord = searchWord;
     this.relationWord = relationWord;
     this.relation = relation;
-    this.createdAt = createdAt;
-    this.updatedAt = updatedAt;
   }
 }
 

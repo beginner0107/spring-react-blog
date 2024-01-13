@@ -2,6 +2,7 @@ package com.zoo.boardback.domain.comment.api;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
@@ -34,7 +35,7 @@ class CommentControllerTest extends ControllerTestSupport {
   void createCommentEmptyBoardNumber() throws Exception {
     // given
     String content = "댓글내용입니다.";
-    int boardNumber = 1;
+    Long boardNumber = 1L;
     CommentCreateRequestDto request = createComment(boardNumber, content);
 
     // when & then
@@ -55,7 +56,7 @@ class CommentControllerTest extends ControllerTestSupport {
   void createComment() throws Exception {
     // given
     String content = "";
-    int boardNumber = 1;
+    Long boardNumber = 1L;
     CommentCreateRequestDto request = createComment(boardNumber, content);
 
     // when & then
@@ -75,11 +76,11 @@ class CommentControllerTest extends ControllerTestSupport {
   @Test
   void getComments() throws Exception {
     // given
-    int boardNumber = 1;
+    Long boardNumber = 1L;
     CommentListResponseDto responseDto = CommentListResponseDto.from(
         List.of(
             CommentQueryDto.builder()
-                .commentNumber(2)
+                .commentNumber(2L)
                 .content("댓글 작성2")
                 .nickname("닉네임2")
                 .profileImage("http://localhost:8080/image2.png")
@@ -87,7 +88,7 @@ class CommentControllerTest extends ControllerTestSupport {
                 .updatedAt(LocalDateTime.now())
                 .build(),
             CommentQueryDto.builder()
-                .commentNumber(1)
+                .commentNumber(1L)
                 .content("댓글 작성1")
                 .nickname("닉네임1")
                 .profileImage("http://localhost:8080/image1.png")
@@ -138,7 +139,7 @@ class CommentControllerTest extends ControllerTestSupport {
         .andExpect(jsonPath("$.message").value("OK"))
         .andExpect(jsonPath("$.field").isEmpty())
         .andExpect(jsonPath("$.data").isEmpty());
-    then(commentService).should(times(1)).editComment(anyInt(), any());
+    then(commentService).should(times(1)).editComment(anyLong(), any());
   }
 
   @DisplayName("댓글의 내용을 입력하지 않으면 댓글이 수정되지 않는다.")
@@ -181,10 +182,10 @@ class CommentControllerTest extends ControllerTestSupport {
         .andExpect(jsonPath("$.code").value(204))
         .andExpect(jsonPath("$.status").value("NO_CONTENT"))
         .andExpect(jsonPath("$.message").value("NO_CONTENT"));
-    then(commentService).should(times(1)).deleteComment(anyInt(), anyString());
+    then(commentService).should(times(1)).deleteComment(anyLong(), anyString());
   }
 
-  private CommentCreateRequestDto createComment(Integer boardNumber, String content) {
+  private CommentCreateRequestDto createComment(Long boardNumber, String content) {
     return CommentCreateRequestDto.builder()
         .boardNumber(boardNumber)
         .content(content)

@@ -9,14 +9,14 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class CommentQueryDto {
-  private int commentNumber;
+  private Long commentNumber;
   private String nickname;
   private String profileImage;
   private String content;
   private LocalDateTime createdAt;
   private LocalDateTime updatedAt;
 
-  public CommentQueryDto(int commentNumber, String nickname, String profileImage, String content
+  public CommentQueryDto(Long commentNumber, String nickname, String profileImage, String content
       , LocalDateTime createdAt, LocalDateTime updatedAt
   ) {
     this.commentNumber = commentNumber;

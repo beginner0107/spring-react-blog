@@ -9,7 +9,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-public interface CommentRepository extends JpaRepository<Comment, Integer> {
+public interface CommentRepository extends JpaRepository<Comment, Long> {
 
   @Query("SELECT " +
       "new com.zoo.boardback.domain.comment.dto.query.CommentQueryDto(A.commentNumber, B.nickname, B.profileImage, A.content, A.createdAt, A.updatedAt) " +

@@ -1,15 +1,18 @@
 package com.zoo.boardback.domain.auth.dto.request;
 
 
+import static lombok.AccessLevel.*;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Pattern;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = PRIVATE)
 public class SignInRequestDto {
   @Email(message = "이메일 형식을 맞춰주세요")
   private String email;

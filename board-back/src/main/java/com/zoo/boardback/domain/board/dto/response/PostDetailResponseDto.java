@@ -1,5 +1,7 @@
 package com.zoo.boardback.domain.board.dto.response;
 
+import static lombok.AccessLevel.PRIVATE;
+
 import com.zoo.boardback.domain.board.entity.Board;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -10,7 +12,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = PRIVATE)
 @AllArgsConstructor
 @Builder
 public class PostDetailResponseDto {

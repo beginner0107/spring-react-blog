@@ -1,12 +1,16 @@
 package com.zoo.boardback.domain.comment.dto.response;
 
+import static lombok.AccessLevel.PRIVATE;
+
 import com.zoo.boardback.domain.comment.dto.query.CommentQueryDto;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
+@NoArgsConstructor(access = PRIVATE)
 public class CommentListResponseDto {
 
   private List<CommentResponse> commentListResponse;

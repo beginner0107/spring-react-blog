@@ -1,5 +1,7 @@
 package com.zoo.boardback.domain.auth.dto.request;
 
+import static lombok.AccessLevel.PRIVATE;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.zoo.boardback.domain.user.entity.User;
 import jakarta.validation.constraints.Email;
@@ -13,7 +15,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = PRIVATE)
 public class SignUpRequestDto {
 
   @Email(message = "이메일 형식을 맞춰주세요")

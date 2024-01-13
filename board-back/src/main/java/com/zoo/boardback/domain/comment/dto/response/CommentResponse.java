@@ -1,11 +1,13 @@
 package com.zoo.boardback.domain.comment.dto.response;
 
+import static lombok.AccessLevel.PRIVATE;
+
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = PRIVATE)
 @Builder
 public class CommentResponse {
   private int commentNumber;

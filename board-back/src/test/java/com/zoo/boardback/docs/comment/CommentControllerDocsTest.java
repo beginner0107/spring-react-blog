@@ -35,7 +35,7 @@ public class CommentControllerDocsTest extends RestDocsSecuritySupport {
   @WithAuthUser(email = "test123@naver.com", role = "ROLE_USER")
   @Test
   void createComment() throws Exception {
-    int boardNumber = 1;
+    Long boardNumber = 1L;
     String content = "댓글내용입니당.";
     CommentCreateRequestDto request = createComment(boardNumber, content);
 
@@ -73,11 +73,11 @@ public class CommentControllerDocsTest extends RestDocsSecuritySupport {
   @DisplayName("게시글의 댓글의 목록은 누구나 조회할 수 있다.")
   @Test
   void getComments() throws Exception {
-    int boardNumber = 1;
+    Long boardNumber = 1L;
     CommentListResponseDto responseDto = CommentListResponseDto.from(
         List.of(
             CommentQueryDto.builder()
-                .commentNumber(2)
+                .commentNumber(2L)
                 .content("댓글 작성2")
                 .nickname("닉네임2")
                 .profileImage("http://localhost:8080/image2.png")
@@ -202,7 +202,7 @@ public class CommentControllerDocsTest extends RestDocsSecuritySupport {
         ));
   }
 
-  private CommentCreateRequestDto createComment(Integer boardNumber, String content) {
+  private CommentCreateRequestDto createComment(Long boardNumber, String content) {
     return CommentCreateRequestDto.builder()
         .boardNumber(boardNumber)
         .content(content)

@@ -57,7 +57,7 @@ class CommentRepositoryTest extends IntegrationTestSupport {
 
   private Board createBoard(User user) {
     return Board.builder()
-        .boardNumber(1)
+        .boardNumber(1L)
         .user(user)
         .title("글의 제목")
         .content("글의 컨텐츠")
@@ -71,7 +71,6 @@ class CommentRepositoryTest extends IntegrationTestSupport {
         .content(content)
         .board(board)
         .user(user)
-        .createdAt(LocalDateTime.now())
         .build();
   }
 

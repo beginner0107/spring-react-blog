@@ -51,7 +51,7 @@ public class BoardService {
   }
 
   @Transactional
-  public PostDetailResponseDto find(int boardNumber) {
+  public PostDetailResponseDto find(Long boardNumber) {
     Board board = boardRepository.findByBoardNumber(boardNumber).orElseThrow(() ->
         new BusinessException(boardNumber, "boardNumber", BOARD_NOT_FOUND));
 
@@ -61,7 +61,7 @@ public class BoardService {
   }
 
   @Transactional
-  public void editPost(int boardNumber, String email, PostUpdateRequestDto requestDto) {
+  public void editPost(Long boardNumber, String email, PostUpdateRequestDto requestDto) {
     Board board = boardRepository.findByBoardNumber(boardNumber).orElseThrow(() ->
         new BusinessException(boardNumber, "boardNumber", BOARD_NOT_FOUND));
     isPostWriterMatches(email, board);
@@ -74,7 +74,7 @@ public class BoardService {
   }
 
   @Transactional
-  public void deletePost(int boardNumber, String email) {
+  public void deletePost(Long boardNumber, String email) {
     Board board = boardRepository.findByBoardNumber(boardNumber).orElseThrow(() ->
         new BusinessException(boardNumber, "boardNumber", BOARD_NOT_FOUND));
     isPostWriterMatches(email, board);

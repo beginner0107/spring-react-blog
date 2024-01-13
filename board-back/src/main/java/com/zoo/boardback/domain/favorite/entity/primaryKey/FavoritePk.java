@@ -25,6 +25,6 @@ public class FavoritePk  {
   private Board board;
 
   @OneToOne(fetch = LAZY, cascade = ALL)
-  @JoinColumn(name = "email")
+  @JoinColumn(name = "id")
   private User user;
 }

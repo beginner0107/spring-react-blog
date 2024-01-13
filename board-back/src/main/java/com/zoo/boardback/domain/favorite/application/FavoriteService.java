@@ -32,7 +32,7 @@ public class FavoriteService {
   private final UserRepository userRepository;
 
   @Transactional
-  public void putFavorite(int boardNumber, String email) {
+  public void putFavorite(Long boardNumber, String email) {
     Board board = boardRepository.findByBoardNumber(boardNumber).orElseThrow(() ->
         new BusinessException(boardNumber, "boardNumber", BOARD_NOT_FOUND));
 
@@ -52,7 +52,7 @@ public class FavoriteService {
     }
   }
 
-  public FavoriteListResponseDto getFavoriteList(int boardNumber) {
+  public FavoriteListResponseDto getFavoriteList(Long boardNumber) {
     Board board = boardRepository.findByBoardNumber(boardNumber).orElseThrow(() ->
         new BusinessException(boardNumber, "boardNumber", BOARD_NOT_FOUND));
     List<FavoriteQueryDto> favoriteList = favoriteRepository.findRecommendersByBoard(board);

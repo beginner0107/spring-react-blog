@@ -92,13 +92,13 @@ class BoardControllerTest extends ControllerTestSupport {
   @Test
   void getPost() throws Exception {
     // given
-    final int boardNumber = 1;
+    final Long boardNumber = 1L;
     String imageUrl = "https://testImage1.png";
     List<String> imageUrls = List.of(imageUrl);
     PostDetailResponseDto response = createPostDetailResponse(boardNumber, imageUrls
     , "테스트1", "테스트내용1", "test123@naver.com", "개구리왕눈이");
 
-    given(boardService.find(any(Integer.class))).willReturn(response);
+    given(boardService.find(any(Long.class))).willReturn(response);
 
     // when & then
     mockMvc.perform(get("/api/v1/board/" + boardNumber))
@@ -137,7 +137,7 @@ class BoardControllerTest extends ControllerTestSupport {
             .profileImage("https://profileImage.png")
             .build())
     ).isEmpty(false).build();
-    given(favoriteService.getFavoriteList(any(Integer.class)))
+    given(favoriteService.getFavoriteList(any(Long.class)))
         .willReturn(response);
 
     // when & then
@@ -190,7 +190,7 @@ class BoardControllerTest extends ControllerTestSupport {
         .andExpect(jsonPath("$.message").value("NO_CONTENT"));
   }
 
-  private static PostDetailResponseDto createPostDetailResponse(int boardNumber, List<String> imageUrls
+  private static PostDetailResponseDto createPostDetailResponse(Long boardNumber, List<String> imageUrls
   , String title, String content, String email, String nickname) {
     return PostDetailResponseDto.builder()
         .boardNumber(boardNumber)

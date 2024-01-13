@@ -42,7 +42,7 @@ public class BoardController {
 
   @GetMapping("/{boardNumber}")
   public ApiResponse<PostDetailResponseDto> getPost(
-      @PathVariable int boardNumber
+      @PathVariable Long boardNumber
   ) {
     PostDetailResponseDto postDetailResponseDto = boardService.find(boardNumber);
     return ApiResponse.ok(postDetailResponseDto);
@@ -50,7 +50,7 @@ public class BoardController {
 
   @PutMapping("/{boardNumber}/favorite")
   public ApiResponse<Void> putFavorite(
-      @PathVariable int boardNumber,
+      @PathVariable Long boardNumber,
       @AuthenticationPrincipal CustomUserDetails userDetails) {
     String email = userDetails.getUsername();
     favoriteService.putFavorite(boardNumber, email);
@@ -59,7 +59,7 @@ public class BoardController {
 
   @PutMapping("/{boardNumber}")
   public ApiResponse<Void> editPost(
-      @PathVariable int boardNumber,
+      @PathVariable Long boardNumber,
       @AuthenticationPrincipal CustomUserDetails userDetails,
       @RequestBody @Valid PostUpdateRequestDto postUpdateRequestDto
   ) {
@@ -70,7 +70,7 @@ public class BoardController {
 
   @DeleteMapping("/{boardNumber}")
   public ApiResponse<Void> deletePost(
-      @PathVariable int boardNumber,
+      @PathVariable Long boardNumber,
       @AuthenticationPrincipal CustomUserDetails userDetails) {
     String email = userDetails.getUsername();
     boardService.deletePost(boardNumber, email);
@@ -79,7 +79,7 @@ public class BoardController {
 
   @GetMapping("/{boardNumber}/favorite-list")
   public ApiResponse<FavoriteListResponseDto> getFavoriteList(
-      @PathVariable int boardNumber
+      @PathVariable Long boardNumber
   ) {
     return ApiResponse.ok(favoriteService.getFavoriteList(boardNumber));
   }

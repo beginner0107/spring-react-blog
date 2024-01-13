@@ -2,6 +2,7 @@ package com.zoo.boardback.domain.auth.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.zoo.boardback.domain.user.entity.User;
+import com.zoo.boardback.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,7 +14,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Authority {
+public class Authority extends BaseEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)

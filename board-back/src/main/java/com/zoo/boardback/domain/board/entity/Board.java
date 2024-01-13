@@ -4,33 +4,27 @@ import static jakarta.persistence.FetchType.LAZY;
 import static lombok.AccessLevel.PROTECTED;
 
 import com.zoo.boardback.domain.user.entity.User;
+import com.zoo.boardback.global.entity.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import java.time.LocalDateTime;
-import java.util.List;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Getter
-@EntityListeners(AuditingEntityListener.class)
 @NoArgsConstructor(access = PROTECTED)
 @Entity
 @Table(name = "Board")
-public class Board {
+public class Board extends BaseEntity {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private int boardNumber;
+  private Long boardNumber;
 
   private String title;
 
@@ -41,14 +35,6 @@ public class Board {
 
   private Integer viewCount;
 
-  @CreatedDate
-  @Column(nullable = false)
-  private LocalDateTime createdAt;
-
-  @LastModifiedDate
-  @Column(nullable = false)
-  private LocalDateTime updatedAt;
-
   @ManyToOne(fetch = LAZY)
   @JoinColumn(name = "email")
   private User user;
@@ -56,16 +42,14 @@ public class Board {
   private Integer commentCount;
 
   @Builder
-  public Board(int boardNumber, String title, String content, Integer favoriteCount,
-      Integer viewCount, LocalDateTime createdAt, LocalDateTime updatedAt, User user,
+  public Board(Long boardNumber, String title, String content, Integer favoriteCount,
+      Integer viewCount, User user,
       Integer commentCount) {
     this.boardNumber = boardNumber;
     this.title = title;
     this.content = content;
     this.favoriteCount = favoriteCount;
     this.viewCount = viewCount;
-    this.createdAt = createdAt;
-    this.updatedAt = updatedAt;
     this.user = user;
     this.commentCount = commentCount;
   }

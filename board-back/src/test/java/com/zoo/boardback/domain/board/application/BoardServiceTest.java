@@ -108,7 +108,7 @@ class BoardServiceTest extends IntegrationTestSupport {
     imageRepository.save(image);
 
     List<Board> boardList = boardRepository.findAll();
-    int boardNumber = boardList.get(0).getBoardNumber();
+    Long boardNumber = boardList.get(0).getBoardNumber();
 
     // when
     PostDetailResponseDto response = boardService.find(boardNumber);
@@ -129,7 +129,7 @@ class BoardServiceTest extends IntegrationTestSupport {
     // given
 
     // when & then
-    assertThatThrownBy(() -> boardService.find(1))
+    assertThatThrownBy(() -> boardService.find(1L))
         .isInstanceOf(BusinessException.class)
         .hasMessageContaining(BOARD_NOT_FOUND.getMessage());
   }
@@ -231,7 +231,7 @@ class BoardServiceTest extends IntegrationTestSupport {
 
     LocalDateTime createdAt = LocalDateTime.now();
     LocalDateTime updatedAt = LocalDateTime.now();
-    Comment comment = createComment("댓글을 답니다1.!", newBoard, newUser, createdAt, updatedAt);
+    Comment comment = createComment("댓글을 답니다1.!", newBoard, newUser);
     commentRepository.save(comment);
 
     // when
@@ -264,7 +264,7 @@ class BoardServiceTest extends IntegrationTestSupport {
 
     LocalDateTime createdAt = LocalDateTime.now();
     LocalDateTime updatedAt = LocalDateTime.now();
-    Comment comment = createComment("댓글을 답니다1.!", newBoard, newUser, createdAt, updatedAt);
+    Comment comment = createComment("댓글을 답니다1.!", newBoard, newUser);
     commentRepository.save(comment);
 
     // when & then
@@ -326,14 +326,11 @@ class BoardServiceTest extends IntegrationTestSupport {
     return Collections.singletonList(Authority.builder().name("ROLE_USER").build());
   }
 
-  private Comment createComment(String content, Board board, User user
-      , LocalDateTime createdAt, LocalDateTime updatedAt) {
+  private Comment createComment(String content, Board board, User user) {
     return Comment.builder()
         .content(content)
         .board(board)
         .user(user)
-        .createdAt(createdAt)
-        .updatedAt(updatedAt)
         .build();
   }
 }

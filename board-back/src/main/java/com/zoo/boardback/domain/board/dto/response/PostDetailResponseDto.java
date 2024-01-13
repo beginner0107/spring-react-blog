@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 @Builder
 public class PostDetailResponseDto {
 
-  private int boardNumber;
+  private Long boardNumber;
   private String title;
   private String content;
   private List<String> boardImageList;

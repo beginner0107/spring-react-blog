@@ -6,8 +6,8 @@ import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-public interface BoardRepository extends JpaRepository<Board, Integer> {
+public interface BoardRepository extends JpaRepository<Board, Long> {
 
   @EntityGraph(attributePaths = "user")
-  Optional<Board> findByBoardNumber(int boardNumber);
+  Optional<Board> findByBoardNumber(Long boardNumber);
 }

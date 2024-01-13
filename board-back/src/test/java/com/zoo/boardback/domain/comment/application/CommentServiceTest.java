@@ -77,8 +77,8 @@ class CommentServiceTest extends IntegrationTestSupport {
 
     LocalDateTime createdAt = LocalDateTime.now();
     LocalDateTime updatedAt = LocalDateTime.now();
-    Comment comment1 = createComment("댓글을 답니다1.!", newBoard, newUser, createdAt, updatedAt);
-    Comment comment2 = createComment("댓글을 답니다2.!", newBoard, newUser, createdAt.plusHours(1), updatedAt.plusHours(1));
+    Comment comment1 = createComment("댓글을 답니다1.!", newBoard, newUser);
+    Comment comment2 = createComment("댓글을 답니다2.!", newBoard, newUser);
     commentRepository.save(comment1);
     commentRepository.save(comment2);
 
@@ -107,9 +107,7 @@ class CommentServiceTest extends IntegrationTestSupport {
     User newUser = userRepository.save(user);
     Board board = createBoard(newUser);
     Board newBoard = boardRepository.save(board);
-    LocalDateTime createdAt = LocalDateTime.now();
-    LocalDateTime updatedAt = LocalDateTime.now();
-    Comment comment = createComment("댓글을 답니다1.!", newBoard, newUser, createdAt, updatedAt);
+    Comment comment = createComment("댓글을 답니다1.!", newBoard, newUser);
     Comment newComment = commentRepository.save(comment);
     String updateContent = "댓글을 수정~ 하겠습니다.";
     CommentUpdateRequestDto updateRequestDto = CommentUpdateRequestDto.builder()
@@ -135,9 +133,7 @@ class CommentServiceTest extends IntegrationTestSupport {
     User newUser = userRepository.save(user);
     Board board = createBoard(newUser);
     Board newBoard = boardRepository.save(board);
-    LocalDateTime createdAt = LocalDateTime.now();
-    LocalDateTime updatedAt = LocalDateTime.now();
-    Comment comment = createComment("댓글을 답니다1.!", newBoard, newUser, createdAt, updatedAt);
+    Comment comment = createComment("댓글을 답니다1.!", newBoard, newUser);
     Comment newComment = commentRepository.save(comment);
 
     // when
@@ -166,7 +162,7 @@ class CommentServiceTest extends IntegrationTestSupport {
 
   private Board createBoard(User user) {
     return Board.builder()
-        .boardNumber(1)
+        .boardNumber(1L)
         .user(user)
         .title("글의 제목")
         .content("글의 컨텐츠")
@@ -177,13 +173,11 @@ class CommentServiceTest extends IntegrationTestSupport {
   }
 
   private Comment createComment(String content, Board board, User user
-  , LocalDateTime createdAt, LocalDateTime updatedAt) {
+  ) {
     return Comment.builder()
         .content(content)
         .board(board)
         .user(user)
-        .createdAt(createdAt)
-        .updatedAt(updatedAt)
         .build();
   }
 

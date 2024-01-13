@@ -51,7 +51,7 @@ class BoardTest {
 
   private static Board createBoard(int viewCount, int favoriteCount) {
     return Board.builder()
-        .boardNumber(1)
+        .boardNumber(1L)
         .title("글의 제목")
         .content("글의 컨텐츠")
         .favoriteCount(favoriteCount)

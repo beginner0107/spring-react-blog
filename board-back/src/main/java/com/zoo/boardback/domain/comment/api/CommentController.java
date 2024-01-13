@@ -37,7 +37,7 @@ public class CommentController {
 
   @GetMapping("/board/{boardNumber}")
   public ApiResponse<CommentListResponseDto> getComments(
-      @PathVariable int boardNumber
+      @PathVariable Long boardNumber
       ) {
     CommentListResponseDto comments = commentService.getComments(
         boardNumber);
@@ -46,7 +46,7 @@ public class CommentController {
 
   @PutMapping("/{commentNumber}")
   public ApiResponse<Void> editComment(
-      @PathVariable int commentNumber,
+      @PathVariable Long commentNumber,
       @RequestBody @Valid CommentUpdateRequestDto commentUpdateRequestDto
       ) {
     commentService.editComment(commentNumber, commentUpdateRequestDto);
@@ -56,7 +56,7 @@ public class CommentController {
   @DeleteMapping("/{commentNumber}")
   public ApiResponse<Void> deleteComment(
       @AuthenticationPrincipal CustomUserDetails userDetails,
-      @PathVariable int commentNumber
+      @PathVariable Long commentNumber
   ) {
     commentService.deleteComment(commentNumber, userDetails.getUsername());
     return ApiResponse.of(HttpStatus.NO_CONTENT, null);

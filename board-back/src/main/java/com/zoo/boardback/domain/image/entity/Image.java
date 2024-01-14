@@ -13,6 +13,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -20,6 +21,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = PROTECTED)
 @Entity
 @Table(name = "Images")
+@EqualsAndHashCode(of = {"imageId"}, callSuper = false)
 public class Image extends BaseEntity {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -16,6 +16,7 @@ import jakarta.persistence.Table;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -23,6 +24,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = PROTECTED)
 @Entity
 @Table(name = "Users")
+@EqualsAndHashCode(of = {"id"}, callSuper = false)
 public class User extends BaseEntity {
 
   @Id @GeneratedValue(strategy = IDENTITY)

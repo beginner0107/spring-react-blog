@@ -1,5 +1,6 @@
 package com.zoo.boardback.domain.comment.dto.query;
 
+import com.zoo.boardback.domain.comment.entity.Comment;
 import java.time.LocalDateTime;
 import lombok.Builder;
 import lombok.Getter;
@@ -25,5 +26,16 @@ public class CommentQueryDto {
     this.content = content;
     this.createdAt = createdAt;
     this.updatedAt = updatedAt;
+  }
+
+  public static CommentQueryDto from(Comment comment) {
+    return CommentQueryDto.builder()
+        .commentNumber(comment.getCommentNumber())
+        .nickname(comment.getUser().getNickname())
+        .content(comment.getContent())
+        .profileImage(comment.getUser().getProfileImage())
+        .createdAt(comment.getCreatedAt())
+        .updatedAt(comment.getUpdatedAt())
+        .build();
   }
 }

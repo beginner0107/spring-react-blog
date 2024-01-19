@@ -12,12 +12,12 @@ import org.springframework.data.repository.query.Param;
 public interface CommentRepository extends JpaRepository<Comment, Long> {
 
   @Query("SELECT " +
-      "new com.zoo.boardback.domain.comment.dto.query.CommentQueryDto(A.commentNumber, B.nickname, B.profileImage, A.content, A.createdAt, A.updatedAt) " +
+      "A " +
       "FROM Comment A " +
-      "INNER JOIN A.user B " +
+      "JOIN FETCH A.user " +
       "WHERE A.board = :board " +
       "ORDER BY A.createdAt DESC")
-  List<CommentQueryDto> getCommentsList(@Param("board") Board board);
+  List<Comment> getCommentsList(@Param("board") Board board);
 
   @Modifying
   @Query("DELETE FROM Comment i WHERE i.board = :board")

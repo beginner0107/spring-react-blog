@@ -16,6 +16,7 @@ import com.zoo.boardback.domain.comment.entity.Comment;
 import com.zoo.boardback.domain.user.entity.User;
 import com.zoo.boardback.global.error.BusinessException;
 import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,8 +41,11 @@ public class CommentService {
   public CommentListResponseDto getComments(Long boardNumber) {
     Board board = boardRepository.findById(boardNumber).orElseThrow(
         () -> new BusinessException(boardNumber, "boardNumber", BOARD_NOT_FOUND));
-    List<CommentQueryDto> comments = commentRepository.getCommentsList(board);
-    return CommentListResponseDto.from(comments);
+    List<Comment> comments = commentRepository.getCommentsList(board);
+    List<CommentQueryDto> commentQueryDto = comments.stream().map(
+        CommentQueryDto::from
+    ).collect(Collectors.toList());
+    return CommentListResponseDto.from(commentQueryDto);
   }
 
   @Transactional

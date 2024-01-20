@@ -8,6 +8,9 @@ import com.zoo.boardback.domain.comment.dto.request.CommentUpdateRequestDto;
 import com.zoo.boardback.domain.comment.dto.response.CommentListResponseDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -34,13 +37,13 @@ public class CommentController {
     commentService.create(userDetails.getUser(), requestDto);
     return ApiResponse.ok(null);
   }
-
   @GetMapping("/board/{boardNumber}")
   public ApiResponse<CommentListResponseDto> getComments(
-      @PathVariable Long boardNumber
+      @PathVariable Long boardNumber,
+      @PageableDefault(size = 5, sort = "createdAt", direction = Direction.DESC) Pageable pageable
       ) {
     CommentListResponseDto comments = commentService.getComments(
-        boardNumber);
+        boardNumber, pageable);
     return ApiResponse.ok(comments);
   }
 

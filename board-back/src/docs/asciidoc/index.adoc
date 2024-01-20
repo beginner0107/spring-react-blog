@@ -17,6 +17,7 @@ include::api/auth-sign-in.adoc[]
 
 == BOARD API
 include::api/board-create.adoc[]
+include::api/board-getPosts.adoc[]
 include::api/board-postDetail.adoc[]
 include::api/board-editPost.adoc[]
 include::api/board-deletePost.adoc[]

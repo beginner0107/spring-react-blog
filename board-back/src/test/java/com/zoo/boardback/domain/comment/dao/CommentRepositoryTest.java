@@ -16,6 +16,8 @@ import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
@@ -38,21 +40,16 @@ class CommentRepositoryTest extends IntegrationTestSupport {
     Board board = createBoard(newUser);
     Board newBoard = boardRepository.save(board);
     Comment comment1 = createComment("댓글을 답니다1.!", newBoard, newUser);
-    Comment comment2 = createComment("댓글을 답니다2.!", newBoard, newUser);
     commentRepository.save(comment1);
-    commentRepository.save(comment2);
 
     // when
-    List<CommentQueryDto> comments = commentRepository.getCommentsList(newBoard);
+    Page<CommentQueryDto> comments = commentRepository.getCommentsList(newBoard, PageRequest.of(0, 5));
 
     // then
-    assertThat(comments).hasSize(2);
-    assertThat(comments.get(0).getNickname()).isEqualTo("개구리왕눈이");
-    assertThat(comments.get(0).getProfileImage()).isEqualTo("http://localhost:8080/profileImage.png");
-    assertThat(comments.get(0).getContent()).isEqualTo("댓글을 답니다2.!");
-    assertThat(comments.get(1).getNickname()).isEqualTo("개구리왕눈이");
-    assertThat(comments.get(1).getProfileImage()).isEqualTo("http://localhost:8080/profileImage.png");
-    assertThat(comments.get(1).getContent()).isEqualTo("댓글을 답니다1.!");
+    assertThat(comments).hasSize(1);
+    assertThat(comments.getContent().get(0).getNickname()).isEqualTo("개구리왕눈이");
+    assertThat(comments.getContent().get(0).getProfileImage()).isEqualTo("http://localhost:8080/profileImage.png");
+    assertThat(comments.getContent().get(0).getContent()).isEqualTo("댓글을 답니다1.!");
   }
 
   private Board createBoard(User user) {

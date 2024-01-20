@@ -33,10 +33,18 @@ public class Image extends BaseEntity {
 
   private String imageUrl;
 
+  private Boolean titleImageYn;
+
   @Builder
-  public Image(Long imageId, Board board, String imageUrl) {
+  public Image(
+      Long imageId,
+      Board board,
+      String imageUrl,
+      Boolean titleImageYn
+  ) {
     this.imageId = imageId;
     this.board = board;
     this.imageUrl = imageUrl;
+    this.titleImageYn = titleImageYn;
   }
 }

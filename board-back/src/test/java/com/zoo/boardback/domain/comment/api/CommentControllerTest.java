@@ -6,7 +6,9 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.when;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.put;
@@ -21,10 +23,14 @@ import com.zoo.boardback.domain.comment.dto.query.CommentQueryDto;
 import com.zoo.boardback.domain.comment.dto.request.CommentCreateRequestDto;
 import com.zoo.boardback.domain.comment.dto.request.CommentUpdateRequestDto;
 import com.zoo.boardback.domain.comment.dto.response.CommentListResponseDto;
+import com.zoo.boardback.domain.comment.dto.response.CommentResponse;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 
 class CommentControllerTest extends ControllerTestSupport {
@@ -77,27 +83,30 @@ class CommentControllerTest extends ControllerTestSupport {
   void getComments() throws Exception {
     // given
     Long boardNumber = 1L;
-    CommentListResponseDto responseDto = CommentListResponseDto.from(
-        List.of(
-            CommentQueryDto.builder()
-                .commentNumber(2L)
-                .content("댓글 작성2")
-                .nickname("닉네임2")
-                .profileImage("http://localhost:8080/image2.png")
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
-                .build(),
-            CommentQueryDto.builder()
-                .commentNumber(1L)
-                .content("댓글 작성1")
-                .nickname("닉네임1")
-                .profileImage("http://localhost:8080/image1.png")
-                .createdAt(LocalDateTime.now().plusHours(1))
-                .updatedAt(LocalDateTime.now().plusHours(1))
-                .build()
-        )
-    );
-    given(commentService.getComments(boardNumber)).willReturn(responseDto);
+    CommentListResponseDto comments = CommentListResponseDto.builder()
+            .commentListResponse(
+                List.of(
+                  CommentResponse.builder()
+                      .commentNumber(2L)
+                      .content("댓글 작성2")
+                      .nickname("닉네임2")
+                      .profileImage("http://localhost:8080/image2.png")
+                      .createdAt("2024-01-20 22:52:59")
+                      .updatedAt("2024-01-20 22:52:59")
+                      .build(),
+                  CommentResponse.builder()
+                      .commentNumber(1L)
+                      .content("댓글 작성1")
+                      .nickname("닉네임1")
+                      .profileImage("http://localhost:8080/image1.png")
+                      .createdAt("2024-01-20 23:52:59")
+                      .updatedAt("2024-01-20 23:52:59")
+                      .build()
+                )
+          )
+        .totalElements(2L)
+        .build();
+    given(commentService.getComments(anyLong(), any(Pageable.class))).willReturn(comments);
 
     // when & then
     mockMvc.perform(get("/api/v1/comments/board/{boardNumber}", boardNumber))
@@ -106,6 +115,7 @@ class CommentControllerTest extends ControllerTestSupport {
         .andExpect(jsonPath("$.code").value(200))
         .andExpect(jsonPath("$.status").value("OK"))
         .andExpect(jsonPath("$.message").value("OK"))
+        .andExpect(jsonPath("$.data.totalElements").value(2))
         .andExpect(jsonPath("$.data.commentListResponse").hasJsonPath())
         .andExpect(jsonPath("$.data.commentListResponse[0].commentNumber").value(2))
         .andExpect(jsonPath("$.data.commentListResponse[0].content").value("댓글 작성2"))

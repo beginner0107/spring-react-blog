@@ -18,6 +18,7 @@ import com.zoo.boardback.domain.user.dao.UserRepository;
 import com.zoo.boardback.domain.user.entity.User;
 import com.zoo.boardback.global.error.BusinessException;
 import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -55,7 +56,10 @@ public class FavoriteService {
   public FavoriteListResponseDto getFavoriteList(Long boardNumber) {
     Board board = boardRepository.findByBoardNumber(boardNumber).orElseThrow(() ->
         new BusinessException(boardNumber, "boardNumber", BOARD_NOT_FOUND));
-    List<FavoriteQueryDto> favoriteList = favoriteRepository.findRecommendersByBoard(board);
-    return FavoriteListResponseDto.from(favoriteList);
+    List<Favorite> favoriteList = favoriteRepository.findRecommendersByBoard(board);
+    List<FavoriteQueryDto> favoriteQueryDtoList = favoriteList.stream()
+        .map(FavoriteQueryDto::from)
+        .collect(Collectors.toList());
+    return FavoriteListResponseDto.from(favoriteQueryDtoList);
   }
 }

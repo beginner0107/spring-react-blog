@@ -17,6 +17,8 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.requestF
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
+import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -25,16 +27,23 @@ import com.zoo.boardback.WithAuthUser;
 import com.zoo.boardback.docs.RestDocsSecuritySupport;
 import com.zoo.boardback.domain.auth.entity.Authority;
 import com.zoo.boardback.domain.board.dto.request.PostCreateRequestDto;
+import com.zoo.boardback.domain.board.dto.request.PostSearchCondition;
 import com.zoo.boardback.domain.board.dto.request.PostUpdateRequestDto;
 import com.zoo.boardback.domain.board.dto.response.PostDetailResponseDto;
+import com.zoo.boardback.domain.board.dto.response.PostSearchResponseDto;
 import com.zoo.boardback.domain.favorite.dto.object.FavoriteListItem;
 import com.zoo.boardback.domain.favorite.dto.response.FavoriteListResponseDto;
 import com.zoo.boardback.domain.user.entity.User;
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.BDDMockito;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.restdocs.payload.JsonFieldType;
@@ -63,6 +72,8 @@ public class BoardControllerDocsTest extends RestDocsSecuritySupport {
                     .description("게시글 제목"),
                 fieldWithPath("content").type(JsonFieldType.STRING)
                     .description("게시글 내용"),
+                fieldWithPath("boardTitleImage").type(JsonFieldType.STRING).optional()
+                    .description("게시글 대표 이미지"),
                 fieldWithPath("boardImageList").type(JsonFieldType.ARRAY)
                     .description("게시글 이미지 목록(URL 경로 리스트[String])")
             )
@@ -80,7 +91,7 @@ public class BoardControllerDocsTest extends RestDocsSecuritySupport {
 
     given(boardService.find(any(Long.class))).willReturn(response);
 
-    mockMvc.perform(get("/api/v1/board/{boardNumber}", boardNumber))
+    mockMvc.perform(RestDocumentationRequestBuilders.get("/api/v1/board/{boardNumber}", boardNumber))
         .andExpect(status().isOk())
         .andDo(document("board-postDetail",
             preprocessResponse(prettyPrint()),
@@ -120,6 +131,85 @@ public class BoardControllerDocsTest extends RestDocsSecuritySupport {
     ;
   }
 
+  @DisplayName("검색어와 함께 게시글을 검색하면, 게시글 목록을 반환한다.")
+  @WithAuthUser(email = "test123@naver.com", role = "ROLE_USER")
+  @Test
+  void getPosts() throws Exception {
+    PostSearchCondition condition = PostSearchCondition.builder()
+        .title("제목")
+        .content("내용")
+        .commentCont("댓글내용")
+        .nickname("개구리왕눈이")
+        .titleAndContent("제목+내용")
+        .build();
+
+    PostSearchResponseDto searchResponse = PostSearchResponseDto.builder()
+        .profileImage("http://localhost:3939/profileImage.png")
+        .nickname("개구리왕눈이")
+        .createdAt(LocalDateTime.now())
+        .title("제목")
+        .content("내용")
+        .viewCount(0)
+        .favoriteCount(0)
+        .commentCount(0)
+        .boardTitleImage("http://localhost:3939/titleImage.png")
+        .build();
+    Page<PostSearchResponseDto> response = new PageImpl<>(List.of(searchResponse));
+
+    given(boardService.searchPosts(condition, Pageable.ofSize(5)))
+        .willReturn(response);
+
+    // when & then
+    mockMvc.perform(get("/api/v1/board?page=0&size=5" + 
+            "&title=제목&content=내용&nickname=닉네임&commentCont=댓글내용" + 
+            "&titleAndContent=제목과내용"))
+        .andExpect(status().isOk())
+        .andDo(document("board-getPosts",
+            preprocessResponse(prettyPrint()),
+            queryParameters(
+                parameterWithName("page").optional().description("페이지 번호"),
+                parameterWithName("size").optional().description("페이지 크기"),
+                parameterWithName("title").optional().description("글 제목"),
+                parameterWithName("content").optional().description("글 내용"),
+                parameterWithName("nickname").optional().description("작성자닉네임"),
+                parameterWithName("commentCont").optional().description("댓글내용"),
+                parameterWithName("titleAndContent").optional().description("제목과내용")
+            ),
+            responseFields(
+                fieldWithPath("code").type(JsonFieldType.NUMBER)
+                    .description("코드"),
+                fieldWithPath("status").type(JsonFieldType.STRING)
+                    .description("상태"),
+                fieldWithPath("message").type(JsonFieldType.STRING)
+                    .description("메시지"),
+                fieldWithPath("field").type(JsonFieldType.STRING)
+                    .optional()
+                    .description("에러 발생 필드명"),
+                fieldWithPath("data").type(JsonFieldType.OBJECT)
+                    .optional()
+                    .description("게시글 목록"),
+                fieldWithPath("data.content[].profileImage").type(JsonFieldType.STRING)
+                    .optional().description("작성자 프로필 이미지"),
+                fieldWithPath("data.content[].nickname").type(JsonFieldType.STRING)
+                    .description("작성자 닉네임"),
+                fieldWithPath("data.content[].createdAt").type(JsonFieldType.STRING)
+                    .description("게시글 작성일"),
+                fieldWithPath("data.content[].title").type(JsonFieldType.STRING)
+                    .description("게시글 제목"),
+                fieldWithPath("data.content[].content").type(JsonFieldType.STRING)
+                    .description("게시글 내용"),
+                fieldWithPath("data.content[].viewCount").type(JsonFieldType.NUMBER)
+                    .description("조회수"),
+                fieldWithPath("data.content[].favoriteCount").type(JsonFieldType.NUMBER)
+                    .description("좋아요 개수"),
+                fieldWithPath("data.content[].commentCount").type(JsonFieldType.NUMBER)
+                    .description("댓글 개수"),
+                fieldWithPath("data.content[].boardTitleImage").type(JsonFieldType.STRING)
+                    .optional().description("게시글 대표 이미지")
+            )
+        ));
+  }
+
   @DisplayName("상세 게시글 페이지에서 좋아요(△, ▽) 버튼을 누를 수 있다.")
   @WithAuthUser(email = "test123@naver.com", role = "ROLE_USER")
   @Test
@@ -149,7 +239,7 @@ public class BoardControllerDocsTest extends RestDocsSecuritySupport {
     given(favoriteService.getFavoriteList(any(Long.class)))
         .willReturn(response);
 
-    mockMvc.perform(get("/api/v1/board/{boardNumber}/favorite-list", boardNumber))
+    mockMvc.perform(RestDocumentationRequestBuilders.get("/api/v1/board/{boardNumber}/favorite-list", boardNumber))
         .andExpect(status().isOk())
         .andDo(print())
         .andDo(document("board-favoriteList",

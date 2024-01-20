@@ -14,13 +14,21 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.zoo.boardback.ControllerTestSupport;
 import com.zoo.boardback.WithAuthUser;
 import com.zoo.boardback.domain.board.dto.request.PostCreateRequestDto;
+import com.zoo.boardback.domain.board.dto.request.PostSearchCondition;
 import com.zoo.boardback.domain.board.dto.request.PostUpdateRequestDto;
 import com.zoo.boardback.domain.board.dto.response.PostDetailResponseDto;
+import com.zoo.boardback.domain.board.dto.response.PostSearchResponseDto;
 import com.zoo.boardback.domain.favorite.dto.object.FavoriteListItem;
 import com.zoo.boardback.domain.favorite.dto.response.FavoriteListResponseDto;
+import java.time.LocalDateTime;
 import java.util.List;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
@@ -86,6 +94,51 @@ class BoardControllerTest extends ControllerTestSupport {
         .andExpect(jsonPath("$.message").value("must not be blank"))
         .andExpect(jsonPath("$.field").value("content"))
         .andExpect(jsonPath("$.data").isEmpty());
+  }
+
+  @DisplayName("검색어와 함께 게시글을 검색하면, 게시글 목록을 볼 수 있다.")
+  @WithAuthUser(email = "test123@naver.com", role = "ROLE_USER")
+  @Test
+  void getPosts() throws Exception {
+    // given
+    PostSearchCondition condition = PostSearchCondition.builder()
+        .title("제목")
+        .content("내용")
+        .commentCont("댓글내용")
+        .nickname("개구리왕눈이")
+        .titleAndContent("제목+내용")
+        .build();
+
+    PostSearchResponseDto searchResponse = PostSearchResponseDto.builder()
+        .profileImage("http://localhost:3939/profileImage.png")
+        .nickname("개구리왕눈이")
+        .createdAt(LocalDateTime.now())
+        .title("제목")
+        .content("내용")
+        .viewCount(0)
+        .favoriteCount(0)
+        .commentCount(0)
+        .boardTitleImage("http://localhost:3939/titleImage.png")
+        .build();
+    Page<PostSearchResponseDto> response = new PageImpl<>(List.of(searchResponse));
+
+    given(boardService.searchPosts(condition, Pageable.ofSize(5)))
+        .willReturn(response);
+
+    // when & then
+    mockMvc.perform(get("/api/v1/board")
+            .queryParam("page", "0")
+            .queryParam("size", "5")
+            .queryParam("title", "제목")
+            .queryParam("nickname", "개구리왕눈이")
+            .queryParam("content", "내용")
+            .queryParam("commentCont", "댓글내용")
+            .queryParam("titleAndContent", "제목+내용")
+        )
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.code").value(200))
+        .andExpect(jsonPath("$.status").value("OK"))
+        .andExpect(jsonPath("$.message").value("OK"));
   }
 
   @DisplayName("게시글 번호를 넘기면 게시글 상세 내용을 볼 수 있다.")

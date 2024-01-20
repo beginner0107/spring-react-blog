@@ -14,13 +14,13 @@ public interface FavoriteRepository extends JpaRepository<Favorite, FavoritePk> 
 
   Favorite findByFavoritePk(FavoritePk favoritePk);
 
-  @Query("SELECT new com.zoo.boardback.domain.favorite.dto.query.FavoriteQueryDto(u.email, u.nickname, u.profileImage) " +
+  @Query("SELECT f " +
       "FROM Favorite f " +
-      "JOIN f.favoritePk.user u " +
+      "JOIN FETCH f.favoritePk.user u " +
       "WHERE f.favoritePk.board = :board " +
       "ORDER BY f.createdAt DESC"
   )
-  List<FavoriteQueryDto> findRecommendersByBoard(@Param("board") Board board);
+  List<Favorite> findRecommendersByBoard(@Param("board") Board board);
 
   @Modifying
   @Query("DELETE FROM Favorite f WHERE f.favoritePk.board = :board")

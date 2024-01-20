@@ -4,18 +4,17 @@ import static com.zoo.boardback.global.error.ErrorCode.BOARD_NOT_CUD_MATCHING_US
 import static com.zoo.boardback.global.error.ErrorCode.BOARD_NOT_FOUND;
 import static com.zoo.boardback.global.error.ErrorCode.USER_NOT_FOUND;
 import static java.util.stream.Collectors.toList;
+import static org.springframework.util.StringUtils.hasText;
 
 import com.zoo.boardback.domain.board.dao.BoardRepository;
 import com.zoo.boardback.domain.board.dto.request.PostCreateRequestDto;
+import com.zoo.boardback.domain.board.dto.request.PostSearchCondition;
 import com.zoo.boardback.domain.board.dto.request.PostUpdateRequestDto;
 import com.zoo.boardback.domain.board.dto.response.PostDetailResponseDto;
+import com.zoo.boardback.domain.board.dto.response.PostSearchResponseDto;
 import com.zoo.boardback.domain.board.entity.Board;
 import com.zoo.boardback.domain.comment.dao.CommentRepository;
 import com.zoo.boardback.domain.favorite.dao.FavoriteRepository;
-import com.zoo.boardback.domain.favorite.dto.query.FavoriteQueryDto;
-import com.zoo.boardback.domain.favorite.dto.response.FavoriteListResponseDto;
-import com.zoo.boardback.domain.favorite.entity.Favorite;
-import com.zoo.boardback.domain.favorite.entity.primaryKey.FavoritePk;
 import com.zoo.boardback.domain.image.dao.ImageRepository;
 import com.zoo.boardback.domain.image.entity.Image;
 import com.zoo.boardback.domain.user.dao.UserRepository;
@@ -24,6 +23,8 @@ import com.zoo.boardback.global.error.BusinessException;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -46,8 +47,23 @@ public class BoardService {
     Board board = request.toEntity(user);
     boardRepository.save(board);
 
+    String boardTitleImage = request.getBoardTitleImage();
+    if (hasText(boardTitleImage)) {
+      imageRepository.save(Image.builder()
+          .imageUrl(boardTitleImage)
+          .board(board)
+          .titleImageYn(true)
+          .build()
+      );
+    }
     List<String> boardImageList = request.getBoardImageList();
-    saveImages(boardImageList, board);
+    if (!boardImageList.isEmpty()) {
+      saveImages(boardImageList, board);
+    }
+  }
+
+  public Page<PostSearchResponseDto> searchPosts(PostSearchCondition condition, Pageable pageable) {
+    return boardRepository.searchPosts(condition, pageable);
   }
 
   @Transactional
@@ -89,6 +105,7 @@ public class BoardService {
         .map(image -> Image.builder()
             .board(board)
             .imageUrl(image)
+            .titleImageYn(false)
             .build())
         .collect(toList());
     imageRepository.saveAll(images);

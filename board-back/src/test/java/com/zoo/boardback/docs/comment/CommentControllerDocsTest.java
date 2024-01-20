@@ -1,5 +1,7 @@
 package com.zoo.boardback.docs.comment;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
@@ -13,18 +15,19 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.requestF
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
+import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.zoo.boardback.WithAuthUser;
 import com.zoo.boardback.docs.RestDocsSecuritySupport;
-import com.zoo.boardback.domain.comment.dto.query.CommentQueryDto;
 import com.zoo.boardback.domain.comment.dto.request.CommentCreateRequestDto;
 import com.zoo.boardback.domain.comment.dto.request.CommentUpdateRequestDto;
 import com.zoo.boardback.domain.comment.dto.response.CommentListResponseDto;
-import java.time.LocalDateTime;
+import com.zoo.boardback.domain.comment.dto.response.CommentResponse;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -70,23 +73,25 @@ public class CommentControllerDocsTest extends RestDocsSecuritySupport {
         ));
   }
 
-  @DisplayName("게시글의 댓글의 목록은 누구나 조회할 수 있다.")
+  @DisplayName("댓글의 목록을 조회한다.")
   @Test
   void getComments() throws Exception {
     Long boardNumber = 1L;
-    CommentListResponseDto responseDto = CommentListResponseDto.from(
-        List.of(
-            CommentQueryDto.builder()
-                .commentNumber(2L)
-                .content("댓글 작성2")
-                .nickname("닉네임2")
-                .profileImage("http://localhost:8080/image2.png")
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
-                .build()
-        )
-    );
-    given(commentService.getComments(boardNumber)).willReturn(responseDto);
+    CommentListResponseDto comments = CommentListResponseDto.builder()
+        .commentListResponse(
+            List.of(
+                CommentResponse.builder()
+                    .commentNumber(2L)
+                    .content("댓글 작성2")
+                    .nickname("닉네임2")
+                    .profileImage("http://localhost:8080/image2.png")
+                    .createdAt("2024-01-20 22:52:59")
+                    .updatedAt("2024-01-20 22:52:59")
+                    .build()
+            )
+        ).totalElements(1L)
+        .build();
+    given(commentService.getComments(anyLong(), any(Pageable.class))).willReturn(comments);
 
     mockMvc.perform(get("/api/v1/comments/board/{boardNumber}", boardNumber))
         .andExpect(status().isOk())
@@ -94,6 +99,10 @@ public class CommentControllerDocsTest extends RestDocsSecuritySupport {
             preprocessResponse(prettyPrint()),
             pathParameters(
                 parameterWithName("boardNumber").description("Board Id")
+            ),
+            queryParameters(
+                parameterWithName("page").optional().description("페이지 번호"),
+                parameterWithName("size").optional().description("페이지 크기")
             ),
             responseFields(
                 fieldWithPath("code").type(JsonFieldType.NUMBER)
@@ -105,6 +114,8 @@ public class CommentControllerDocsTest extends RestDocsSecuritySupport {
                 fieldWithPath("field").type(JsonFieldType.STRING)
                     .optional()
                     .description("에러 발생 필드명"),
+                fieldWithPath("data.totalElements").type(JsonFieldType.NUMBER)
+                    .description("총 댓글 개수"),
                 fieldWithPath("data.commentListResponse").type(JsonFieldType.ARRAY)
                     .description("댓글 목록"),
                 fieldWithPath("data.commentListResponse[0].commentNumber").type(JsonFieldType.NUMBER)

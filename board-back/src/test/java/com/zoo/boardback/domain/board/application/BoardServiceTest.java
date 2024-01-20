@@ -10,8 +10,10 @@ import com.zoo.boardback.IntegrationTestSupport;
 import com.zoo.boardback.domain.auth.entity.Authority;
 import com.zoo.boardback.domain.board.dao.BoardRepository;
 import com.zoo.boardback.domain.board.dto.request.PostCreateRequestDto;
+import com.zoo.boardback.domain.board.dto.request.PostSearchCondition;
 import com.zoo.boardback.domain.board.dto.request.PostUpdateRequestDto;
 import com.zoo.boardback.domain.board.dto.response.PostDetailResponseDto;
+import com.zoo.boardback.domain.board.dto.response.PostSearchResponseDto;
 import com.zoo.boardback.domain.board.entity.Board;
 import com.zoo.boardback.domain.comment.dao.CommentRepository;
 import com.zoo.boardback.domain.comment.entity.Comment;
@@ -27,6 +29,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 class BoardServiceTest extends IntegrationTestSupport {
 
@@ -132,6 +136,71 @@ class BoardServiceTest extends IntegrationTestSupport {
     assertThatThrownBy(() -> boardService.find(1L))
         .isInstanceOf(BusinessException.class)
         .hasMessageContaining(BOARD_NOT_FOUND.getMessage());
+  }
+
+  @DisplayName("검색어와 함께 게시글을 검색하면, 게시글 목록을 반환한다.")
+  @Test
+  void givenNoSearchParameters_whenSearchPosts_thenReturnPosts() {
+    // given
+    String email = "test12@naver.com";
+    String nickname = "개구리왕눈이";
+    User user = createUser(email, "testpassword123"
+        , "01022222222", nickname);
+    userRepository.save(user);
+
+    String title1 = "테스트 글의 제목1", content1 = "테스트 글의 내용1";
+    String title2 = "테스트 글의 제목2", content2 = "테스트 글의 내용2";
+    Board board1 = createBoard(title1, content1, user);
+    Board board2 = createBoard(title2, content2, user);
+    boardRepository.saveAll(List.of(board1, board2));
+
+    // when
+    Page<PostSearchResponseDto> posts = boardService.searchPosts(
+        PostSearchCondition.builder()
+            .build(), Pageable.ofSize(5)
+    );
+
+    // then
+    assertThat(posts).hasSize(2);
+  }
+
+  @DisplayName("검색어와 함께 게시글을 검색하면, 게시글 목록을 반환한다.")
+  @Test
+  void givenSearchParameters_whenSearchPosts_thenReturnPosts() {
+    // given
+    String email = "test12@naver.com";
+    String nickname = "개구리왕눈이";
+    User user = createUser(email, "testpassword123"
+        , "01022222222", nickname);
+    userRepository.save(user);
+
+    String title1 = "테스트 글의 제목1", content1 = "테스트 글의 내용1";
+    String title2 = "테스트 글의 제목2", content2 = "테스트 글의 내용2";
+    Board board1 = createBoard(title1, content1, user);
+    Board board2 = createBoard(title2, content2, user);
+    boardRepository.saveAll(List.of(board1, board2));
+
+    String imageUrl = "https://testImage.png";
+    Image image = createImage(imageUrl, board1);
+    imageRepository.save(image);
+
+    // when
+    Page<PostSearchResponseDto> posts = boardService.searchPosts(
+        PostSearchCondition.builder()
+            .title("테스트 글의 제목1")
+            .build(), Pageable.ofSize(5)
+    );
+
+    // then
+    assertThat(posts).hasSize(1);
+    assertThat(posts.getContent().get(0).getTitle()).isEqualTo(title1);
+    assertThat(posts.getContent().get(0).getContent()).isEqualTo(content1);
+    assertThat(posts.getContent().get(0).getContent()).isEqualTo(content1);
+    assertThat(posts.getContent().get(0).getProfileImage()).isNull();
+    assertThat(posts.getContent().get(0).getViewCount()).isZero();
+    assertThat(posts.getContent().get(0).getFavoriteCount()).isZero();
+    assertThat(posts.getContent().get(0).getCommentCount()).isZero();
+    assertThat(posts.getContent().get(0).getBoardTitleImage()).isNull();
   }
 
   @DisplayName("회원 본인이 작성한 게시글을 수정할 수 있다.")

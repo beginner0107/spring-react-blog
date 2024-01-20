@@ -6,20 +6,25 @@ import com.zoo.boardback.domain.comment.dto.query.CommentQueryDto;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.data.domain.Page;
 
 @Getter
 @NoArgsConstructor(access = PRIVATE)
 public class CommentListResponseDto {
 
   private List<CommentResponse> commentListResponse;
+  private Long totalElements;
 
-  public CommentListResponseDto(List<CommentResponse> commentListResponse) {
+  @Builder
+  public CommentListResponseDto(List<CommentResponse> commentListResponse, Long totalElements) {
     this.commentListResponse = commentListResponse;
+    this.totalElements = totalElements;
   }
 
-  public static CommentListResponseDto from(List<CommentQueryDto> comments) {
+  public static CommentListResponseDto from(Page<CommentQueryDto> comments) {
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     List<CommentResponse> commentListResponse = comments.stream()
@@ -32,6 +37,7 @@ public class CommentListResponseDto {
             .updatedAt(comment.getUpdatedAt().format(formatter))
             .build())
         .collect(Collectors.toList());
-    return new CommentListResponseDto(commentListResponse);
+    Long totalElements = comments.getTotalElements();
+    return new CommentListResponseDto(commentListResponse, totalElements);
   }
 }

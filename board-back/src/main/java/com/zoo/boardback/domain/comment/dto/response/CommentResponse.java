@@ -17,6 +17,7 @@ public class CommentResponse {
   private String createdAt;
   private String updatedAt;
 
+  @Builder
   public CommentResponse(Long commentNumber, String nickname, String profileImage, String content
       , String createdAt, String updatedAt
   ) {

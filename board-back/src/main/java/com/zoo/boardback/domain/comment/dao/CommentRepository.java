@@ -9,15 +9,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-public interface CommentRepository extends JpaRepository<Comment, Long> {
-
-  @Query("SELECT " +
-      "A " +
-      "FROM Comment A " +
-      "JOIN FETCH A.user " +
-      "WHERE A.board = :board " +
-      "ORDER BY A.createdAt DESC")
-  List<Comment> getCommentsList(@Param("board") Board board);
+public interface CommentRepository extends JpaRepository<Comment, Long>, CommentRepositoryCustom {
 
   @Modifying
   @Query("DELETE FROM Comment i WHERE i.board = :board")

@@ -89,16 +89,22 @@ class FavoriteRepositoryTest extends IntegrationTestSupport {
     favoriteRepository.save(saveFavorite2);
 
     // when
-    List<FavoriteQueryDto> recommenderUserList = favoriteRepository.findRecommendersByBoard(board1);
+    List<Favorite> recommenderUserList = favoriteRepository.findRecommendersByBoard(board1);
 
     // then
     assertThat(recommenderUserList).hasSize(2);
-    assertThat(recommenderUserList.get(0).getEmail()).isEqualTo("test13@naver.com");
-    assertThat(recommenderUserList.get(0).getNickname()).isEqualTo("개구리왕눈이2");
-    assertThat(recommenderUserList.get(0).getProfileImage()).isEqualTo("http://profileImage.png");
-    assertThat(recommenderUserList.get(1).getEmail()).isEqualTo("test12@naver.com");
-    assertThat(recommenderUserList.get(1).getNickname()).isEqualTo("개구리왕눈이1");
-    assertThat(recommenderUserList.get(1).getProfileImage()).isEqualTo("http://profileImage.png");
+    assertThat(recommenderUserList.get(0).getFavoritePk().getUser().getEmail())
+        .isEqualTo("test13@naver.com");
+    assertThat(recommenderUserList.get(0).getFavoritePk().getUser().getNickname())
+        .isEqualTo("개구리왕눈이2");
+    assertThat(recommenderUserList.get(0).getFavoritePk().getUser().getProfileImage())
+        .isEqualTo("http://profileImage.png");
+    assertThat(recommenderUserList.get(1).getFavoritePk().getUser().getEmail())
+        .isEqualTo("test12@naver.com");
+    assertThat(recommenderUserList.get(1).getFavoritePk().getUser().getNickname())
+        .isEqualTo("개구리왕눈이1");
+    assertThat(recommenderUserList.get(1).getFavoritePk().getUser().getProfileImage())
+        .isEqualTo("http://profileImage.png");
   }
 
   private User createUser(String email, String password, String telNumber, String nickname) {

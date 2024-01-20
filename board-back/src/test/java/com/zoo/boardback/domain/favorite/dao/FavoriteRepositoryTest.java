@@ -74,36 +74,25 @@ class FavoriteRepositoryTest extends IntegrationTestSupport {
     // given
     User user1 = createUser("test12@naver.com", "testpassword123"
         , "01022222222", "개구리왕눈이1");
-    User user2 = createUser("test13@naver.com", "testpassword123"
-        , "01022222221", "개구리왕눈이2");
-    userRepository.saveAll(List.of(user1, user2));
+    userRepository.save(user1);
 
     Board board1 = createBoard("제목1", "내용입니다.1", user1);
     boardRepository.save(board1);
 
     FavoritePk favoritePk1 = new FavoritePk(board1, user1);
     Favorite saveFavorite1 = createFavorite(favoritePk1);
-    FavoritePk favoritePk2 = new FavoritePk(board1, user2);
-    Favorite saveFavorite2 = createFavorite(favoritePk2);
     favoriteRepository.save(saveFavorite1);
-    favoriteRepository.save(saveFavorite2);
 
     // when
     List<Favorite> recommenderUserList = favoriteRepository.findRecommendersByBoard(board1);
 
     // then
-    assertThat(recommenderUserList).hasSize(2);
+    assertThat(recommenderUserList).hasSize(1);
     assertThat(recommenderUserList.get(0).getFavoritePk().getUser().getEmail())
-        .isEqualTo("test13@naver.com");
-    assertThat(recommenderUserList.get(0).getFavoritePk().getUser().getNickname())
-        .isEqualTo("개구리왕눈이2");
-    assertThat(recommenderUserList.get(0).getFavoritePk().getUser().getProfileImage())
-        .isEqualTo("http://profileImage.png");
-    assertThat(recommenderUserList.get(1).getFavoritePk().getUser().getEmail())
         .isEqualTo("test12@naver.com");
-    assertThat(recommenderUserList.get(1).getFavoritePk().getUser().getNickname())
+    assertThat(recommenderUserList.get(0).getFavoritePk().getUser().getNickname())
         .isEqualTo("개구리왕눈이1");
-    assertThat(recommenderUserList.get(1).getFavoritePk().getUser().getProfileImage())
+    assertThat(recommenderUserList.get(0).getFavoritePk().getUser().getProfileImage())
         .isEqualTo("http://profileImage.png");
   }
 

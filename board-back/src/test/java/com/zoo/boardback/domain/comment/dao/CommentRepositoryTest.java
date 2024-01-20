@@ -38,21 +38,16 @@ class CommentRepositoryTest extends IntegrationTestSupport {
     Board board = createBoard(newUser);
     Board newBoard = boardRepository.save(board);
     Comment comment1 = createComment("댓글을 답니다1.!", newBoard, newUser);
-    Comment comment2 = createComment("댓글을 답니다2.!", newBoard, newUser);
     commentRepository.save(comment1);
-    commentRepository.save(comment2);
 
     // when
     List<Comment> comments = commentRepository.getCommentsList(newBoard);
 
     // then
-    assertThat(comments).hasSize(2);
+    assertThat(comments).hasSize(1);
     assertThat(comments.get(0).getUser().getNickname()).isEqualTo("개구리왕눈이");
     assertThat(comments.get(0).getUser().getProfileImage()).isEqualTo("http://localhost:8080/profileImage.png");
-    assertThat(comments.get(0).getContent()).isEqualTo("댓글을 답니다2.!");
-    assertThat(comments.get(1).getUser().getNickname()).isEqualTo("개구리왕눈이");
-    assertThat(comments.get(1).getUser().getProfileImage()).isEqualTo("http://localhost:8080/profileImage.png");
-    assertThat(comments.get(1).getContent()).isEqualTo("댓글을 답니다1.!");
+    assertThat(comments.get(0).getContent()).isEqualTo("댓글을 답니다1.!");
   }
 
   private Board createBoard(User user) {

@@ -43,15 +43,15 @@ class CommentRepositoryTest extends IntegrationTestSupport {
     commentRepository.save(comment2);
 
     // when
-    List<CommentQueryDto> comments = commentRepository.getCommentsList(newBoard);
+    List<Comment> comments = commentRepository.getCommentsList(newBoard);
 
     // then
     assertThat(comments).hasSize(2);
-    assertThat(comments.get(0).getNickname()).isEqualTo("개구리왕눈이");
-    assertThat(comments.get(0).getProfileImage()).isEqualTo("http://localhost:8080/profileImage.png");
+    assertThat(comments.get(0).getUser().getNickname()).isEqualTo("개구리왕눈이");
+    assertThat(comments.get(0).getUser().getProfileImage()).isEqualTo("http://localhost:8080/profileImage.png");
     assertThat(comments.get(0).getContent()).isEqualTo("댓글을 답니다2.!");
-    assertThat(comments.get(1).getNickname()).isEqualTo("개구리왕눈이");
-    assertThat(comments.get(1).getProfileImage()).isEqualTo("http://localhost:8080/profileImage.png");
+    assertThat(comments.get(1).getUser().getNickname()).isEqualTo("개구리왕눈이");
+    assertThat(comments.get(1).getUser().getProfileImage()).isEqualTo("http://localhost:8080/profileImage.png");
     assertThat(comments.get(1).getContent()).isEqualTo("댓글을 답니다1.!");
   }
 

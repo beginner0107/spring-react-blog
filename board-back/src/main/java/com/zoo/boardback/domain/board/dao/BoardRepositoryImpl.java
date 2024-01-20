@@ -14,7 +14,6 @@ import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.zoo.boardback.domain.board.dto.request.PostSearchCondition;
 import com.zoo.boardback.domain.board.dto.response.PostSearchResponseDto;
-import com.zoo.boardback.domain.board.entity.QBoard;
 import jakarta.persistence.EntityManager;
 import java.util.List;
 import org.springframework.data.domain.Page;

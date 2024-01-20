@@ -62,6 +62,10 @@ public class BoardService {
     }
   }
 
+  public Page<PostSearchResponseDto> searchPosts(PostSearchCondition condition, Pageable pageable) {
+    return boardRepository.searchPosts(condition, pageable);
+  }
+
   @Transactional
   public PostDetailResponseDto find(Long boardNumber) {
     Board board = boardRepository.findByBoardNumber(boardNumber).orElseThrow(() ->
@@ -133,11 +137,5 @@ public class BoardService {
       imageEntities.add(imageEntity);
     }
     imageRepository.saveAll(imageEntities);
-  }
-
-  public Page<PostSearchResponseDto> searchPosts(PostSearchCondition condition, Pageable pageable) {
-    Page<PostSearchResponseDto> posts = boardRepository.searchPosts(condition,
-        pageable);
-    return posts;
   }
 }

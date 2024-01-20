@@ -65,6 +65,7 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom{
     JPAQuery<Long> countQuery = queryFactory
         .select(board.count())
         .from(board)
+        .leftJoin(board).on(board.boardNumber.eq(comment.board.boardNumber))
         .where(
             titleEq(condition.getTitle()),
             contentEq(condition.getContent()),

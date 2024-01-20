@@ -6,12 +6,18 @@ import com.zoo.boardback.domain.ApiResponse;
 import com.zoo.boardback.domain.auth.details.CustomUserDetails;
 import com.zoo.boardback.domain.board.application.BoardService;
 import com.zoo.boardback.domain.board.dto.request.PostCreateRequestDto;
+import com.zoo.boardback.domain.board.dto.request.PostSearchCondition;
 import com.zoo.boardback.domain.board.dto.request.PostUpdateRequestDto;
 import com.zoo.boardback.domain.board.dto.response.PostDetailResponseDto;
+import com.zoo.boardback.domain.board.dto.response.PostSearchResponseDto;
 import com.zoo.boardback.domain.favorite.application.FavoriteService;
 import com.zoo.boardback.domain.favorite.dto.response.FavoriteListResponseDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,7 +36,7 @@ public class BoardController {
   private final BoardService boardService;
   private final FavoriteService favoriteService;
 
-  @PostMapping("")
+  @PostMapping
   public ApiResponse<Void> createPost(
       @RequestBody @Valid PostCreateRequestDto requestDto,
       @AuthenticationPrincipal CustomUserDetails userDetails
@@ -38,6 +44,15 @@ public class BoardController {
     String email = userDetails.getUsername();
     boardService.create(requestDto, email);
     return ApiResponse.ok(null);
+  }
+
+  @GetMapping
+  public ApiResponse<Page<PostSearchResponseDto>> getPosts(
+      @PageableDefault(size = 5, sort = "createdAt", direction = Direction.DESC) Pageable pageable,
+      PostSearchCondition condition
+  ) {
+    Page<PostSearchResponseDto> posts = boardService.searchPosts(condition, pageable);
+    return ApiResponse.ok(posts);
   }
 
   @GetMapping("/{boardNumber}")

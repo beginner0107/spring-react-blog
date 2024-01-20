@@ -20,6 +20,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 
 class CommentServiceTest extends IntegrationTestSupport {
 
@@ -80,7 +81,8 @@ class CommentServiceTest extends IntegrationTestSupport {
     commentRepository.save(comment2);
 
     // when
-    CommentListResponseDto commentsList= commentService.getComments(newBoard.getBoardNumber());
+    CommentListResponseDto commentsList= commentService.getComments(newBoard.getBoardNumber(),
+        PageRequest.of(0, 5));
 
     // then
     assertThat(commentsList).isNotNull();

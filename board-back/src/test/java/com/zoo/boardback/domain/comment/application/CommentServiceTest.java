@@ -14,7 +14,6 @@ import com.zoo.boardback.domain.comment.dto.response.CommentResponse;
 import com.zoo.boardback.domain.comment.entity.Comment;
 import com.zoo.boardback.domain.user.dao.UserRepository;
 import com.zoo.boardback.domain.user.entity.User;
-import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.AfterEach;
@@ -75,8 +74,6 @@ class CommentServiceTest extends IntegrationTestSupport {
     Board board = createBoard(newUser);
     Board newBoard = boardRepository.save(board);
 
-    LocalDateTime createdAt = LocalDateTime.now();
-    LocalDateTime updatedAt = LocalDateTime.now();
     Comment comment1 = createComment("댓글을 답니다1.!", newBoard, newUser);
     Comment comment2 = createComment("댓글을 답니다2.!", newBoard, newUser);
     commentRepository.save(comment1);

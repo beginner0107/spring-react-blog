@@ -14,7 +14,9 @@ import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.zoo.boardback.domain.board.dto.request.PostSearchCondition;
 import com.zoo.boardback.domain.board.dto.response.PostSearchResponseDto;
+import com.zoo.boardback.domain.board.dto.response.object.PostRankItem;
 import jakarta.persistence.EntityManager;
+import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -74,6 +76,37 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom{
             nicknameEq(condition.getNickname())
         );
     return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchOne);
+  }
+
+  @Override
+  public List<PostRankItem> getTop3Posts(LocalDateTime startDate, LocalDateTime endDate) {
+    return queryFactory
+        .select(
+            constructor(PostRankItem.class,
+                board.boardNumber, board.title,
+                board.content, image.imageUrl.as("boardTitleImage"),
+                board.favoriteCount, board.commentCount,
+                board.viewCount, board.user.nickname.as("writerNickname"),
+                board.createdAt.as("writerCreatedAt"),
+                board.user.profileImage.as("writerProfileImage")
+            )
+        )
+        .from(board)
+        .join(board.user, user)
+        .leftJoin(image)
+        .on(
+            image.board.boardNumber.eq(board.boardNumber)
+                .and(image.titleImageYn.isTrue())
+        )
+        .where(board.createdAt.between(startDate, endDate))
+        .limit(3)
+        .orderBy(
+            board.favoriteCount.desc(),
+            board.commentCount.desc(),
+            board.viewCount.desc(),
+            board.createdAt.desc()
+        )
+        .fetch();
   }
 
   private BooleanExpression titleEq(String title) {

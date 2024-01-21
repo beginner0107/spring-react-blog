@@ -12,6 +12,8 @@ import com.zoo.boardback.domain.board.dto.request.PostSearchCondition;
 import com.zoo.boardback.domain.board.dto.request.PostUpdateRequestDto;
 import com.zoo.boardback.domain.board.dto.response.PostDetailResponseDto;
 import com.zoo.boardback.domain.board.dto.response.PostSearchResponseDto;
+import com.zoo.boardback.domain.board.dto.response.PostsTop3ResponseDto;
+import com.zoo.boardback.domain.board.dto.response.object.PostRankItem;
 import com.zoo.boardback.domain.board.entity.Board;
 import com.zoo.boardback.domain.comment.dao.CommentRepository;
 import com.zoo.boardback.domain.favorite.dao.FavoriteRepository;
@@ -20,6 +22,7 @@ import com.zoo.boardback.domain.image.entity.Image;
 import com.zoo.boardback.domain.user.dao.UserRepository;
 import com.zoo.boardback.domain.user.entity.User;
 import com.zoo.boardback.global.error.BusinessException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -137,5 +140,10 @@ public class BoardService {
       imageEntities.add(imageEntity);
     }
     imageRepository.saveAll(imageEntities);
+  }
+
+  public PostsTop3ResponseDto getTop3Posts(LocalDateTime startDate, LocalDateTime endDate) {
+    List<PostRankItem> posts = boardRepository.getTop3Posts(startDate, endDate);
+    return PostsTop3ResponseDto.builder().top3List(posts).build();
   }
 }

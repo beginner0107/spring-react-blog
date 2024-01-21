@@ -2,8 +2,7 @@ package com.zoo.boardback.domain.board.api;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.springframework.http.HttpStatus.*;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -18,20 +17,18 @@ import com.zoo.boardback.domain.board.dto.request.PostSearchCondition;
 import com.zoo.boardback.domain.board.dto.request.PostUpdateRequestDto;
 import com.zoo.boardback.domain.board.dto.response.PostDetailResponseDto;
 import com.zoo.boardback.domain.board.dto.response.PostSearchResponseDto;
+import com.zoo.boardback.domain.board.dto.response.PostsTop3ResponseDto;
+import com.zoo.boardback.domain.board.dto.response.object.PostRankItem;
 import com.zoo.boardback.domain.favorite.dto.object.FavoriteListItem;
 import com.zoo.boardback.domain.favorite.dto.response.FavoriteListResponseDto;
 import java.time.LocalDateTime;
 import java.util.List;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 
 class BoardControllerTest extends ControllerTestSupport {
 
@@ -241,6 +238,56 @@ class BoardControllerTest extends ControllerTestSupport {
         .andExpect(jsonPath("$.code").value(204))
         .andExpect(jsonPath("$.status").value("NO_CONTENT"))
         .andExpect(jsonPath("$.message").value("NO_CONTENT"));
+  }
+
+  @DisplayName("회원은 상위 3개의 게시물을 볼 수 있다.")
+  @WithAuthUser(email = "test123@naver.com", role = "ROLE_USER")
+  @Test
+  void getPostsTop3() throws Exception {
+    // given
+    PostsTop3ResponseDto response = PostsTop3ResponseDto.builder()
+        .top3List(
+            List.of(
+                createPostRankItem("제목3", "내용3", 3),
+                createPostRankItem("제목2", "내용2", 2),
+                createPostRankItem("제목1", "내용1", 1)
+            )
+        ).build();
+
+    given(boardService.getTop3Posts(any(LocalDateTime.class), any(LocalDateTime.class)))
+        .willReturn(response);
+
+    // when & then
+    mockMvc.perform(get("/api/v1/board/top3"))
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.code").value(200))
+        .andExpect(jsonPath("$.status").value("OK"))
+        .andExpect(jsonPath("$.message").value("OK"))
+        .andExpect(jsonPath("$.field").isEmpty())
+        .andExpect(jsonPath("$.data").isNotEmpty())
+        .andExpect(jsonPath("$.data.top3List[0].title").value("제목3"))
+        .andExpect(jsonPath("$.data.top3List[0].content").value("내용3"))
+        .andExpect(jsonPath("$.data.top3List[0].favoriteCount").value(3));
+  }
+
+  private PostRankItem createPostRankItem(
+      String title, String content,
+      Integer favoriteCount
+  ) {
+    return PostRankItem
+        .builder()
+        .boardNumber(3L)
+        .title(title)
+        .content(content)
+        .boardTitleImage("http://localhost:3939/titleImage.png")
+        .favoriteCount(favoriteCount)
+        .commentCount(0)
+        .viewCount(0)
+        .writerNickname("닉네임3")
+        .writerCreatedAt(LocalDateTime.now())
+        .writerProfileImage("http://localhost:3939/profileImage.png")
+        .build();
   }
 
   private static PostDetailResponseDto createPostDetailResponse(Long boardNumber, List<String> imageUrls

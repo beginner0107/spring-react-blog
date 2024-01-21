@@ -14,6 +14,7 @@ import com.zoo.boardback.domain.board.dto.request.PostSearchCondition;
 import com.zoo.boardback.domain.board.dto.request.PostUpdateRequestDto;
 import com.zoo.boardback.domain.board.dto.response.PostDetailResponseDto;
 import com.zoo.boardback.domain.board.dto.response.PostSearchResponseDto;
+import com.zoo.boardback.domain.board.dto.response.PostsTop3ResponseDto;
 import com.zoo.boardback.domain.board.entity.Board;
 import com.zoo.boardback.domain.comment.dao.CommentRepository;
 import com.zoo.boardback.domain.comment.entity.Comment;
@@ -22,7 +23,11 @@ import com.zoo.boardback.domain.image.entity.Image;
 import com.zoo.boardback.domain.user.dao.UserRepository;
 import com.zoo.boardback.domain.user.entity.User;
 import com.zoo.boardback.global.error.BusinessException;
+import java.time.DayOfWeek;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalAdjusters;
 import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.AfterEach;
@@ -343,6 +348,39 @@ class BoardServiceTest extends IntegrationTestSupport {
         .hasMessage(BOARD_NOT_CUD_MATCHING_USER.getMessage());
   }
 
+  @DisplayName("회원은 상위 3개의 게시물을 볼 수 있다.")
+  @Test
+  void getTop3Posts() {
+    // given
+    String email = "test12@naver.com";
+    String nickname = "개구리왕눈이";
+    User user = createUser(email, "testpassword123"
+        , "01022222222", nickname);
+    User newUser = userRepository.save(user);
+
+    String title1 = "테스트 글의 제목1", content1 = "테스트 글의 내용1";
+    String title2 = "테스트 글의 제목2", content2 = "테스트 글의 내용2";
+    String title3 = "테스트 글의 제목3", content3 = "테스트 글의 내용3";
+    Board board1 = createBoardViewCount(title1, content1, user, 1);
+    Board board2 = createBoardViewCount(title2, content2, user, 2);
+    Board board3 = createBoardViewCount(title3, content3, user, 3);
+    boardRepository.saveAll(List.of(board1, board2, board3));
+
+    LocalDateTime now = LocalDateTime.now();
+    LocalDateTime startDate = getStartOfWeek(now);
+    LocalDateTime endDate = getEndOfWeek(now);
+
+    // when
+    PostsTop3ResponseDto posts = boardService.getTop3Posts(startDate, endDate);
+
+    // then
+    assertThat(posts).isNotNull();
+    assertThat(posts.getTop3List()).hasSize(3);
+    assertThat(posts.getTop3List().get(0).getTitle()).isEqualTo(title3);
+    assertThat(posts.getTop3List().get(0).getContent()).isEqualTo(content3);
+    assertThat(posts.getTop3List().get(0).getFavoriteCount()).isEqualTo(3);
+  }
+
   private static Image createImage(String imageUrl, Board board) {
     return Image.builder()
         .imageUrl(imageUrl)
@@ -356,6 +394,20 @@ class BoardServiceTest extends IntegrationTestSupport {
         .content(content)
         .viewCount(0)
         .favoriteCount(0)
+        .commentCount(0)
+        .user(user)
+        .build();
+  }
+
+  private static Board createBoardViewCount(
+      String title, String content,
+      User user, Integer favoriteCount
+  ) {
+    return Board.builder()
+        .title(title)
+        .content(content)
+        .viewCount(0)
+        .favoriteCount(favoriteCount)
         .commentCount(0)
         .user(user)
         .build();
@@ -401,5 +453,13 @@ class BoardServiceTest extends IntegrationTestSupport {
         .board(board)
         .user(user)
         .build();
+  }
+
+  private LocalDateTime getStartOfWeek(LocalDateTime dateTime) {
+    return dateTime.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)).truncatedTo(ChronoUnit.DAYS);
+  }
+
+  private LocalDateTime getEndOfWeek(LocalDateTime dateTime) {
+    return dateTime.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY)).with(LocalTime.MAX);
   }
 }

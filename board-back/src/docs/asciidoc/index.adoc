@@ -23,6 +23,7 @@ include::api/board-editPost.adoc[]
 include::api/board-deletePost.adoc[]
 include::api/board-favorite-button-click.adoc[]
 include::api/board-favoriteList.adoc[]
+include::api/board-getPostsTop3.adoc[]
 
 == BOARD API
 include::api/comments-create.adoc[]

@@ -10,9 +10,15 @@ import com.zoo.boardback.domain.board.dto.request.PostSearchCondition;
 import com.zoo.boardback.domain.board.dto.request.PostUpdateRequestDto;
 import com.zoo.boardback.domain.board.dto.response.PostDetailResponseDto;
 import com.zoo.boardback.domain.board.dto.response.PostSearchResponseDto;
+import com.zoo.boardback.domain.board.dto.response.PostsTop3ResponseDto;
 import com.zoo.boardback.domain.favorite.application.FavoriteService;
 import com.zoo.boardback.domain.favorite.dto.response.FavoriteListResponseDto;
 import jakarta.validation.Valid;
+import java.time.DayOfWeek;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalAdjusters;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -97,5 +103,22 @@ public class BoardController {
       @PathVariable Long boardNumber
   ) {
     return ApiResponse.ok(favoriteService.getFavoriteList(boardNumber));
+  }
+
+  @GetMapping("/top3")
+  public ApiResponse<PostsTop3ResponseDto> getPostsTop3() {
+    LocalDateTime now = LocalDateTime.now();
+    LocalDateTime startDate = getStartOfWeek(now);
+    LocalDateTime endDate = getEndOfWeek(now);
+    PostsTop3ResponseDto posts = boardService.getTop3Posts(startDate, endDate);
+    return ApiResponse.ok(posts);
+  }
+
+  private LocalDateTime getStartOfWeek(LocalDateTime dateTime) {
+    return dateTime.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)).truncatedTo(ChronoUnit.DAYS);
+  }
+
+  private LocalDateTime getEndOfWeek(LocalDateTime dateTime) {
+    return dateTime.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY)).with(LocalTime.MAX);
   }
 }

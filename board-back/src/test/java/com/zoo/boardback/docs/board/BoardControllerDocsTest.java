@@ -2,10 +2,8 @@ package com.zoo.boardback.docs.board;
 
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.*;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.put;
@@ -20,7 +18,6 @@ import static org.springframework.restdocs.request.RequestDocumentation.pathPara
 import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.zoo.boardback.WithAuthUser;
@@ -31,23 +28,22 @@ import com.zoo.boardback.domain.board.dto.request.PostSearchCondition;
 import com.zoo.boardback.domain.board.dto.request.PostUpdateRequestDto;
 import com.zoo.boardback.domain.board.dto.response.PostDetailResponseDto;
 import com.zoo.boardback.domain.board.dto.response.PostSearchResponseDto;
+import com.zoo.boardback.domain.board.dto.response.PostsTop3ResponseDto;
+import com.zoo.boardback.domain.board.dto.response.object.PostRankItem;
 import com.zoo.boardback.domain.favorite.dto.object.FavoriteListItem;
 import com.zoo.boardback.domain.favorite.dto.response.FavoriteListResponseDto;
 import com.zoo.boardback.domain.user.entity.User;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.BDDMockito;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.restdocs.payload.JsonFieldType;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 public class BoardControllerDocsTest extends RestDocsSecuritySupport {
 
@@ -346,6 +342,63 @@ public class BoardControllerDocsTest extends RestDocsSecuritySupport {
         ));
   }
 
+  @DisplayName("회원은 상위 3개의 게시물을 볼 수 있다.")
+  @WithAuthUser(email = "test123@naver.com", role = "ROLE_USER")
+  @Test
+  void getPostsTop3() throws Exception {
+    PostsTop3ResponseDto response = PostsTop3ResponseDto.builder()
+        .top3List(
+            List.of(
+                createPostRankItem("제목3", "내용3", 3),
+                createPostRankItem("제목2", "내용2", 2),
+                createPostRankItem("제목1", "내용1", 1)
+            )
+        ).build();
+
+    given(boardService.getTop3Posts(any(LocalDateTime.class), any(LocalDateTime.class)))
+        .willReturn(response);
+
+    mockMvc.perform(get("/api/v1/board/top3"))
+        .andExpect(status().isOk())
+        .andDo(document("board-getPostsTop3",
+            preprocessResponse(prettyPrint()),
+            responseFields(
+                fieldWithPath("code").type(JsonFieldType.NUMBER)
+                    .description("코드"),
+                fieldWithPath("status").type(JsonFieldType.STRING)
+                    .description("상태"),
+                fieldWithPath("message").type(JsonFieldType.STRING)
+                    .description("메시지"),
+                fieldWithPath("field").type(JsonFieldType.STRING)
+                    .optional()
+                    .description("에러 발생 필드명"),
+                fieldWithPath("data").type(JsonFieldType.OBJECT)
+                    .optional()
+                    .description("게시글 목록"),
+                fieldWithPath("data.top3List[].boardNumber").type(JsonFieldType.NUMBER)
+                    .optional().description("Board ID"),
+                fieldWithPath("data.top3List[].title").type(JsonFieldType.STRING)
+                    .optional().description("게시물 제목"),
+                fieldWithPath("data.top3List[].content").type(JsonFieldType.STRING)
+                    .optional().description("게시물 내용"),
+                fieldWithPath("data.top3List[].boardTitleImage").type(JsonFieldType.STRING)
+                    .optional().description("게시물 타이틀 이미지"),
+                fieldWithPath("data.top3List[].favoriteCount").type(JsonFieldType.NUMBER)
+                    .optional().description("좋아요 개수"),
+                fieldWithPath("data.top3List[].commentCount").type(JsonFieldType.NUMBER)
+                    .optional().description("댓글 개수"),
+                fieldWithPath("data.top3List[].viewCount").type(JsonFieldType.NUMBER)
+                    .optional().description("조회수"),
+                fieldWithPath("data.top3List[].writerNickname").type(JsonFieldType.STRING)
+                    .optional().description("작성자 닉네임"),
+                fieldWithPath("data.top3List[].writerCreatedAt").type(JsonFieldType.STRING)
+                    .optional().description("작성일"),
+                fieldWithPath("data.top3List[].writerProfileImage").type(JsonFieldType.STRING)
+                    .optional().description("작성자 프로필 이미지")
+            )
+        ));
+  }
+
   private PostCreateRequestDto createPostRequest(String title, String content) {
     return PostCreateRequestDto.builder()
         .title(title)
@@ -390,6 +443,25 @@ public class BoardControllerDocsTest extends RestDocsSecuritySupport {
         .content(content)
         .boardImageList(List.of("https://updateImage1.png",
             "https://updateImage2.png"))
+        .build();
+  }
+
+  private PostRankItem createPostRankItem(
+      String title, String content,
+      Integer favoriteCount
+  ) {
+    return PostRankItem
+        .builder()
+        .boardNumber(3L)
+        .title(title)
+        .content(content)
+        .boardTitleImage("http://localhost:3939/titleImage.png")
+        .favoriteCount(favoriteCount)
+        .commentCount(0)
+        .viewCount(0)
+        .writerNickname("닉네임3")
+        .writerCreatedAt(LocalDateTime.now())
+        .writerProfileImage("http://localhost:3939/profileImage.png")
         .build();
   }
 }

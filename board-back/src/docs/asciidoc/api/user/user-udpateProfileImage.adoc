@@ -1,0 +1,10 @@
+[[user-updateProfileImage]]
+=== 회원 정보 변경 - 프로필이미지
+
+==== HTTP Request
+include::{snippets}/user-updateProfileImage/http-request.adoc[]
+include::{snippets}/user-updateProfileImage/request-fields.adoc[]
+
+==== HTTP Response
+include::{snippets}/user-updateProfileImage/http-response.adoc[]
+include::{snippets}/user-updateProfileImage/response-fields.adoc[]

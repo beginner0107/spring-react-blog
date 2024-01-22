@@ -12,30 +12,35 @@ endif::[]
 [[ZoosBlog-API]]
 == AUTH API
 
-include::api/auth-sign-up.adoc[]
-include::api/auth-sign-in.adoc[]
+include::api/auth/auth-sign-up.adoc[]
+include::api/auth/auth-sign-in.adoc[]
 
 == BOARD API
-include::api/board-create.adoc[]
-include::api/board-getPosts.adoc[]
-include::api/board-postDetail.adoc[]
-include::api/board-editPost.adoc[]
-include::api/board-deletePost.adoc[]
-include::api/board-favorite-button-click.adoc[]
-include::api/board-favoriteList.adoc[]
-include::api/board-getPostsTop3.adoc[]
+include::api/board/board-create.adoc[]
+include::api/board/board-getPosts.adoc[]
+include::api/board/board-postDetail.adoc[]
+include::api/board/board-editPost.adoc[]
+include::api/board/board-deletePost.adoc[]
+include::api/board/board-favorite-button-click.adoc[]
+include::api/board/board-favoriteList.adoc[]
+include::api/board/board-getPostsTop3.adoc[]
 
-== BOARD API
-include::api/comments-create.adoc[]
-include::api/comments-getComments.adoc[]
-include::api/comments-editComment.adoc[]
-include::api/comments-delete.adoc[]
+== COMMENT API
+include::api/comments/comments-create.adoc[]
+include::api/comments/comments-getComments.adoc[]
+include::api/comments/comments-editComment.adoc[]
+include::api/comments/comments-delete.adoc[]
 
 == FILE API
-include::api/file-upload.adoc[]
-include::api/file-showImage.adoc[]
+include::api/file/file-upload.adoc[]
+include::api/file/file-showImage.adoc[]
 
 == SEARCH API
-include::api/search-getSearchWords.adoc[]
+include::api/search/search-getSearchWords.adoc[]
+
+== USER API
+include::api/user/user-myInfo.adoc[]
+include::api/user/user-updateNickname.adoc[]
+include::api/user/user-udpateProfileImage.adoc[]
 
 

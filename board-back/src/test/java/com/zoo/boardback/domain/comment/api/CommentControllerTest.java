@@ -1,14 +1,11 @@
 package com.zoo.boardback.domain.comment.api;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.when;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.put;
@@ -19,17 +16,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.zoo.boardback.ControllerTestSupport;
 import com.zoo.boardback.WithAuthUser;
-import com.zoo.boardback.domain.comment.dto.query.CommentQueryDto;
 import com.zoo.boardback.domain.comment.dto.request.CommentCreateRequestDto;
 import com.zoo.boardback.domain.comment.dto.request.CommentUpdateRequestDto;
 import com.zoo.boardback.domain.comment.dto.response.CommentListResponseDto;
 import com.zoo.boardback.domain.comment.dto.response.CommentResponse;
-import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 

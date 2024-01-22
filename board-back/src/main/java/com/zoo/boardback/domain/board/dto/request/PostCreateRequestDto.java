@@ -3,7 +3,6 @@ package com.zoo.boardback.domain.board.dto.request;
 import static lombok.AccessLevel.PRIVATE;
 
 import com.zoo.boardback.domain.board.entity.Board;
-import com.zoo.boardback.domain.image.entity.Image;
 import com.zoo.boardback.domain.user.entity.User;
 import jakarta.validation.constraints.NotBlank;
 import java.util.List;

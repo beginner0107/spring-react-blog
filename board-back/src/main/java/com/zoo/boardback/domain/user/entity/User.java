@@ -72,4 +72,12 @@ public class User extends BaseEntity {
     this.roles = role;
     role.forEach(o -> o.setUser(this));
   }
+
+  public void changeNickname(String nickname) {
+    this.nickname = nickname;
+  }
+
+  public void changeProfileImage(String profileImage) {
+    this.profileImage = profileImage;
+  }
 }

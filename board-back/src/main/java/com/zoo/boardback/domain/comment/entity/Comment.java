@@ -25,7 +25,6 @@ import lombok.NoArgsConstructor;
 @Entity
 @EqualsAndHashCode(of = {"commentNumber"}, callSuper = false)
 @Table(name = "Comment")
-
 public class Comment extends BaseEntity {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)

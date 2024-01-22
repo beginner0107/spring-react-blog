@@ -2,20 +2,21 @@ package com.zoo.boardback.domain.searchLog.entity;
 
 import static lombok.AccessLevel.PROTECTED;
 
+import com.zoo.boardback.domain.searchLog.entity.type.SearchType;
+import com.zoo.boardback.domain.searchLog.entity.type.SearchTypeConverter;
 import com.zoo.boardback.global.entity.BaseEntity;
-import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import java.time.LocalDateTime;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
 
 @Getter
 @NoArgsConstructor(access = PROTECTED)
@@ -26,28 +27,16 @@ public class SearchLog extends BaseEntity {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long sequence;
-
+  @Convert(converter = SearchTypeConverter.class)
+  private SearchType searchType;
   private String searchWord;
 
-  private String relationWord;
-
-  private boolean relation;
-
-  @CreatedDate
-  @Column(nullable = false)
-  private LocalDateTime createdAt;
-
-  @LastModifiedDate
-  @Column(nullable = false)
-  private LocalDateTime updatedAt;
-
   @Builder
-  public SearchLog(Long sequence, String searchWord, String relationWord, boolean relation
+  public SearchLog(Long sequence, String searchWord, SearchType searchType
   ) {
     this.sequence = sequence;
     this.searchWord = searchWord;
-    this.relationWord = relationWord;
-    this.relation = relation;
+    this.searchType = searchType;
   }
 }
 

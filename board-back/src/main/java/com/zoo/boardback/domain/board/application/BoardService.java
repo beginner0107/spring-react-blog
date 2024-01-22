@@ -1,5 +1,7 @@
 package com.zoo.boardback.domain.board.application;
 
+import static com.zoo.boardback.domain.searchLog.entity.type.SearchType.NOT_EXIST_SEARCH_WORD;
+import static com.zoo.boardback.domain.searchLog.entity.type.SearchType.findSearchWord;
 import static com.zoo.boardback.global.error.ErrorCode.BOARD_NOT_CUD_MATCHING_USER;
 import static com.zoo.boardback.global.error.ErrorCode.BOARD_NOT_FOUND;
 import static com.zoo.boardback.global.error.ErrorCode.USER_NOT_FOUND;
@@ -19,6 +21,9 @@ import com.zoo.boardback.domain.comment.dao.CommentRepository;
 import com.zoo.boardback.domain.favorite.dao.FavoriteRepository;
 import com.zoo.boardback.domain.image.dao.ImageRepository;
 import com.zoo.boardback.domain.image.entity.Image;
+import com.zoo.boardback.domain.searchLog.dao.SearchLogRepository;
+import com.zoo.boardback.domain.searchLog.entity.SearchLog;
+import com.zoo.boardback.domain.searchLog.entity.type.SearchType;
 import com.zoo.boardback.domain.user.dao.UserRepository;
 import com.zoo.boardback.domain.user.entity.User;
 import com.zoo.boardback.global.error.BusinessException;
@@ -41,6 +46,7 @@ public class BoardService {
   private final ImageRepository imageRepository;
   private final CommentRepository commentRepository;
   private final FavoriteRepository favoriteRepository;
+  private final SearchLogRepository searchLogRepository;
 
   @Transactional
   public void create(PostCreateRequestDto request, String email) {
@@ -66,7 +72,24 @@ public class BoardService {
   }
 
   public Page<PostSearchResponseDto> searchPosts(PostSearchCondition condition, Pageable pageable) {
+    this.saveSearchLog(condition);
     return boardRepository.searchPosts(condition, pageable);
+  }
+
+  @Transactional
+  private void saveSearchLog(PostSearchCondition condition) {
+    SearchType searchType = SearchType.findSearchType(condition);
+    if (searchType != NOT_EXIST_SEARCH_WORD) {
+      String searchWord = findSearchWord(searchType, condition);
+      searchLogRepository.save(createdSearchLog(searchType, searchWord));
+    }
+  }
+
+  private SearchLog createdSearchLog(SearchType searchType, String searchWord) {
+    return SearchLog.builder()
+        .searchType(searchType)
+        .searchWord(searchWord)
+        .build();
   }
 
   @Transactional

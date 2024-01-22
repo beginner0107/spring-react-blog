@@ -20,6 +20,9 @@ import com.zoo.boardback.domain.comment.dao.CommentRepository;
 import com.zoo.boardback.domain.comment.entity.Comment;
 import com.zoo.boardback.domain.image.dao.ImageRepository;
 import com.zoo.boardback.domain.image.entity.Image;
+import com.zoo.boardback.domain.searchLog.dao.SearchLogRepository;
+import com.zoo.boardback.domain.searchLog.entity.SearchLog;
+import com.zoo.boardback.domain.searchLog.entity.type.SearchType;
 import com.zoo.boardback.domain.user.dao.UserRepository;
 import com.zoo.boardback.domain.user.entity.User;
 import com.zoo.boardback.global.error.BusinessException;
@@ -48,6 +51,8 @@ class BoardServiceTest extends IntegrationTestSupport {
   @Autowired
   private CommentRepository commentRepository;
   @Autowired
+  private SearchLogRepository searchLogRepository;
+  @Autowired
   private BoardService boardService;
 
   @AfterEach
@@ -56,6 +61,7 @@ class BoardServiceTest extends IntegrationTestSupport {
     commentRepository.deleteAllInBatch();
     boardRepository.deleteAllInBatch();
     userRepository.deleteAllInBatch();
+    searchLogRepository.deleteAllInBatch();
   }
 
   @DisplayName("회원은 게시물을 작성하고 저장할 수 있다.")
@@ -206,6 +212,11 @@ class BoardServiceTest extends IntegrationTestSupport {
     assertThat(posts.getContent().get(0).getFavoriteCount()).isZero();
     assertThat(posts.getContent().get(0).getCommentCount()).isZero();
     assertThat(posts.getContent().get(0).getBoardTitleImage()).isNull();
+
+    List<SearchLog> searchLogs = searchLogRepository.findAll();
+    assertThat(searchLogs).hasSize(1);
+    assertThat(searchLogs.get(0).getSearchType()).isEqualTo(SearchType.POST_WRITER_TITLE);
+    assertThat(searchLogs.get(0).getSearchWord()).isEqualTo("테스트 글의 제목1");
   }
 
   @DisplayName("회원 본인이 작성한 게시글을 수정할 수 있다.")

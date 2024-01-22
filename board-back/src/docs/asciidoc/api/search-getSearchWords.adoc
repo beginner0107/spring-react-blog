@@ -1,0 +1,10 @@
+[[search-popularWords]]
+=== 인기 검색어 목록
+
+==== HTTP Request
+include::{snippets}/search-popularWords/http-request.adoc[]
+include::{snippets}/search-popularWords/query-parameters.adoc[]
+
+==== HTTP Response
+include::{snippets}/search-popularWords/http-response.adoc[]
+include::{snippets}/search-popularWords/response-fields.adoc[]

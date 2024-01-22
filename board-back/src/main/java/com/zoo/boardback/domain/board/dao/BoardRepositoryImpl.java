@@ -18,6 +18,7 @@ import com.zoo.boardback.domain.board.dto.response.object.PostRankItem;
 import jakarta.persistence.EntityManager;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
@@ -51,11 +52,11 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom{
         .join(board.user, user)
         .leftJoin(board).on(board.boardNumber.eq(comment.board.boardNumber))
         .where(
-            titleEq(condition.getTitle()),
-            contentEq(condition.getContent()),
-            commentContentEq(condition.getCommentCont()),
-            titleAndContentEq(condition.getTitleAndContent()),
-            nicknameEq(condition.getNickname())
+            titleLike(condition.getTitle()),
+            contentLike(condition.getContent()),
+            commentContentLike(condition.getCommentCont()),
+            titleAndContentLike(condition.getTitleAndContent()),
+            nicknameLike(condition.getNickname())
         )
         .offset(pageable.getOffset())
         .limit(pageable.getPageSize())
@@ -69,11 +70,11 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom{
         .from(board)
         .leftJoin(board).on(board.boardNumber.eq(comment.board.boardNumber))
         .where(
-            titleEq(condition.getTitle()),
-            contentEq(condition.getContent()),
-            commentContentEq(condition.getCommentCont()),
-            titleAndContentEq(condition.getTitleAndContent()),
-            nicknameEq(condition.getNickname())
+            titleLike(condition.getTitle()),
+            contentLike(condition.getContent()),
+            commentContentLike(condition.getCommentCont()),
+            titleAndContentLike(condition.getTitleAndContent()),
+            nicknameLike(condition.getNickname())
         );
     return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchOne);
   }
@@ -109,24 +110,29 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom{
         .fetch();
   }
 
-  private BooleanExpression titleEq(String title) {
-    return hasText(title) ? board.title.eq(title) : null;
+  private BooleanExpression titleLike(String title) {
+    return hasText(title) ? board.title.like(likeQuery(title)) : null;
   }
 
-  private BooleanExpression contentEq(String content) {
-    return hasText(content) ? board.content.eq(content) : null;
+  private BooleanExpression contentLike(String content) {
+    return hasText(content) ? board.content.like(likeQuery(content)) : null;
   }
 
-  private BooleanExpression commentContentEq(String commentContent) {
-    return hasText(commentContent) ? comment.content.eq(commentContent) : null;
+  private BooleanExpression commentContentLike(String commentContent) {
+    return hasText(commentContent) ? comment.content.like(likeQuery(commentContent)) : null;
   }
 
-  private BooleanExpression titleAndContentEq(String titleAndContent) {
-    return hasText(titleAndContent) ? titleEq(titleAndContent).or(contentEq(titleAndContent)) : null;
+  private BooleanExpression titleAndContentLike(String titleAndContent) {
+    return hasText(titleAndContent) ? Objects.requireNonNull(titleLike(titleAndContent))
+        .or(contentLike(titleAndContent)) : null;
   }
 
-  private BooleanExpression nicknameEq(String nickname) {
-    return hasText(nickname) ? user.nickname.eq(nickname) : null;
+  private BooleanExpression nicknameLike(String nickname) {
+    return hasText(nickname) ? user.nickname.like(likeQuery(nickname)) : null;
+  }
+
+  private String likeQuery(String word) {
+    return "%" + word + "%";
   }
 
 

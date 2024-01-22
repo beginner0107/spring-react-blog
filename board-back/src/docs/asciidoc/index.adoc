@@ -35,4 +35,7 @@ include::api/comments-delete.adoc[]
 include::api/file-upload.adoc[]
 include::api/file-showImage.adoc[]
 
+== SEARCH API
+include::api/search-getSearchWords.adoc[]
+
 

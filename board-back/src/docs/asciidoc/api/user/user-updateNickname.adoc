@@ -1,0 +1,10 @@
+[[user-updateNickname]]
+=== 회원 정보 변경 - 닉네임
+
+==== HTTP Request
+include::{snippets}/user-updateNickname/http-request.adoc[]
+include::{snippets}/user-updateNickname/request-fields.adoc[]
+
+==== HTTP Response
+include::{snippets}/user-updateNickname/http-response.adoc[]
+include::{snippets}/user-updateNickname/response-fields.adoc[]

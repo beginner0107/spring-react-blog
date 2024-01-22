@@ -37,7 +37,6 @@ public class SecurityConfiguration {
             auth
                 .requestMatchers(mvc.pattern("/")).permitAll()
                 .requestMatchers(mvc.pattern("/api/v1/auth/**")).permitAll()
-                .requestMatchers(mvc.pattern("/api/v1/user/**")).permitAll()
                 .requestMatchers(mvc.pattern("/api/v1/search/**")).permitAll()
                 .requestMatchers(mvc.pattern("/api/v1/comments/board/*")).permitAll()
                 .requestMatchers(mvc.pattern("/file/**")).permitAll()

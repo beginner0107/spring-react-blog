@@ -2,8 +2,8 @@ package com.zoo.boardback.domain.comment.entity;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.zoo.boardback.domain.board.entity.Board;
 import com.zoo.boardback.domain.comment.dto.request.CommentUpdateRequestDto;
+import com.zoo.boardback.domain.post.entity.Post;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -13,8 +13,8 @@ class CommentTest {
   @Test
   void increaseViewCount() {
     // given
-    Board board = createBoard();
-    Comment comment = createComment("댓글을 답니다.!", board);
+    Post post = createPost();
+    Comment comment = createComment("댓글을 답니다.!", post);
     String updateContent = "댓글 수정입니다. ㅎㅎ";
     CommentUpdateRequestDto updateRequestDto = createUpdateRequestDto(updateContent);
 
@@ -25,9 +25,8 @@ class CommentTest {
     assertThat(comment.getContent()).isEqualTo(updateContent);
   }
 
-  private Board createBoard() {
-    return Board.builder()
-        .boardNumber(1L)
+  private Post createPost() {
+    return Post.builder()
         .title("글의 제목")
         .content("글의 컨텐츠")
         .favoriteCount(0)
@@ -35,17 +34,15 @@ class CommentTest {
         .build();
   }
 
-  private Comment createComment(String content, Board board) {
+  private Comment createComment(String content, Post post) {
     return Comment.builder()
-        .commentNumber(1L)
         .content(content)
-        .board(board)
+        .post(post)
         .build();
   }
 
   private CommentUpdateRequestDto createUpdateRequestDto(String content) {
     return CommentUpdateRequestDto.builder()
-        .boardNumber(1)
         .content(content)
         .build();
   }

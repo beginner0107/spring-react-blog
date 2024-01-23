@@ -3,8 +3,8 @@ package com.zoo.boardback;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zoo.boardback.domain.auth.api.AuthController;
 import com.zoo.boardback.domain.auth.application.AuthService;
-import com.zoo.boardback.domain.board.api.BoardController;
-import com.zoo.boardback.domain.board.application.BoardService;
+import com.zoo.boardback.domain.post.api.PostController;
+import com.zoo.boardback.domain.post.application.PostService;
 import com.zoo.boardback.domain.comment.api.CommentController;
 import com.zoo.boardback.domain.comment.application.CommentService;
 import com.zoo.boardback.domain.favorite.application.FavoriteService;
@@ -23,7 +23,7 @@ import org.springframework.test.web.servlet.MockMvc;
 @AutoConfigureMockMvc(addFilters = false)
 @WebMvcTest(controllers = {
     AuthController.class,
-    BoardController.class,
+    PostController.class,
     FileController.class,
     UserController.class,
     CommentController.class,
@@ -39,7 +39,7 @@ public abstract class ControllerTestSupport {
   protected AuthService authService;
 
   @MockBean
-  protected BoardService boardService;
+  protected PostService postService;
 
   @MockBean
   protected FavoriteService favoriteService;

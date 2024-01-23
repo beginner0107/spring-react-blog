@@ -3,7 +3,7 @@ package com.zoo.boardback.domain.image.entity;
 import static jakarta.persistence.FetchType.LAZY;
 import static lombok.AccessLevel.PROTECTED;
 
-import com.zoo.boardback.domain.board.entity.Board;
+import com.zoo.boardback.domain.post.entity.Post;
 import com.zoo.boardback.global.entity.BaseEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -21,15 +21,15 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = PROTECTED)
 @Entity
 @Table(name = "Images")
-@EqualsAndHashCode(of = {"imageId"}, callSuper = false)
+@EqualsAndHashCode(of = {"id"}, callSuper = false)
 public class Image extends BaseEntity {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long imageId;
+  private Long id;
 
   @ManyToOne(fetch = LAZY)
-  @JoinColumn(name = "boardNumber")
-  private Board board;
+  @JoinColumn(name = "postId")
+  private Post post;
 
   private String imageUrl;
 
@@ -37,13 +37,11 @@ public class Image extends BaseEntity {
 
   @Builder
   public Image(
-      Long imageId,
-      Board board,
+      Post post,
       String imageUrl,
       Boolean titleImageYn
   ) {
-    this.imageId = imageId;
-    this.board = board;
+    this.post = post;
     this.imageUrl = imageUrl;
     this.titleImageYn = titleImageYn;
   }

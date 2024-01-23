@@ -88,6 +88,7 @@ class UserRepositoryTest extends IntegrationTestSupport {
   
   private User createUser(String email, String password, String telNumber, String nickname) {
     return User.builder()
+        .id(1L)
         .email(email)
         .password(password)
         .telNumber(telNumber)

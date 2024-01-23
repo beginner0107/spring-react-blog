@@ -55,9 +55,10 @@ public class User extends BaseEntity {
   private List<Authority> roles = new ArrayList<>();
 
   @Builder
-  public User(String email, String password, String nickname, String telNumber, String address,
+  public User(Long id, String email, String password, String nickname, String telNumber, String address,
       String addressDetail, String profileImage, List<Authority> roles)
   {
+    this.id = id;
     this.email = email;
     this.password = password;
     this.nickname = nickname;

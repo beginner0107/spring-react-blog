@@ -1,0 +1,9 @@
+[[post-create]]
+=== 게시글 등록
+
+==== HTTP Request
+include::{snippets}/post-create/http-request.adoc[]
+include::{snippets}/post-create/request-fields.adoc[]
+
+==== HTTP Response
+include::{snippets}/post-create/http-response.adoc[]

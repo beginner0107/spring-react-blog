@@ -1,7 +1,6 @@
 package com.zoo.boardback.domain.favorite.dao;
 
-import com.zoo.boardback.domain.board.entity.Board;
-import com.zoo.boardback.domain.favorite.dto.query.FavoriteQueryDto;
+import com.zoo.boardback.domain.post.entity.Post;
 import com.zoo.boardback.domain.favorite.entity.Favorite;
 import com.zoo.boardback.domain.favorite.entity.primaryKey.FavoritePk;
 import java.util.List;
@@ -17,12 +16,12 @@ public interface FavoriteRepository extends JpaRepository<Favorite, FavoritePk> 
   @Query("SELECT f " +
       "FROM Favorite f " +
       "JOIN FETCH f.favoritePk.user u " +
-      "WHERE f.favoritePk.board = :board " +
+      "WHERE f.favoritePk.post = :post " +
       "ORDER BY f.createdAt DESC"
   )
-  List<Favorite> findRecommendersByBoard(@Param("board") Board board);
+  List<Favorite> findRecommendersByBoard(@Param("post") Post post);
 
   @Modifying
-  @Query("DELETE FROM Favorite f WHERE f.favoritePk.board = :board")
-  void deleteByBoard(@Param("board") Board board);
+  @Query("DELETE FROM Favorite f WHERE f.favoritePk.post = :post")
+  void deleteByBoard(@Param("post") Post post);
 }

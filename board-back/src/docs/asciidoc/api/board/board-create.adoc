@@ -1,9 +1,0 @@
-[[board-create]]
-=== 게시글 등록
-
-==== HTTP Request
-include::{snippets}/board-create/http-request.adoc[]
-include::{snippets}/board-create/request-fields.adoc[]
-
-==== HTTP Response
-include::{snippets}/board-create/http-response.adoc[]

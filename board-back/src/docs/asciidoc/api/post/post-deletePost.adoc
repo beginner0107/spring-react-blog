@@ -1,0 +1,10 @@
+[[post-deletePost]]
+=== 게시글 삭제
+
+==== HTTP Request
+include::{snippets}/post-deletePost/http-request.adoc[]
+include::{snippets}/post-deletePost/path-parameters.adoc[]
+
+==== HTTP Response
+include::{snippets}/post-deletePost/http-response.adoc[]
+include::{snippets}/post-deletePost/response-fields.adoc[]

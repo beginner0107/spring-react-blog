@@ -4,13 +4,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.zoo.boardback.IntegrationTestSupport;
 import com.zoo.boardback.domain.auth.entity.Authority;
-import com.zoo.boardback.domain.board.dao.BoardRepository;
-import com.zoo.boardback.domain.board.entity.Board;
+import com.zoo.boardback.domain.post.dao.PostRepository;
+import com.zoo.boardback.domain.post.entity.Post;
 import com.zoo.boardback.domain.comment.dto.query.CommentQueryDto;
 import com.zoo.boardback.domain.comment.entity.Comment;
 import com.zoo.boardback.domain.user.dao.UserRepository;
 import com.zoo.boardback.domain.user.entity.User;
-import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
@@ -26,7 +25,7 @@ class CommentRepositoryTest extends IntegrationTestSupport {
   @Autowired
   private UserRepository userRepository;
   @Autowired
-  private BoardRepository boardRepository;
+  private PostRepository postRepository;
   @Autowired
   private CommentRepository commentRepository;
 
@@ -37,13 +36,13 @@ class CommentRepositoryTest extends IntegrationTestSupport {
     User user = createUser("test12@naver.com", "testpassword123"
         , "01022222222", "개구리왕눈이");
     User newUser = userRepository.save(user);
-    Board board = createBoard(newUser);
-    Board newBoard = boardRepository.save(board);
-    Comment comment1 = createComment("댓글을 답니다1.!", newBoard, newUser);
+    Post post = createPost(newUser);
+    Post newPost = postRepository.save(post);
+    Comment comment1 = createComment("댓글을 답니다1.!", newPost, newUser);
     commentRepository.save(comment1);
 
     // when
-    Page<CommentQueryDto> comments = commentRepository.getCommentsList(newBoard, PageRequest.of(0, 5));
+    Page<CommentQueryDto> comments = commentRepository.getCommentsList(newPost, PageRequest.of(0, 5));
 
     // then
     assertThat(comments).hasSize(1);
@@ -52,9 +51,8 @@ class CommentRepositoryTest extends IntegrationTestSupport {
     assertThat(comments.getContent().get(0).getContent()).isEqualTo("댓글을 답니다1.!");
   }
 
-  private Board createBoard(User user) {
-    return Board.builder()
-        .boardNumber(1L)
+  private Post createPost(User user) {
+    return Post.builder()
         .user(user)
         .title("글의 제목")
         .content("글의 컨텐츠")
@@ -63,10 +61,10 @@ class CommentRepositoryTest extends IntegrationTestSupport {
         .build();
   }
 
-  private Comment createComment(String content, Board board, User user) {
+  private Comment createComment(String content, Post post, User user) {
     return Comment.builder()
         .content(content)
-        .board(board)
+        .post(post)
         .user(user)
         .build();
   }

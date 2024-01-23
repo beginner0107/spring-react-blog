@@ -102,7 +102,7 @@ class CommentControllerTest extends ControllerTestSupport {
     given(commentService.getComments(anyLong(), any(Pageable.class))).willReturn(comments);
 
     // when & then
-    mockMvc.perform(get("/api/v1/comments/board/{boardNumber}", boardNumber))
+    mockMvc.perform(get("/api/v1/comments/post/{postId}", boardNumber))
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.code").value(200))
@@ -126,13 +126,13 @@ class CommentControllerTest extends ControllerTestSupport {
   void editComment() throws Exception {
     // given
     String content = "댓글수정입니다.";
-    int commentNumber = 1;
+    Long commentId = 1L;
     CommentUpdateRequestDto requestDto = CommentUpdateRequestDto.builder()
-        .boardNumber(1)
+        .postId(1L)
         .content(content).build();
 
     // when & then
-    mockMvc.perform(put("/api/v1/comments/{commentNumber}", commentNumber)
+    mockMvc.perform(put("/api/v1/comments/{commentId}", commentId)
             .content(objectMapper.writeValueAsString(requestDto))
             .contentType(MediaType.APPLICATION_JSON))
         .andDo(print())
@@ -142,7 +142,7 @@ class CommentControllerTest extends ControllerTestSupport {
         .andExpect(jsonPath("$.message").value("OK"))
         .andExpect(jsonPath("$.field").isEmpty())
         .andExpect(jsonPath("$.data").isEmpty());
-    then(commentService).should(times(1)).editComment(anyLong(), any());
+    then(commentService).should(times(1)).editComment(anyString(), anyLong(), any());
   }
 
   @DisplayName("댓글의 내용을 입력하지 않으면 댓글이 수정되지 않는다.")
@@ -151,13 +151,13 @@ class CommentControllerTest extends ControllerTestSupport {
   void editCommentEmptyContent() throws Exception {
     // given
     String content = "";
-    int commentNumber = 1;
+    int commentId = 1;
     CommentUpdateRequestDto requestDto = CommentUpdateRequestDto.builder()
-        .boardNumber(1)
+        .postId(1L)
         .content(content).build();
 
     // when & then
-    mockMvc.perform(put("/api/v1/comments/{commentNumber}", commentNumber)
+    mockMvc.perform(put("/api/v1/comments/{commentId}", commentId)
             .content(objectMapper.writeValueAsString(requestDto))
             .contentType(MediaType.APPLICATION_JSON))
         .andDo(print())
@@ -174,11 +174,11 @@ class CommentControllerTest extends ControllerTestSupport {
   @Test
   void deleteComment() throws Exception {
     // given
-    int commentNumber = 1;
+    int commentId = 1;
 
     // when & then
-    mockMvc.perform(delete("/api/v1/comments/{commentNumber}"
-            , commentNumber)
+    mockMvc.perform(delete("/api/v1/comments/{commentId}"
+            , commentId)
         )
         .andDo(print())
         .andExpect(status().isOk())
@@ -188,9 +188,9 @@ class CommentControllerTest extends ControllerTestSupport {
     then(commentService).should(times(1)).deleteComment(anyLong(), anyString());
   }
 
-  private CommentCreateRequestDto createComment(Long boardNumber, String content) {
+  private CommentCreateRequestDto createComment(Long postId, String content) {
     return CommentCreateRequestDto.builder()
-        .boardNumber(boardNumber)
+        .postId(postId)
         .content(content)
         .build();
   }

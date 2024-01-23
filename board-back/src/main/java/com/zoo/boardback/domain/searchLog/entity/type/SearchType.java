@@ -2,7 +2,7 @@ package com.zoo.boardback.domain.searchLog.entity.type;
 
 import static org.springframework.util.StringUtils.hasText;
 
-import com.zoo.boardback.domain.board.dto.request.PostSearchCondition;
+import com.zoo.boardback.domain.post.dto.request.PostSearchCondition;
 import java.util.Arrays;
 
 public enum SearchType{
@@ -29,7 +29,7 @@ public enum SearchType{
     if (hasText(condition.getContent())) {
       return POST_WRITER_CONTENT;
     }
-    if (hasText(condition.getTitleAndContent())) {
+    if (hasText(condition.getTitleOrContent())) {
       return POST_WRITER_TITLE_OR_CONTENT;
     }
     if (hasText(condition.getCommentCont())) {
@@ -49,7 +49,7 @@ public enum SearchType{
       return condition.getContent();
     }
     if (searchType == POST_WRITER_TITLE_OR_CONTENT) {
-      return condition.getTitleAndContent();
+      return condition.getTitleOrContent();
     }
     if (searchType == COMMENT_WRITER_CONTENT) {
       return condition.getCommentCont();

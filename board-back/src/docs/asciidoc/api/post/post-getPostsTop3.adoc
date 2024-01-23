@@ -1,0 +1,9 @@
+[[post-getPostsTop3]]
+=== 게시글 주간 상위 3개 게시물
+
+==== HTTP Request
+include::{snippets}/post-getPostsTop3/http-request.adoc[]
+
+==== HTTP Response
+include::{snippets}/post-getPostsTop3/http-response.adoc[]
+include::{snippets}/post-getPostsTop3/response-fields.adoc[]

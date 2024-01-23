@@ -4,8 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.zoo.boardback.IntegrationTestSupport;
 import com.zoo.boardback.domain.auth.entity.Authority;
-import com.zoo.boardback.domain.board.dao.BoardRepository;
-import com.zoo.boardback.domain.board.entity.Board;
+import com.zoo.boardback.domain.post.dao.PostRepository;
+import com.zoo.boardback.domain.post.entity.Post;
 import com.zoo.boardback.domain.comment.dao.CommentRepository;
 import com.zoo.boardback.domain.comment.dto.request.CommentCreateRequestDto;
 import com.zoo.boardback.domain.comment.dto.request.CommentUpdateRequestDto;
@@ -27,7 +27,7 @@ class CommentServiceTest extends IntegrationTestSupport {
   @Autowired
   private UserRepository userRepository;
   @Autowired
-  private BoardRepository boardRepository;
+  private PostRepository postRepository;
   @Autowired
   private CommentRepository commentRepository;
   @Autowired
@@ -37,7 +37,7 @@ class CommentServiceTest extends IntegrationTestSupport {
   @AfterEach
   void tearDown() {
     commentRepository.deleteAllInBatch();
-    boardRepository.deleteAllInBatch();
+    postRepository.deleteAllInBatch();
     userRepository.deleteAllInBatch();
   }
 
@@ -48,11 +48,11 @@ class CommentServiceTest extends IntegrationTestSupport {
     User user = createUser("test12@naver.com", "testpassword123"
         , "01022222222", "개구리왕눈이");
     User newUser = userRepository.save(user);
-    Board board = createBoard(newUser);
-    Board newBoard = boardRepository.save(board);
+    Post post = createPost(newUser);
+    Post newPost = postRepository.save(post);
     String content = "안녕하세요. 댓글을 작성하겠습니다.";
     CommentCreateRequestDto commentCreateRequestDto = CommentCreateRequestDto.builder()
-        .boardNumber(newBoard.getBoardNumber())
+        .postId(newPost.getId())
         .content(content)
         .build();
 
@@ -72,16 +72,16 @@ class CommentServiceTest extends IntegrationTestSupport {
     User user = createUser("test12@naver.com", "testpassword123"
         , "01022222222", "개구리왕눈이");
     User newUser = userRepository.save(user);
-    Board board = createBoard(newUser);
-    Board newBoard = boardRepository.save(board);
+    Post post = createPost(newUser);
+    Post newPost = postRepository.save(post);
 
-    Comment comment1 = createComment("댓글을 답니다1.!", newBoard, newUser);
-    Comment comment2 = createComment("댓글을 답니다2.!", newBoard, newUser);
+    Comment comment1 = createComment("댓글을 답니다1.!", newPost, newUser);
+    Comment comment2 = createComment("댓글을 답니다2.!", newPost, newUser);
     commentRepository.save(comment1);
     commentRepository.save(comment2);
 
     // when
-    CommentListResponseDto commentsList= commentService.getComments(newBoard.getBoardNumber(),
+    CommentListResponseDto commentsList= commentService.getComments(newPost.getId(),
         PageRequest.of(0, 5));
 
     // then
@@ -101,21 +101,22 @@ class CommentServiceTest extends IntegrationTestSupport {
   @Test
   void editComment() {
     // given
-    User user = createUser("test12@naver.com", "testpassword123"
+    String email = "test12@naver.com";
+    User user = createUser(email, "testpassword123"
         , "01022222222", "개구리왕눈이");
     User newUser = userRepository.save(user);
-    Board board = createBoard(newUser);
-    Board newBoard = boardRepository.save(board);
-    Comment comment = createComment("댓글을 답니다1.!", newBoard, newUser);
+    Post post = createPost(newUser);
+    Post newPost = postRepository.save(post);
+    Comment comment = createComment("댓글을 답니다1.!", newPost, newUser);
     Comment newComment = commentRepository.save(comment);
     String updateContent = "댓글을 수정~ 하겠습니다.";
     CommentUpdateRequestDto updateRequestDto = CommentUpdateRequestDto.builder()
-        .boardNumber(1)
+        .postId(1L)
         .content(updateContent)
         .build();
 
     // when
-    commentService.editComment(newComment.getCommentNumber(), updateRequestDto);
+    commentService.editComment(email, newComment.getId(), updateRequestDto);
 
     // then
     List<Comment> comments = commentRepository.findAll();
@@ -130,13 +131,13 @@ class CommentServiceTest extends IntegrationTestSupport {
     User user = createUser("test12@naver.com", "testpassword123"
         , "01022222222", "개구리왕눈이");
     User newUser = userRepository.save(user);
-    Board board = createBoard(newUser);
-    Board newBoard = boardRepository.save(board);
-    Comment comment = createComment("댓글을 답니다1.!", newBoard, newUser);
+    Post post = createPost(newUser);
+    Post newPost = postRepository.save(post);
+    Comment comment = createComment("댓글을 답니다1.!", newPost, newUser);
     Comment newComment = commentRepository.save(comment);
 
     // when
-    commentService.deleteComment(newComment.getCommentNumber(), "test12@naver.com");
+    commentService.deleteComment(newComment.getId(), "test12@naver.com");
 
     // then
     List<Comment> comments = commentRepository.findAll();
@@ -159,9 +160,8 @@ class CommentServiceTest extends IntegrationTestSupport {
     return Collections.singletonList(Authority.builder().name("ROLE_USER").build());
   }
 
-  private Board createBoard(User user) {
-    return Board.builder()
-        .boardNumber(1L)
+  private Post createPost(User user) {
+    return Post.builder()
         .user(user)
         .title("글의 제목")
         .content("글의 컨텐츠")
@@ -171,11 +171,11 @@ class CommentServiceTest extends IntegrationTestSupport {
         .build();
   }
 
-  private Comment createComment(String content, Board board, User user
+  private Comment createComment(String content, Post post, User user
   ) {
     return Comment.builder()
         .content(content)
-        .board(board)
+        .post(post)
         .user(user)
         .build();
   }

@@ -3,8 +3,8 @@ package com.zoo.boardback.domain.comment.entity;
 import static jakarta.persistence.FetchType.LAZY;
 import static lombok.AccessLevel.PROTECTED;
 
-import com.zoo.boardback.domain.board.entity.Board;
 import com.zoo.boardback.domain.comment.dto.request.CommentUpdateRequestDto;
+import com.zoo.boardback.domain.post.entity.Post;
 import com.zoo.boardback.domain.user.entity.User;
 import com.zoo.boardback.global.entity.BaseEntity;
 import jakarta.persistence.Column;
@@ -23,29 +23,29 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = PROTECTED)
 @Entity
-@EqualsAndHashCode(of = {"commentNumber"}, callSuper = false)
+@EqualsAndHashCode(of = {"id"}, callSuper = false)
 @Table(name = "Comment")
 public class Comment extends BaseEntity {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long commentNumber;
+  private Long id;
 
   @Column(name = "content", nullable = false, columnDefinition = "TEXT")
   private String content;
 
   @ManyToOne(fetch = LAZY)
-  @JoinColumn(name = "boardNumber")
-  private Board board;
+  @JoinColumn(name = "postId")
+  private Post post;
 
   @ManyToOne(fetch = LAZY)
-  @JoinColumn(name = "email")
+  @JoinColumn(name = "userId")
   private User user;
 
   @Builder
-  public Comment(Long commentNumber, String content, Board board, User user) {
-    this.commentNumber = commentNumber;
+  public Comment(Long id, String content, Post post, User user) {
+    this.id = id;
     this.content = content;
-    this.board = board;
+    this.post = post;
     this.user = user;
   }
 

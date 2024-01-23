@@ -1,0 +1,11 @@
+[[post-editPost]]
+=== 게시글 수정
+
+==== HTTP Request
+include::{snippets}/post-editPost/http-request.adoc[]
+include::{snippets}/post-editPost/request-fields.adoc[]
+include::{snippets}/post-editPost/path-parameters.adoc[]
+
+==== HTTP Response
+include::{snippets}/post-editPost/http-response.adoc[]
+include::{snippets}/post-editPost/response-fields.adoc[]

@@ -4,7 +4,7 @@ import static jakarta.persistence.CascadeType.ALL;
 import static jakarta.persistence.FetchType.LAZY;
 import static lombok.AccessLevel.PROTECTED;
 
-import com.zoo.boardback.domain.board.entity.Board;
+import com.zoo.boardback.domain.post.entity.Post;
 import com.zoo.boardback.domain.user.entity.User;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.JoinColumn;
@@ -24,7 +24,7 @@ public class FavoritePk implements Serializable {
 
   @ManyToOne(fetch = LAZY, cascade = ALL)
   @JoinColumn(name = "boardNumber")
-  private Board board;
+  private Post post;
 
   @OneToOne(fetch = LAZY, cascade = ALL)
   @JoinColumn(name = "id")
@@ -39,11 +39,11 @@ public class FavoritePk implements Serializable {
       return false;
     }
     FavoritePk that = (FavoritePk) object;
-    return Objects.equals(board, that.board) && Objects.equals(user, that.user);
+    return Objects.equals(post, that.post) && Objects.equals(user, that.user);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(board, user);
+    return Objects.hash(post, user);
   }
 }

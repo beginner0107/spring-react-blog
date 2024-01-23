@@ -1,0 +1,10 @@
+[[post-getPosts]]
+=== 게시글 목록
+
+==== HTTP Request
+include::{snippets}/post-getPosts/http-request.adoc[]
+include::{snippets}/post-getPosts/query-parameters.adoc[]
+
+==== HTTP Response
+include::{snippets}/post-getPosts/http-response.adoc[]
+include::{snippets}/post-getPosts/response-fields.adoc[]

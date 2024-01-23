@@ -15,15 +15,15 @@ endif::[]
 include::api/auth/auth-sign-up.adoc[]
 include::api/auth/auth-sign-in.adoc[]
 
-== BOARD API
-include::api/board/board-create.adoc[]
-include::api/board/board-getPosts.adoc[]
-include::api/board/board-postDetail.adoc[]
-include::api/board/board-editPost.adoc[]
-include::api/board/board-deletePost.adoc[]
-include::api/board/board-favorite-button-click.adoc[]
-include::api/board/board-favoriteList.adoc[]
-include::api/board/board-getPostsTop3.adoc[]
+== POST API
+include::api/post/post-create.adoc[]
+include::api/post/post-getPosts.adoc[]
+include::api/post/post-postDetail.adoc[]
+include::api/post/post-editPost.adoc[]
+include::api/post/post-deletePost.adoc[]
+include::api/post/post-favorite-button-click.adoc[]
+include::api/post/post-favoriteList.adoc[]
+include::api/post/post-getPostsTop3.adoc[]
 
 == COMMENT API
 include::api/comments/comments-create.adoc[]

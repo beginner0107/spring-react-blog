@@ -1,0 +1,9 @@
+[[post-favorite-button-click]]
+=== 좋아요 버튼 클릭
+
+==== HTTP Request
+include::{snippets}/post-favorite-button-click/http-request.adoc[]
+include::{snippets}/post-favorite-button-click/path-parameters.adoc[]
+
+==== HTTP Response
+include::{snippets}/post-favorite-button-click/http-response.adoc[]

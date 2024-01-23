@@ -2,7 +2,7 @@ package com.zoo.boardback.domain.comment.dto.request;
 
 import static lombok.AccessLevel.PRIVATE;
 
-import com.zoo.boardback.domain.board.entity.Board;
+import com.zoo.boardback.domain.post.entity.Post;
 import com.zoo.boardback.domain.comment.entity.Comment;
 import com.zoo.boardback.domain.user.entity.User;
 import jakarta.validation.constraints.NotBlank;
@@ -19,21 +19,21 @@ public class CommentUpdateRequestDto {
   public static final int MAX_REQUEST_COMMENT_LENGTH = 300;
 
   @NotNull(message = "게시글 번호를 입력해주세요")
-  private int boardNumber;
+  private Long postId;
 
   @NotBlank(message = "댓글 내용을 입력해주세요")
   @Size(max = MAX_REQUEST_COMMENT_LENGTH, message = "댓글 내용은 300자 이하로 입력해주세요.")
   private String content;
 
   @Builder
-  public CommentUpdateRequestDto(int boardNumber, String content) {
-    this.boardNumber = boardNumber;
+  public CommentUpdateRequestDto(Long postId, String content) {
+    this.postId = postId;
     this.content = content;
   }
 
-  public Comment toEntity(User user, Board board) {
+  public Comment toEntity(User user, Post post) {
     return Comment.builder()
-        .board(board)
+        .post(post)
         .user(user)
         .content(content)
         .build();

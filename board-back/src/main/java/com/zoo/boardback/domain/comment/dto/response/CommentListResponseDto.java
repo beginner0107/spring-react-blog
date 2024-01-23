@@ -29,7 +29,7 @@ public class CommentListResponseDto {
 
     List<CommentResponse> commentListResponse = comments.stream()
         .map(comment -> CommentResponse.builder()
-            .commentNumber(comment.getCommentNumber())
+            .commentNumber(comment.getCommentId())
             .nickname(comment.getNickname())
             .profileImage(comment.getProfileImage())
             .content(comment.getContent())

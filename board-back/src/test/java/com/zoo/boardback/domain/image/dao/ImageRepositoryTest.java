@@ -4,8 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.zoo.boardback.IntegrationTestSupport;
 import com.zoo.boardback.domain.auth.entity.Authority;
-import com.zoo.boardback.domain.board.dao.BoardRepository;
-import com.zoo.boardback.domain.board.entity.Board;
+import com.zoo.boardback.domain.post.dao.PostRepository;
+import com.zoo.boardback.domain.post.entity.Post;
 import com.zoo.boardback.domain.image.entity.Image;
 import com.zoo.boardback.domain.user.dao.UserRepository;
 import com.zoo.boardback.domain.user.entity.User;
@@ -22,14 +22,14 @@ class ImageRepositoryTest extends IntegrationTestSupport {
   @Autowired
   private ImageRepository imageRepository;
   @Autowired
-  private BoardRepository boardRepository;
+  private PostRepository postRepository;
   @Autowired
   private UserRepository userRepository;
 
 
   @DisplayName("게시글에 포함된 이미지 목록을 가지고 온다.")
   @Test
-  void findByBoard() {
+  void findByPost() {
     // given
     User user1 = createUser("test12@naver.com", "testpassword123"
         , "01022222222", "개구리왕눈이");
@@ -37,24 +37,24 @@ class ImageRepositoryTest extends IntegrationTestSupport {
         , "01022222221", "황소고집1");
     userRepository.saveAll(List.of(user1, user2));
 
-    Board board1 = createBoard("제목1", "내용입니다.1", user1);
-    boardRepository.save(board1);
+    Post post1 = createPost("제목1", "내용입니다.1", user1);
+    postRepository.save(post1);
 
     Image image1 = Image.builder()
-        .board(board1).build();
+        .post(post1).build();
     Image image2 = Image.builder()
-        .board(board1).build();
+        .post(post1).build();
     imageRepository.saveAll(List.of(image1, image2));
 
     // when
-    List<Image> images = imageRepository.findByBoard(board1);
+    List<Image> images = imageRepository.findByPost(post1);
 
     // then
     assertThat(images).hasSize(2);
   }
 
-  private static Board createBoard(String title, String content, User user) {
-    return Board.builder()
+  private static Post createPost(String title, String content, User user) {
+    return Post.builder()
         .title(title)
         .content(content)
         .favoriteCount(0)

@@ -6,7 +6,7 @@ import static com.zoo.boardback.domain.user.entity.QUser.user;
 
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.zoo.boardback.domain.board.entity.Board;
+import com.zoo.boardback.domain.post.entity.Post;
 import com.zoo.boardback.domain.comment.dto.query.CommentQueryDto;
 import jakarta.persistence.EntityManager;
 import java.util.List;
@@ -22,10 +22,10 @@ public class CommentRepositoryImpl implements CommentRepositoryCustom{
   }
 
   @Override
-  public Page<CommentQueryDto> getCommentsList(Board board, Pageable pageable) {
+  public Page<CommentQueryDto> getCommentsList(Post post, Pageable pageable) {
     List<CommentQueryDto> comments = queryFactory
         .select(constructor(CommentQueryDto.class,
-                comment.commentNumber,
+                comment.id,
                 user.nickname,
                 user.profileImage,
                 comment.content,
@@ -35,7 +35,7 @@ public class CommentRepositoryImpl implements CommentRepositoryCustom{
         )
         .from(comment)
         .join(comment.user, user)
-        .where(comment.board.boardNumber.eq(board.getBoardNumber()))
+        .where(comment.post.id.eq(post.getId()))
         .offset(pageable.getOffset())
         .limit(pageable.getPageSize())
         .orderBy(comment.createdAt.desc())

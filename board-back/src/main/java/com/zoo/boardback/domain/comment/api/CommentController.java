@@ -37,31 +37,32 @@ public class CommentController {
     commentService.create(userDetails.getUser(), requestDto);
     return ApiResponse.ok(null);
   }
-  @GetMapping("/board/{boardNumber}")
+  @GetMapping("/post/{postId}")
   public ApiResponse<CommentListResponseDto> getComments(
-      @PathVariable Long boardNumber,
+      @PathVariable Long postId,
       @PageableDefault(size = 5, sort = "createdAt", direction = Direction.DESC) Pageable pageable
       ) {
     CommentListResponseDto comments = commentService.getComments(
-        boardNumber, pageable);
+        postId, pageable);
     return ApiResponse.ok(comments);
   }
 
-  @PutMapping("/{commentNumber}")
+  @PutMapping("/{commentId}")
   public ApiResponse<Void> editComment(
-      @PathVariable Long commentNumber,
-      @RequestBody @Valid CommentUpdateRequestDto commentUpdateRequestDto
+      @PathVariable Long commentId,
+      @RequestBody @Valid CommentUpdateRequestDto commentUpdateRequestDto,
+      @AuthenticationPrincipal CustomUserDetails userDetails
       ) {
-    commentService.editComment(commentNumber, commentUpdateRequestDto);
+    commentService.editComment(userDetails.getUsername(), commentId, commentUpdateRequestDto);
     return ApiResponse.ok(null);
   }
 
-  @DeleteMapping("/{commentNumber}")
+  @DeleteMapping("/{commentId}")
   public ApiResponse<Void> deleteComment(
       @AuthenticationPrincipal CustomUserDetails userDetails,
-      @PathVariable Long commentNumber
+      @PathVariable Long commentId
   ) {
-    commentService.deleteComment(commentNumber, userDetails.getUsername());
+    commentService.deleteComment(commentId, userDetails.getUsername());
     return ApiResponse.of(HttpStatus.NO_CONTENT, null);
   }
 }

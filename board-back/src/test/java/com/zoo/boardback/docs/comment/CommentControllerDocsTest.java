@@ -38,9 +38,9 @@ public class CommentControllerDocsTest extends RestDocsSecuritySupport {
   @WithAuthUser(email = "test123@naver.com", role = "ROLE_USER")
   @Test
   void createComment() throws Exception {
-    Long boardNumber = 1L;
+    Long postId = 1L;
     String content = "댓글내용입니당.";
-    CommentCreateRequestDto request = createComment(boardNumber, content);
+    CommentCreateRequestDto request = createComment(postId, content);
 
 
     mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/comments")
@@ -51,8 +51,8 @@ public class CommentControllerDocsTest extends RestDocsSecuritySupport {
             preprocessRequest(prettyPrint()),
             preprocessResponse(prettyPrint()),
             requestFields(
-                fieldWithPath("boardNumber").type(JsonFieldType.NUMBER)
-                    .description("게시글 내용"),
+                fieldWithPath("postId").type(JsonFieldType.NUMBER)
+                    .description("Post Id"),
                 fieldWithPath("content").type(JsonFieldType.STRING)
                     .description("게시글 내용")
             ),
@@ -93,12 +93,12 @@ public class CommentControllerDocsTest extends RestDocsSecuritySupport {
         .build();
     given(commentService.getComments(anyLong(), any(Pageable.class))).willReturn(comments);
 
-    mockMvc.perform(get("/api/v1/comments/board/{boardNumber}", boardNumber))
+    mockMvc.perform(get("/api/v1/comments/post/{postId}", boardNumber))
         .andExpect(status().isOk())
         .andDo(document("comments-getComments",
             preprocessResponse(prettyPrint()),
             pathParameters(
-                parameterWithName("boardNumber").description("Board Id")
+                parameterWithName("postId").description("Post Id")
             ),
             queryParameters(
                 parameterWithName("page").optional().description("페이지 번호"),
@@ -139,12 +139,12 @@ public class CommentControllerDocsTest extends RestDocsSecuritySupport {
   @Test
   void editComment() throws Exception {
     String content = "댓글수정입니다.";
-    int commentNumber = 1;
+    Long commentId = 1L;
     CommentUpdateRequestDto requestDto = CommentUpdateRequestDto.builder()
-        .boardNumber(1)
+        .postId(1L)
         .content(content).build();
 
-    mockMvc.perform(put("/api/v1/comments/{commentNumber}", commentNumber)
+    mockMvc.perform(put("/api/v1/comments/{commentId}", commentId)
             .content(objectMapper.writeValueAsString(requestDto))
             .contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
@@ -152,10 +152,10 @@ public class CommentControllerDocsTest extends RestDocsSecuritySupport {
             preprocessRequest(prettyPrint()),
             preprocessResponse(prettyPrint()),
             pathParameters(
-                parameterWithName("commentNumber").description("Comment Id")
+                parameterWithName("commentId").description("Comment Id")
             ),
             requestFields(
-                fieldWithPath("boardNumber").type(JsonFieldType.NUMBER)
+                fieldWithPath("postId").type(JsonFieldType.NUMBER)
                     .description("게시글 내용"),
                 fieldWithPath("content").type(JsonFieldType.STRING)
                     .description("게시글 내용")
@@ -182,19 +182,18 @@ public class CommentControllerDocsTest extends RestDocsSecuritySupport {
   @Test
   void deleteComment() throws Exception {
     // given
-    int commentNumber = 1;
-    int boardNumber = 1;
+    Long commentId = 1L;
 
     // when & then
-    mockMvc.perform(delete("/api/v1/comments/{commentNumber}"
-            , commentNumber, boardNumber)
+    mockMvc.perform(delete("/api/v1/comments/{commentId}"
+            , commentId)
         )
         .andExpect(status().isOk())
         .andDo(document("comments-deleteComment",
             preprocessRequest(prettyPrint()),
             preprocessResponse(prettyPrint()),
             pathParameters(
-                parameterWithName("commentNumber").description("Comment Id")
+                parameterWithName("commentId").description("Comment Id")
             ),
             responseFields(
                 fieldWithPath("code").type(JsonFieldType.NUMBER)
@@ -213,9 +212,9 @@ public class CommentControllerDocsTest extends RestDocsSecuritySupport {
         ));
   }
 
-  private CommentCreateRequestDto createComment(Long boardNumber, String content) {
+  private CommentCreateRequestDto createComment(Long postId, String content) {
     return CommentCreateRequestDto.builder()
-        .boardNumber(boardNumber)
+        .postId(postId)
         .content(content)
         .build();
   }

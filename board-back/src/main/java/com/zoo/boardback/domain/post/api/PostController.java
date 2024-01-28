@@ -6,6 +6,7 @@ import com.zoo.boardback.domain.ApiResponse;
 import com.zoo.boardback.domain.auth.details.CustomUserDetails;
 import com.zoo.boardback.domain.favorite.application.FavoriteService;
 import com.zoo.boardback.domain.favorite.dto.response.FavoriteListResponseDto;
+import com.zoo.boardback.domain.post.application.PostCacheService;
 import com.zoo.boardback.domain.post.application.PostService;
 import com.zoo.boardback.domain.post.dto.request.PostCreateRequestDto;
 import com.zoo.boardback.domain.post.dto.request.PostSearchCondition;
@@ -41,6 +42,7 @@ public class PostController {
 
   private final PostService postService;
   private final FavoriteService favoriteService;
+  private final PostCacheService postCacheService;
 
   @PostMapping
   public ApiResponse<Void> create(
@@ -65,6 +67,7 @@ public class PostController {
   public ApiResponse<PostDetailResponseDto> getPost(
       @PathVariable Long postId
   ) {
+    postCacheService.addViewCntToRedis(postId);
     PostDetailResponseDto postDetailResponseDto = postService.find(postId);
     return ApiResponse.ok(postDetailResponseDto);
   }

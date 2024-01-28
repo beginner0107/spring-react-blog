@@ -85,7 +85,7 @@ class FavoriteServiceTest extends IntegrationTestSupport {
     favoriteRepository.save(saveFavorite);
 
     // when
-    favoriteService.putFavorite(boardNumber, "test12@naver.com");
+    favoriteService.putFavoriteCancel(boardNumber, "test12@naver.com");
 
     // then
     List<Favorite> favoriteList = favoriteRepository.findAll();

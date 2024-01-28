@@ -4,6 +4,7 @@ import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.docu
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zoo.boardback.domain.post.api.PostController;
+import com.zoo.boardback.domain.post.application.PostCacheService;
 import com.zoo.boardback.domain.post.application.PostService;
 import com.zoo.boardback.domain.comment.api.CommentController;
 import com.zoo.boardback.domain.comment.application.CommentService;
@@ -48,6 +49,10 @@ public abstract class RestDocsSecuritySupport {
 
   @MockBean
   protected CommentService commentService;
+
+  @MockBean
+  protected PostCacheService postCacheService;
+
 
   @BeforeEach
   void setUp(WebApplicationContext webApplicationContext

@@ -30,7 +30,10 @@ public enum ErrorCode {
   COMMENT_NOT_CUD_MATCHING_USER("댓글 작성자만 댓글을 변경 가능합니다.", HttpStatus.BAD_REQUEST),
 
   // DB
-  DATABASE_ERROR("데이터베이스 에러가 발생했습니다.", HttpStatus.INTERNAL_SERVER_ERROR)
+  DATABASE_ERROR("데이터베이스 에러가 발생했습니다.", HttpStatus.INTERNAL_SERVER_ERROR),
+
+  // FAVORITE
+  FAVORITE_CANCEL("좋아요 취소를 할 수 없습니다.", HttpStatus.BAD_REQUEST);
   ;
 
   private final String message;

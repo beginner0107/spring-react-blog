@@ -164,7 +164,7 @@ class PostControllerTest extends ControllerTestSupport {
         .andExpect(jsonPath("$.data.writerNickname").value("개구리왕눈이"));
   }
 
-  @DisplayName("상세 게시글 페이지에서 좋아요(△, ▽) 버튼을 누를 수 있다.")
+  @DisplayName("상세 게시글 페이지에서 좋아요 버튼을 누를 수 있다.")
   @WithAuthUser(email = "test123@naver.com", role = "ROLE_USER")
   @Test
   void putFavorite() throws Exception {
@@ -175,6 +175,19 @@ class PostControllerTest extends ControllerTestSupport {
     mockMvc.perform(put("/api/v1/post/" + postId + "/favorite"))
         .andExpect(status().isOk());
   }
+
+  @DisplayName("상세 게시글 페이지에서 좋아요 버튼을 취소 할 수 있다.")
+  @WithAuthUser(email = "test123@naver.com", role = "ROLE_USER")
+  @Test
+  void putFavoriteCancel() throws Exception {
+    // given
+    final int postId = 1;
+
+    // when & then
+    mockMvc.perform(put("/api/v1/post/" + postId + "/favoriteCancel"))
+        .andExpect(status().isOk());
+  }
+
 
   @DisplayName("하나의 게시물에 좋아요를 눌러준 사람들의 목록을 가지고온다.")
   @Test

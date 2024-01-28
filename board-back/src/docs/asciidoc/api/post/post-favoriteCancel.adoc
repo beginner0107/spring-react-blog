@@ -1,0 +1,9 @@
+[[post-favorite-button-click]]
+=== 좋아요 취소
+
+==== HTTP Request
+include::{snippets}/post-favoriteCancel/http-request.adoc[]
+include::{snippets}/post-favoriteCancel/path-parameters.adoc[]
+
+==== HTTP Response
+include::{snippets}/post-favoriteCancel/http-response.adoc[]

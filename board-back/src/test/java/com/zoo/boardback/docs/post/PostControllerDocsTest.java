@@ -204,7 +204,7 @@ public class PostControllerDocsTest extends RestDocsSecuritySupport {
         ));
   }
 
-  @DisplayName("상세 게시글 페이지에서 좋아요(△, ▽) 버튼을 누를 수 있다.")
+  @DisplayName("상세 게시글 페이지에서 좋아요 버튼을 누를 수 있다.")
   @WithAuthUser(email = "test123@naver.com", role = "ROLE_USER")
   @Test
   void putFavorite() throws Exception {
@@ -212,7 +212,23 @@ public class PostControllerDocsTest extends RestDocsSecuritySupport {
 
     mockMvc.perform(put("/api/v1/post/{postId}/favorite", postId))
         .andExpect(status().isOk())
-        .andDo(document("post-favorite-button-click",
+        .andDo(document("post-favorite",
+            preprocessResponse(prettyPrint()),
+            pathParameters(
+                parameterWithName("postId").description("Post Id")
+            )
+        ));
+  }
+
+  @DisplayName("상세 게시글 페이지에서 좋아요 버튼을 취소할 수 있다.")
+  @WithAuthUser(email = "test123@naver.com", role = "ROLE_USER")
+  @Test
+  void putFavoriteCancel() throws Exception {
+    final int postId = 1;
+
+    mockMvc.perform(put("/api/v1/post/{postId}/favoriteCancel", postId))
+        .andExpect(status().isOk())
+        .andDo(document("post-favoriteCancel",
             preprocessResponse(prettyPrint()),
             pathParameters(
                 parameterWithName("postId").description("Post Id")

@@ -47,15 +47,15 @@ public class PostCacheService {
     }
   }
 
-  public Long extractPostIdFromKey(String key) {
+  private Long extractPostIdFromKey(String key) {
     return Long.parseLong(key.split("::")[1]);
   }
 
-  public String createViewCntCacheKey(Long id) {
+  private String createViewCntCacheKey(Long id) {
     return createCacheKey("postViewCount", id);
   }
 
-  public String createCacheKey(String cacheType, Long id) {
+  private String createCacheKey(String cacheType, Long id) {
     return cacheType + "::" + id;
   }
 }

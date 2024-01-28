@@ -69,15 +69,6 @@ public class PostController {
     return ApiResponse.ok(postDetailResponseDto);
   }
 
-  @PutMapping("/{postId}/favorite")
-  public ApiResponse<Void> putFavorite(
-      @PathVariable Long postId,
-      @AuthenticationPrincipal CustomUserDetails userDetails) {
-    String email = userDetails.getUsername();
-    favoriteService.putFavorite(postId, email);
-    return ApiResponse.ok(null);
-  }
-
   @PutMapping("/{postId}")
   public ApiResponse<Void> editPost(
       @PathVariable Long postId,
@@ -96,6 +87,24 @@ public class PostController {
     String email = userDetails.getUsername();
     postService.deletePost(postId, email);
     return ApiResponse.of(NO_CONTENT, null);
+  }
+
+  @PutMapping("/{postId}/favorite")
+  public ApiResponse<Void> putFavorite(
+      @PathVariable Long postId,
+      @AuthenticationPrincipal CustomUserDetails userDetails) {
+    String email = userDetails.getUsername();
+    favoriteService.putFavorite(postId, email);
+    return ApiResponse.ok(null);
+  }
+
+  @PutMapping("/{postId}/favoriteCancel")
+  public ApiResponse<Void> putFavoriteCancel(
+      @PathVariable Long postId,
+      @AuthenticationPrincipal CustomUserDetails userDetails) {
+    String email = userDetails.getUsername();
+    favoriteService.putFavoriteCancel(postId, email);
+    return ApiResponse.ok(null);
   }
 
   @GetMapping("/{postId}/favorite-list")

@@ -3,13 +3,13 @@ package com.zoo.boardback.domain.favorite.application;
 import static com.zoo.boardback.global.error.ErrorCode.BOARD_NOT_FOUND;
 import static com.zoo.boardback.global.error.ErrorCode.USER_NOT_FOUND;
 
-import com.zoo.boardback.domain.post.dao.PostRepository;
-import com.zoo.boardback.domain.post.entity.Post;
 import com.zoo.boardback.domain.favorite.dao.FavoriteRepository;
 import com.zoo.boardback.domain.favorite.dto.query.FavoriteQueryDto;
 import com.zoo.boardback.domain.favorite.dto.response.FavoriteListResponseDto;
 import com.zoo.boardback.domain.favorite.entity.Favorite;
 import com.zoo.boardback.domain.favorite.entity.primaryKey.FavoritePk;
+import com.zoo.boardback.domain.post.dao.PostRepository;
+import com.zoo.boardback.domain.post.entity.Post;
 import com.zoo.boardback.domain.user.dao.UserRepository;
 import com.zoo.boardback.domain.user.entity.User;
 import com.zoo.boardback.global.error.BusinessException;
@@ -43,7 +43,19 @@ public class FavoriteService {
           .build();
       favoriteRepository.save(favorite);
       post.increaseFavoriteCount();
-    } else {
+    }
+  }
+
+  @Transactional
+  public void putFavoriteCancel(Long postId, String email) {
+    Post post = postRepository.findById(postId).orElseThrow(() ->
+        new BusinessException(postId, "postId", BOARD_NOT_FOUND));
+
+    User user = userRepository.findByEmail(email).orElseThrow(() ->
+        new BusinessException(email, "email", USER_NOT_FOUND));
+    FavoritePk favoritePk = new FavoritePk(post, user);
+    Favorite favorite = favoriteRepository.findByFavoritePk(favoritePk);
+    if (favorite != null) {
       favoriteRepository.delete(favorite);
       post.decreaseFavoriteCount();
     }

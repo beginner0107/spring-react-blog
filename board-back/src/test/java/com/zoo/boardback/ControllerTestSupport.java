@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zoo.boardback.domain.auth.api.AuthController;
 import com.zoo.boardback.domain.auth.application.AuthService;
 import com.zoo.boardback.domain.post.api.PostController;
+import com.zoo.boardback.domain.post.application.PostCacheService;
 import com.zoo.boardback.domain.post.application.PostService;
 import com.zoo.boardback.domain.comment.api.CommentController;
 import com.zoo.boardback.domain.comment.application.CommentService;
@@ -55,5 +56,8 @@ public abstract class ControllerTestSupport {
 
   @MockBean
   protected SearchLogService searchLogService;
+
+  @MockBean
+  protected PostCacheService postCacheService;
 }
 

@@ -65,9 +65,9 @@ public class PostService {
           .build()
       );
     }
-    List<String> boardImageList = request.getPostImageList();
-    if (!boardImageList.isEmpty()) {
-      saveImages(boardImageList, post);
+    List<String> postImageList = request.getPostImageList();
+    if (!postImageList.isEmpty()) {
+      saveImages(postImageList, post);
     }
   }
 
@@ -97,7 +97,6 @@ public class PostService {
     Post post = postRepository.findById(postId).orElseThrow(() ->
         new BusinessException(postId, "postId", BOARD_NOT_FOUND));
 
-    post.increaseViewCount();
     List<String> boardImageList = findBoardImages(post);
     return PostDetailResponseDto.of(post, boardImageList);
   }

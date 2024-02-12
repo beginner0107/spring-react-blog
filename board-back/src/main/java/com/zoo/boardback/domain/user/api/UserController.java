@@ -1,14 +1,14 @@
 package com.zoo.boardback.domain.user.api;
 
 import com.zoo.boardback.domain.ApiResponse;
-import com.zoo.boardback.domain.auth.details.CustomUserDetails;
 import com.zoo.boardback.domain.user.application.UserService;
 import com.zoo.boardback.domain.user.dto.request.NicknameUpdateRequestDto;
 import com.zoo.boardback.domain.user.dto.request.UserProfileUpdateRequestDto;
 import com.zoo.boardback.domain.user.dto.response.GetSignUserResponseDto;
+import com.zoo.boardback.domain.user.entity.User;
+import com.zoo.boardback.global.config.security.annotation.LoginUser;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -23,26 +23,26 @@ public class UserController {
 
   @GetMapping
   public ApiResponse<GetSignUserResponseDto> getSignInUser(
-      @AuthenticationPrincipal CustomUserDetails user
+      @LoginUser User user
   ) {
-    return ApiResponse.ok(userService.getSignUser(user.getUsername()));
+    return ApiResponse.ok(userService.getSignUser(user.getEmail()));
   }
 
   @PatchMapping("/nickname")
   public ApiResponse<Void> updateNickname(
       @RequestBody @Valid NicknameUpdateRequestDto nicknameUpdateRequestDto,
-      @AuthenticationPrincipal CustomUserDetails user
+      @LoginUser User user
   ) {
-    userService.updateNickname(user.getUsername(), nicknameUpdateRequestDto.getNickname());
+    userService.updateNickname(user.getEmail(), nicknameUpdateRequestDto.getNickname());
     return ApiResponse.ok(null);
   }
 
   @PatchMapping("/profileImage")
   public ApiResponse<Void> updateProfileImage(
       @RequestBody @Valid UserProfileUpdateRequestDto userProfileUpdateDto,
-      @AuthenticationPrincipal CustomUserDetails user
+      @LoginUser User user
   ) {
-    userService.updateProfileImage(user.getUsername(), userProfileUpdateDto.getProfileImage());
+    userService.updateProfileImage(user.getEmail(), userProfileUpdateDto.getProfileImage());
     return ApiResponse.ok(null);
   }
 }

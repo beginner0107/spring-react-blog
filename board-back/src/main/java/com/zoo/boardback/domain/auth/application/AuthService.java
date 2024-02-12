@@ -8,16 +8,17 @@ import static com.zoo.boardback.global.error.ErrorCode.USER_WRONG_PASSWORD;
 
 import com.zoo.boardback.domain.auth.dto.request.SignInRequestDto;
 import com.zoo.boardback.domain.auth.dto.request.SignUpRequestDto;
-import com.zoo.boardback.domain.auth.dto.response.SignInResponseDto;
 import com.zoo.boardback.domain.auth.entity.Authority;
 import com.zoo.boardback.domain.user.dao.UserRepository;
 import com.zoo.boardback.domain.user.entity.User;
-import com.zoo.boardback.global.config.security.jwt.JwtProvider;
 import com.zoo.boardback.global.error.BusinessException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 import java.util.Collections;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -27,7 +28,7 @@ import org.springframework.stereotype.Service;
 public class AuthService {
   private final UserRepository userRepository;
   private final PasswordEncoder passwordEncoder;
-  private final JwtProvider jwtProvider;
+  private final AuthCookieService authCookieService;
 
   @Value("${jwt.expirationTime}")
   private int expirationTime;
@@ -46,15 +47,16 @@ public class AuthService {
   }
 
   @Transactional
-  public SignInResponseDto signIn(SignInRequestDto request) {
+  public void signIn(SignInRequestDto request
+      , HttpServletRequest httpRequest, HttpServletResponse httpResponse) {
     User user = userRepository.findByEmail(request.getEmail()).orElseThrow(() ->
         new BusinessException(request.getEmail(), "email", USER_NOT_FOUND));
 
     if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
       throw new BusinessException(null, "password", USER_WRONG_PASSWORD);
     }
-
-    return SignInResponseDto.of(jwtProvider.createToken(user.getEmail(), user.getRoles()), expirationTime);
+    authCookieService.setNewCookieInResponse(String.valueOf(user.getId()), user.getRoles(),
+        httpRequest.getHeader(HttpHeaders.USER_AGENT), httpResponse);
   }
 
   private void checkIsDuplicationTelNumber(String telNumber) {
@@ -73,5 +75,9 @@ public class AuthService {
     if (userRepository.existsByEmail(email)) {
       throw new BusinessException(email, "email", USER_EMAIL_DUPLICATE);
     }
+  }
+
+  public void refreshToken() {
+
   }
 }

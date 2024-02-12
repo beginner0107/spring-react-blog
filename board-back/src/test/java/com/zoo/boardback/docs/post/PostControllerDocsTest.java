@@ -32,10 +32,12 @@ import com.zoo.boardback.domain.post.dto.response.PostsTop3ResponseDto;
 import com.zoo.boardback.domain.post.dto.response.object.PostRankItem;
 import com.zoo.boardback.domain.favorite.dto.object.FavoriteListItem;
 import com.zoo.boardback.domain.favorite.dto.response.FavoriteListResponseDto;
+import com.zoo.boardback.domain.user.dto.response.GetSignUserResponseDto;
 import com.zoo.boardback.domain.user.entity.User;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.data.domain.Page;
@@ -47,19 +49,28 @@ import org.springframework.restdocs.payload.JsonFieldType;
 
 public class PostControllerDocsTest extends RestDocsSecuritySupport {
 
+  final static String EMAIL = "test123@naver.com";
+  final static String NICKNAME = "개구리왕눈이123";
+
   @DisplayName("게시글에 필요한 정보를 입력 후 등록을 하면 게시글이 저장된다.")
-  @WithAuthUser(email = "test123@naver.com", role = "ROLE_USER")
+  @WithAuthUser(userId = "1", role = "ROLE_USER")
   @Test
   void createPost() throws Exception {
     String title = "게시글제목";
     String content = "게시글내용";
     PostCreateRequestDto request = createPostRequest(title, content);
-
+    given(userRepository.findById(1L)).willReturn(Optional.ofNullable(User.builder()
+        .id(1L)
+        .email(EMAIL)
+        .nickname(NICKNAME)
+        .profileImage(null)
+        .build()));
 
     mockMvc.perform(post("/api/v1/post")
             .content(objectMapper.writeValueAsString(request))
             .contentType(MediaType.APPLICATION_JSON)
             )
+        .andDo(print())
         .andExpect(status().isOk())
         .andDo(document("post-create",
             preprocessRequest(prettyPrint()),
@@ -86,6 +97,13 @@ public class PostControllerDocsTest extends RestDocsSecuritySupport {
         , "테스트1", "테스트내용1", "test123@naver.com", "개구리왕눈이");
 
     given(postService.find(any(Long.class))).willReturn(response);
+    given(userService.getSignUser(EMAIL))
+        .willReturn(GetSignUserResponseDto.builder()
+            .email(EMAIL)
+            .nickname(NICKNAME)
+            .profileImage("http://image.png")
+            .build()
+        );
 
     mockMvc.perform(RestDocumentationRequestBuilders.get("/api/v1/post/{postId}", postId))
         .andExpect(status().isOk())
@@ -128,7 +146,7 @@ public class PostControllerDocsTest extends RestDocsSecuritySupport {
   }
 
   @DisplayName("검색어와 함께 게시글을 검색하면, 게시글 목록을 반환한다.")
-  @WithAuthUser(email = "test123@naver.com", role = "ROLE_USER")
+  @WithAuthUser(userId = "1", role = "ROLE_USER")
   @Test
   void getPosts() throws Exception {
     PostSearchCondition condition = PostSearchCondition.builder()
@@ -154,6 +172,13 @@ public class PostControllerDocsTest extends RestDocsSecuritySupport {
 
     given(postService.searchPosts(condition, Pageable.ofSize(5)))
         .willReturn(response);
+    given(userService.getSignUser(EMAIL))
+        .willReturn(GetSignUserResponseDto.builder()
+            .email(EMAIL)
+            .nickname(NICKNAME)
+            .profileImage("http://image.png")
+            .build()
+        );
 
     // when & then
     mockMvc.perform(get("/api/v1/post"))
@@ -205,12 +230,19 @@ public class PostControllerDocsTest extends RestDocsSecuritySupport {
   }
 
   @DisplayName("상세 게시글 페이지에서 좋아요 버튼을 누를 수 있다.")
-  @WithAuthUser(email = "test123@naver.com", role = "ROLE_USER")
+  @WithAuthUser(userId = "1", role = "ROLE_USER")
   @Test
   void putFavorite() throws Exception {
     final int postId = 1;
+    given(userRepository.findById(1L)).willReturn(Optional.ofNullable(User.builder()
+        .id(1L)
+        .email(EMAIL)
+        .nickname(NICKNAME)
+        .profileImage(null)
+        .build()));
 
     mockMvc.perform(put("/api/v1/post/{postId}/favorite", postId))
+        .andDo(print())
         .andExpect(status().isOk())
         .andDo(document("post-favorite",
             preprocessResponse(prettyPrint()),
@@ -221,12 +253,19 @@ public class PostControllerDocsTest extends RestDocsSecuritySupport {
   }
 
   @DisplayName("상세 게시글 페이지에서 좋아요 버튼을 취소할 수 있다.")
-  @WithAuthUser(email = "test123@naver.com", role = "ROLE_USER")
+  @WithAuthUser(userId = "1", role = "ROLE_USER")
   @Test
   void putFavoriteCancel() throws Exception {
     final int postId = 1;
+    given(userRepository.findById(1L)).willReturn(Optional.ofNullable(User.builder()
+        .id(1L)
+        .email(EMAIL)
+        .nickname(NICKNAME)
+        .profileImage(null)
+        .build()));
 
     mockMvc.perform(put("/api/v1/post/{postId}/favoriteCancel", postId))
+        .andDo(print())
         .andExpect(status().isOk())
         .andDo(document("post-favoriteCancel",
             preprocessResponse(prettyPrint()),
@@ -248,6 +287,13 @@ public class PostControllerDocsTest extends RestDocsSecuritySupport {
     ).isEmpty(false).build();
     given(favoriteService.getFavoriteList(any(Long.class)))
         .willReturn(response);
+    given(userService.getSignUser(EMAIL))
+        .willReturn(GetSignUserResponseDto.builder()
+            .email(EMAIL)
+            .nickname(NICKNAME)
+            .profileImage("http://image.png")
+            .build()
+        );
 
     mockMvc.perform(RestDocumentationRequestBuilders.get("/api/v1/post/{postId}/favorite-list", postId))
         .andExpect(status().isOk())
@@ -282,17 +328,24 @@ public class PostControllerDocsTest extends RestDocsSecuritySupport {
   }
 
   @DisplayName("회원은 게시글을 수정할 수 있습니다.")
-  @WithAuthUser(email = "test123@naver.com", role = "ROLE_USER")
+  @WithAuthUser(userId = "1", role = "ROLE_USER")
   @Test
   void editPost() throws Exception {
     final int postId = 1;
     final String editTitle = "테스트 수정 글의 제목";
     final String editContent = "테스트 수정 글의 내용";
     PostUpdateRequestDto request = createPostUpdateRequest(editTitle, editContent);
+    given(userRepository.findById(1L)).willReturn(Optional.ofNullable(User.builder()
+        .id(1L)
+        .email(EMAIL)
+        .nickname(NICKNAME)
+        .profileImage(null)
+        .build()));
 
     mockMvc.perform(put("/api/v1/post/{postId}", postId)
             .content(objectMapper.writeValueAsString(request))
             .contentType(MediaType.APPLICATION_JSON))
+        .andDo(print())
         .andDo(print())
         .andExpect(status().isOk())
         .andDo(document("post-editPost",
@@ -327,12 +380,19 @@ public class PostControllerDocsTest extends RestDocsSecuritySupport {
   }
 
   @DisplayName("회원은 게시글을 삭제할 수 있습니다.")
-  @WithAuthUser(email = "test123@naver.com", role = "ROLE_USER")
+  @WithAuthUser(userId = "1", role = "ROLE_USER")
   @Test
   void deletePost() throws Exception {
     final int boardNumber = 1;
+    given(userRepository.findById(1L)).willReturn(Optional.ofNullable(User.builder()
+        .id(1L)
+        .email(EMAIL)
+        .nickname(NICKNAME)
+        .profileImage(null)
+        .build()));
 
     mockMvc.perform(delete("/api/v1/post/{postId}", boardNumber))
+        .andDo(print())
         .andExpect(status().isOk())
         .andDo(document("post-deletePost",
             preprocessResponse(prettyPrint()),
@@ -357,7 +417,7 @@ public class PostControllerDocsTest extends RestDocsSecuritySupport {
   }
 
   @DisplayName("회원은 상위 3개의 게시물을 볼 수 있다.")
-  @WithAuthUser(email = "test123@naver.com", role = "ROLE_USER")
+  @WithAuthUser(userId = "1", role = "ROLE_USER")
   @Test
   void getPostsTop3() throws Exception {
     PostsTop3ResponseDto response = PostsTop3ResponseDto.builder()
@@ -371,6 +431,13 @@ public class PostControllerDocsTest extends RestDocsSecuritySupport {
 
     given(postService.getTop3Posts(any(LocalDateTime.class), any(LocalDateTime.class)))
         .willReturn(response);
+    given(userService.getSignUser(EMAIL))
+        .willReturn(GetSignUserResponseDto.builder()
+            .email(EMAIL)
+            .nickname(NICKNAME)
+            .profileImage("http://image.png")
+            .build()
+        );
 
     mockMvc.perform(get("/api/v1/post/top3"))
         .andExpect(status().isOk())

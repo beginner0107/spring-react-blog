@@ -1,5 +1,7 @@
 package com.zoo.boardback.domain.post.application;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.verify;
@@ -8,6 +10,7 @@ import static org.mockito.BDDMockito.when;
 import com.zoo.boardback.domain.post.dao.PostRepository;
 import com.zoo.boardback.global.util.redis.RedisUtil;
 import java.time.Duration;
+import java.util.Optional;
 import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -39,7 +42,7 @@ class PostCacheServiceTest {
     Long postId = 1L;
     String viewCntKey = "postViewCount::" + postId;
 
-    given(redisUtil.getData(viewCntKey)).willReturn(null);
+    given(redisUtil.getData(viewCntKey, Long.class)).willReturn(Optional.empty());
     given(postRepository.findViewCount(postId)).willReturn(5L);
 
     // when
@@ -58,7 +61,7 @@ class PostCacheServiceTest {
     Long viewCount = 10L;
 
     when(redisUtil.keys("postViewCount*")).thenReturn(Set.of(viewCntKey));
-    when(redisUtil.getData(viewCntKey)).thenReturn(String.valueOf(viewCount));
+    when(redisUtil.getData(viewCntKey, Long.class)).thenReturn(Optional.of(10L));
 
     // when
     postCacheService.applyViewCountToRDB();

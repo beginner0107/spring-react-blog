@@ -1,18 +1,18 @@
 package com.zoo.boardback.domain.comment.api;
 
 import com.zoo.boardback.domain.ApiResponse;
-import com.zoo.boardback.domain.auth.details.CustomUserDetails;
 import com.zoo.boardback.domain.comment.application.CommentService;
 import com.zoo.boardback.domain.comment.dto.request.CommentCreateRequestDto;
 import com.zoo.boardback.domain.comment.dto.request.CommentUpdateRequestDto;
 import com.zoo.boardback.domain.comment.dto.response.CommentListResponseDto;
+import com.zoo.boardback.domain.user.entity.User;
+import com.zoo.boardback.global.config.security.annotation.LoginUser;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -32,9 +32,9 @@ public class CommentController {
   @PostMapping
   public ApiResponse<Void> create(
       @RequestBody @Valid CommentCreateRequestDto requestDto,
-      @AuthenticationPrincipal CustomUserDetails userDetails
+      @LoginUser User user
   ) {
-    commentService.create(userDetails.getUser(), requestDto);
+    commentService.create(user, requestDto);
     return ApiResponse.ok(null);
   }
   @GetMapping("/post/{postId}")
@@ -51,18 +51,18 @@ public class CommentController {
   public ApiResponse<Void> editComment(
       @PathVariable Long commentId,
       @RequestBody @Valid CommentUpdateRequestDto commentUpdateRequestDto,
-      @AuthenticationPrincipal CustomUserDetails userDetails
+      @LoginUser User user
       ) {
-    commentService.editComment(userDetails.getUsername(), commentId, commentUpdateRequestDto);
+    commentService.editComment(user.getEmail(), commentId, commentUpdateRequestDto);
     return ApiResponse.ok(null);
   }
 
   @DeleteMapping("/{commentId}")
   public ApiResponse<Void> deleteComment(
-      @AuthenticationPrincipal CustomUserDetails userDetails,
+      @LoginUser User user,
       @PathVariable Long commentId
   ) {
-    commentService.deleteComment(commentId, userDetails.getUsername());
+    commentService.deleteComment(commentId, user.getEmail());
     return ApiResponse.of(HttpStatus.NO_CONTENT, null);
   }
 }

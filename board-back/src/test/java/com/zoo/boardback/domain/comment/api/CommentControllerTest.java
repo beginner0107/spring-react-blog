@@ -20,7 +20,9 @@ import com.zoo.boardback.domain.comment.dto.request.CommentCreateRequestDto;
 import com.zoo.boardback.domain.comment.dto.request.CommentUpdateRequestDto;
 import com.zoo.boardback.domain.comment.dto.response.CommentListResponseDto;
 import com.zoo.boardback.domain.comment.dto.response.CommentResponse;
+import com.zoo.boardback.domain.user.entity.User;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.data.domain.Pageable;
@@ -28,14 +30,23 @@ import org.springframework.http.MediaType;
 
 class CommentControllerTest extends ControllerTestSupport {
 
+  final static String EMAIL = "test123@naver.com";
+  final static String NICKNAME = "개구리왕눈이123";
+
   @DisplayName("댓글에 필요한 정보를 입력 후 등록을 하면 댓글이 저장된다.")
-  @WithAuthUser(email = "test123@naver.com", role = "ROLE_USER")
+  @WithAuthUser(userId = "1", role = "ROLE_USER")
   @Test
   void createCommentEmptyBoardNumber() throws Exception {
     // given
     String content = "댓글내용입니다.";
     Long boardNumber = 1L;
     CommentCreateRequestDto request = createComment(boardNumber, content);
+    given(userRepository.findById(1L)).willReturn(Optional.ofNullable(User.builder()
+        .id(1L)
+        .email(EMAIL)
+        .nickname(NICKNAME)
+        .profileImage(null)
+        .build()));
 
     // when & then
     mockMvc.perform(post("/api/v1/comments")
@@ -50,13 +61,19 @@ class CommentControllerTest extends ControllerTestSupport {
   }
 
   @DisplayName("댓글 내용을 입력하지 않으면 댓글을 작성할 수 없습니다.")
-  @WithAuthUser(email = "test123@naver.com", role = "ROLE_USER")
+  @WithAuthUser(userId = "1", role = "ROLE_USER")
   @Test
   void createComment() throws Exception {
     // given
     String content = "";
     Long boardNumber = 1L;
     CommentCreateRequestDto request = createComment(boardNumber, content);
+    given(userRepository.findById(1L)).willReturn(Optional.ofNullable(User.builder()
+        .id(1L)
+        .email(EMAIL)
+        .nickname(NICKNAME)
+        .profileImage(null)
+        .build()));
 
     // when & then
     mockMvc.perform(post("/api/v1/comments")
@@ -100,6 +117,12 @@ class CommentControllerTest extends ControllerTestSupport {
         .totalElements(2L)
         .build();
     given(commentService.getComments(anyLong(), any(Pageable.class))).willReturn(comments);
+    given(userRepository.findById(1L)).willReturn(Optional.ofNullable(User.builder()
+        .id(1L)
+        .email(EMAIL)
+        .nickname(NICKNAME)
+        .profileImage(null)
+        .build()));
 
     // when & then
     mockMvc.perform(get("/api/v1/comments/post/{postId}", boardNumber))
@@ -121,7 +144,7 @@ class CommentControllerTest extends ControllerTestSupport {
   }
 
   @DisplayName("댓글의 내용을 변경 하면 댓글이 수정된다.")
-  @WithAuthUser(email = "test123@naver.com", role = "ROLE_USER")
+  @WithAuthUser(userId = "1", role = "ROLE_USER")
   @Test
   void editComment() throws Exception {
     // given
@@ -130,6 +153,12 @@ class CommentControllerTest extends ControllerTestSupport {
     CommentUpdateRequestDto requestDto = CommentUpdateRequestDto.builder()
         .postId(1L)
         .content(content).build();
+    given(userRepository.findById(1L)).willReturn(Optional.ofNullable(User.builder()
+        .id(1L)
+        .email(EMAIL)
+        .nickname(NICKNAME)
+        .profileImage(null)
+        .build()));
 
     // when & then
     mockMvc.perform(put("/api/v1/comments/{commentId}", commentId)
@@ -146,7 +175,7 @@ class CommentControllerTest extends ControllerTestSupport {
   }
 
   @DisplayName("댓글의 내용을 입력하지 않으면 댓글이 수정되지 않는다.")
-  @WithAuthUser(email = "test123@naver.com", role = "ROLE_USER")
+  @WithAuthUser(userId = "1", role = "ROLE_USER")
   @Test
   void editCommentEmptyContent() throws Exception {
     // given
@@ -170,11 +199,17 @@ class CommentControllerTest extends ControllerTestSupport {
   }
 
   @DisplayName("회원은 댓글을 삭제할 수 있다.")
-  @WithAuthUser(email = "test123@naver.com", role = "ROLE_USER")
+  @WithAuthUser(userId = "1", role = "ROLE_USER")
   @Test
   void deleteComment() throws Exception {
     // given
     int commentId = 1;
+    given(userRepository.findById(1L)).willReturn(Optional.ofNullable(User.builder()
+        .id(1L)
+        .email(EMAIL)
+        .nickname(NICKNAME)
+        .profileImage(null)
+        .build()));
 
     // when & then
     mockMvc.perform(delete("/api/v1/comments/{commentId}"

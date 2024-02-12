@@ -3,7 +3,6 @@ package com.zoo.boardback.domain.post.api;
 import static org.springframework.http.HttpStatus.NO_CONTENT;
 
 import com.zoo.boardback.domain.ApiResponse;
-import com.zoo.boardback.domain.auth.details.CustomUserDetails;
 import com.zoo.boardback.domain.favorite.application.FavoriteService;
 import com.zoo.boardback.domain.favorite.dto.response.FavoriteListResponseDto;
 import com.zoo.boardback.domain.post.application.PostCacheService;
@@ -14,6 +13,8 @@ import com.zoo.boardback.domain.post.dto.request.PostUpdateRequestDto;
 import com.zoo.boardback.domain.post.dto.response.PostDetailResponseDto;
 import com.zoo.boardback.domain.post.dto.response.PostSearchResponseDto;
 import com.zoo.boardback.domain.post.dto.response.PostsTop3ResponseDto;
+import com.zoo.boardback.domain.user.entity.User;
+import com.zoo.boardback.global.config.security.annotation.LoginUser;
 import jakarta.validation.Valid;
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
@@ -25,7 +26,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.web.PageableDefault;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -47,9 +47,9 @@ public class PostController {
   @PostMapping
   public ApiResponse<Void> create(
       @RequestBody @Valid PostCreateRequestDto requestDto,
-      @AuthenticationPrincipal CustomUserDetails userDetails
+      @LoginUser User user
   ) {
-    String email = userDetails.getUsername();
+    String email = user.getEmail();
     postService.create(requestDto, email);
     return ApiResponse.ok(null);
   }
@@ -75,10 +75,10 @@ public class PostController {
   @PutMapping("/{postId}")
   public ApiResponse<Void> editPost(
       @PathVariable Long postId,
-      @AuthenticationPrincipal CustomUserDetails userDetails,
+      @LoginUser User user,
       @RequestBody @Valid PostUpdateRequestDto postUpdateRequestDto
   ) {
-    String email = userDetails.getUsername();
+    String email = user.getEmail();
     postService.editPost(postId, email, postUpdateRequestDto);
     return ApiResponse.ok(null);
   }
@@ -86,8 +86,8 @@ public class PostController {
   @DeleteMapping("/{postId}")
   public ApiResponse<Void> deletePost(
       @PathVariable Long postId,
-      @AuthenticationPrincipal CustomUserDetails userDetails) {
-    String email = userDetails.getUsername();
+      @LoginUser User user) {
+    String email = user.getEmail();
     postService.deletePost(postId, email);
     return ApiResponse.of(NO_CONTENT, null);
   }
@@ -95,8 +95,8 @@ public class PostController {
   @PutMapping("/{postId}/favorite")
   public ApiResponse<Void> putFavorite(
       @PathVariable Long postId,
-      @AuthenticationPrincipal CustomUserDetails userDetails) {
-    String email = userDetails.getUsername();
+      @LoginUser User user) {
+    String email = user.getEmail();
     favoriteService.putFavorite(postId, email);
     return ApiResponse.ok(null);
   }
@@ -104,8 +104,8 @@ public class PostController {
   @PutMapping("/{postId}/favoriteCancel")
   public ApiResponse<Void> putFavoriteCancel(
       @PathVariable Long postId,
-      @AuthenticationPrincipal CustomUserDetails userDetails) {
-    String email = userDetails.getUsername();
+      @LoginUser User user) {
+    String email = user.getEmail();
     favoriteService.putFavoriteCancel(postId, email);
     return ApiResponse.ok(null);
   }

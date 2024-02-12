@@ -3,14 +3,19 @@ package com.zoo.boardback.docs;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.zoo.boardback.domain.post.api.PostController;
-import com.zoo.boardback.domain.post.application.PostCacheService;
-import com.zoo.boardback.domain.post.application.PostService;
+import com.zoo.boardback.domain.auth.application.AuthCookieService;
 import com.zoo.boardback.domain.comment.api.CommentController;
 import com.zoo.boardback.domain.comment.application.CommentService;
 import com.zoo.boardback.domain.favorite.application.FavoriteService;
+import com.zoo.boardback.domain.post.api.PostController;
+import com.zoo.boardback.domain.post.application.PostCacheService;
+import com.zoo.boardback.domain.post.application.PostService;
 import com.zoo.boardback.domain.user.api.UserController;
 import com.zoo.boardback.domain.user.application.UserService;
+import com.zoo.boardback.domain.user.dao.UserRepository;
+import com.zoo.boardback.global.config.security.filter.RefreshTokenFilter;
+import com.zoo.boardback.global.config.security.filter.token_condition.JwtTokenConditionFactory;
+import com.zoo.boardback.global.config.security.jwt.JwtProvider;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,6 +57,21 @@ public abstract class RestDocsSecuritySupport {
 
   @MockBean
   protected PostCacheService postCacheService;
+
+  @MockBean
+  protected UserRepository userRepository;
+
+  @MockBean
+  protected RefreshTokenFilter refreshTokenFilter;
+
+  @MockBean
+  protected JwtProvider jwtProvider;
+
+  @MockBean
+  protected JwtTokenConditionFactory jwtTokenConditionFactory;
+
+  @MockBean
+  protected AuthCookieService authCookieService;
 
 
   @BeforeEach

@@ -16,6 +16,7 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.response
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.zoo.boardback.WithAuthUser;
@@ -24,7 +25,10 @@ import com.zoo.boardback.domain.comment.dto.request.CommentCreateRequestDto;
 import com.zoo.boardback.domain.comment.dto.request.CommentUpdateRequestDto;
 import com.zoo.boardback.domain.comment.dto.response.CommentListResponseDto;
 import com.zoo.boardback.domain.comment.dto.response.CommentResponse;
+import com.zoo.boardback.domain.user.dto.response.GetSignUserResponseDto;
+import com.zoo.boardback.domain.user.entity.User;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.data.domain.Pageable;
@@ -34,18 +38,27 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 public class CommentControllerDocsTest extends RestDocsSecuritySupport {
 
+  final static String EMAIL = "test123@naver.com";
+  final static String NICKNAME = "개구리왕눈이123";
+
   @DisplayName("게시글에 필요한 정보를 입력 후 등록을 하면 게시글이 저장된다.")
-  @WithAuthUser(email = "test123@naver.com", role = "ROLE_USER")
+  @WithAuthUser(userId = "1", role = "ROLE_USER")
   @Test
   void createComment() throws Exception {
     Long postId = 1L;
     String content = "댓글내용입니당.";
     CommentCreateRequestDto request = createComment(postId, content);
-
+    given(userRepository.findById(1L)).willReturn(Optional.ofNullable(User.builder()
+        .id(1L)
+        .email(EMAIL)
+        .nickname(NICKNAME)
+        .profileImage(null)
+        .build()));
 
     mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/comments")
             .content(objectMapper.writeValueAsString(request))
             .contentType(MediaType.APPLICATION_JSON))
+        .andDo(print())
         .andExpect(status().isOk())
         .andDo(document("comments-create",
             preprocessRequest(prettyPrint()),
@@ -135,7 +148,7 @@ public class CommentControllerDocsTest extends RestDocsSecuritySupport {
   }
 
   @DisplayName("댓글의 내용을 변경 하면 댓글이 수정된다.")
-  @WithAuthUser(email = "test123@naver.com", role = "ROLE_USER")
+  @WithAuthUser(userId = "1", role = "ROLE_USER")
   @Test
   void editComment() throws Exception {
     String content = "댓글수정입니다.";
@@ -143,10 +156,17 @@ public class CommentControllerDocsTest extends RestDocsSecuritySupport {
     CommentUpdateRequestDto requestDto = CommentUpdateRequestDto.builder()
         .postId(1L)
         .content(content).build();
+    given(userRepository.findById(1L)).willReturn(Optional.ofNullable(User.builder()
+        .id(1L)
+        .email(EMAIL)
+        .nickname(NICKNAME)
+        .profileImage(null)
+        .build()));
 
     mockMvc.perform(put("/api/v1/comments/{commentId}", commentId)
             .content(objectMapper.writeValueAsString(requestDto))
             .contentType(MediaType.APPLICATION_JSON))
+        .andDo(print())
         .andExpect(status().isOk())
         .andDo(document("comments-editComment",
             preprocessRequest(prettyPrint()),
@@ -178,16 +198,23 @@ public class CommentControllerDocsTest extends RestDocsSecuritySupport {
   }
 
   @DisplayName("회원은 댓글을 삭제할 수 있다.")
-  @WithAuthUser(email = "test123@naver.com", role = "ROLE_USER")
+  @WithAuthUser(userId = "1", role = "ROLE_USER")
   @Test
   void deleteComment() throws Exception {
     // given
     Long commentId = 1L;
+    given(userRepository.findById(1L)).willReturn(Optional.ofNullable(User.builder()
+        .id(1L)
+        .email(EMAIL)
+        .nickname(NICKNAME)
+        .profileImage(null)
+        .build()));
 
     // when & then
     mockMvc.perform(delete("/api/v1/comments/{commentId}"
             , commentId)
         )
+        .andDo(print())
         .andExpect(status().isOk())
         .andDo(document("comments-deleteComment",
             preprocessRequest(prettyPrint()),

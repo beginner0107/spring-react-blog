@@ -1,9 +1,8 @@
 package com.zoo.boardback.global.config.security;
 
-import com.zoo.boardback.global.config.security.filter.JwtAuthenticationFilter;
+import com.zoo.boardback.global.config.security.filter.RefreshTokenFilter;
 import com.zoo.boardback.global.config.security.handler.CustomAccessDeniedHandler;
 import com.zoo.boardback.global.config.security.handler.CustomAuthenticationEntryPoint;
-import com.zoo.boardback.global.config.security.jwt.JwtProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
@@ -25,9 +24,9 @@ import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
 @RequiredArgsConstructor
 public class SecurityConfiguration {
 
-  private final JwtProvider jwtProvider;
   private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
   private final CustomAccessDeniedHandler customAccessDeniedHandler;
+  private final RefreshTokenFilter refreshTokenFilter;
 
   @Bean
   public SecurityFilterChain filterChain(HttpSecurity http, MvcRequestMatcher.Builder mvc) throws Exception {
@@ -47,7 +46,7 @@ public class SecurityConfiguration {
         .httpBasic().disable()
         .csrf().disable()
         .headers().frameOptions().sameOrigin().and()
-            .addFilterBefore(new JwtAuthenticationFilter(jwtProvider), UsernamePasswordAuthenticationFilter.class)
+            .addFilterBefore(refreshTokenFilter, UsernamePasswordAuthenticationFilter.class)
             .exceptionHandling() // 권한 문제 발생했을 경우
             .accessDeniedHandler(customAccessDeniedHandler)
             .authenticationEntryPoint(customAuthenticationEntryPoint)

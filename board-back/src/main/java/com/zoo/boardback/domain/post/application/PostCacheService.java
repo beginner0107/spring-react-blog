@@ -18,7 +18,7 @@ public class PostCacheService {
 
   public void addViewCntToRedis(Long postId) {
     String viewCntKey = createViewCntCacheKey(postId);
-    if (redisUtil.getData(viewCntKey) != null) {
+    if (redisUtil.getData(viewCntKey, Long.class).isPresent()) {
       redisUtil.increment(viewCntKey);
       return;
     }
@@ -40,7 +40,8 @@ public class PostCacheService {
 
     for (String viewCntKey : viewCntKeys) {
       Long postId = extractPostIdFromKey(viewCntKey);
-      Long viewCount = Long.parseLong(redisUtil.getData(viewCntKey));
+      Long viewCount = redisUtil.getData(viewCntKey, Long.class)
+          .orElseThrow(IllegalArgumentException::new);
 
       postRepository.applyViewCntToRDB(postId, viewCount);
       redisUtil.deleteData(viewCntKey);

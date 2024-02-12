@@ -1,40 +1,36 @@
 package com.zoo.boardback.domain.auth.details;
 
-import com.zoo.boardback.domain.user.entity.User;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.Collection;
-import java.util.stream.Collectors;
-
+@RequiredArgsConstructor
 public class CustomUserDetails implements UserDetails {
 
-  private final User user;
-
-  public CustomUserDetails(User user) {
-    this.user = user;
-  }
-
-  public final User getUser() {
-    return user;
-  }
+  private final String id;
+  private final List<String> roles;
 
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {
-    return user.getRoles().stream().map(o -> new SimpleGrantedAuthority(
-        o.getName()
-    )).collect(Collectors.toList());
+    List<SimpleGrantedAuthority> authorities = new ArrayList<>();
+    for (String role : roles) {
+      authorities.add(new SimpleGrantedAuthority(role));
+    }
+    return authorities;
   }
 
   @Override
   public String getPassword() {
-    return user.getPassword();
+    return "";
   }
 
   @Override
   public String getUsername() {
-    return user.getEmail();
+    return id;
   }
 
   @Override

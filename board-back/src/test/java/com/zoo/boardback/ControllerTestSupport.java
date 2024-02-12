@@ -2,6 +2,7 @@ package com.zoo.boardback;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zoo.boardback.domain.auth.api.AuthController;
+import com.zoo.boardback.domain.auth.application.AuthCookieService;
 import com.zoo.boardback.domain.auth.application.AuthService;
 import com.zoo.boardback.domain.post.api.PostController;
 import com.zoo.boardback.domain.post.application.PostCacheService;
@@ -14,6 +15,11 @@ import com.zoo.boardback.domain.searchLog.api.SearchLogController;
 import com.zoo.boardback.domain.searchLog.application.SearchLogService;
 import com.zoo.boardback.domain.user.api.UserController;
 import com.zoo.boardback.domain.user.application.UserService;
+import com.zoo.boardback.domain.user.dao.UserRepository;
+import com.zoo.boardback.global.config.security.annotation.LoginUser;
+import com.zoo.boardback.global.config.security.annotation.LoginUserArgumentResolver;
+import com.zoo.boardback.global.config.security.filter.token_condition.JwtTokenConditionFactory;
+import com.zoo.boardback.global.config.security.jwt.JwtProvider;
 import com.zoo.boardback.global.util.file.FileUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -59,5 +65,17 @@ public abstract class ControllerTestSupport {
 
   @MockBean
   protected PostCacheService postCacheService;
+
+  @MockBean
+  protected UserRepository userRepository;
+
+  @MockBean
+  protected JwtProvider jwtProvider;
+
+  @MockBean
+  protected JwtTokenConditionFactory jwtTokenConditionFactory;
+
+  @MockBean
+  protected AuthCookieService authCookieService;
 }
 

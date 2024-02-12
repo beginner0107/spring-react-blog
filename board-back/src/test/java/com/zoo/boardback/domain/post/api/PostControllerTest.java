@@ -21,8 +21,10 @@ import com.zoo.boardback.domain.post.dto.response.PostsTop3ResponseDto;
 import com.zoo.boardback.domain.post.dto.response.object.PostRankItem;
 import com.zoo.boardback.domain.favorite.dto.object.FavoriteListItem;
 import com.zoo.boardback.domain.favorite.dto.response.FavoriteListResponseDto;
+import com.zoo.boardback.domain.user.entity.User;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.data.domain.Page;
@@ -32,14 +34,23 @@ import org.springframework.http.MediaType;
 
 class PostControllerTest extends ControllerTestSupport {
 
+  final static String EMAIL = "test123@naver.com";
+  final static String NICKNAME = "개구리왕눈이123";
+
   @DisplayName("게시글에 필요한 정보를 입력 후 등록을 하면 게시글이 저장된다.")
-  @WithAuthUser(email = "test123@naver.com", role = "ROLE_USER")
+  @WithAuthUser(userId = "1", role = "ROLE_USER")
   @Test
   void createPost() throws Exception {
     // given
     String title = "게시글제목";
     String content = "게시글내용";
     PostCreateRequestDto request = createPostRequest(title, content);
+    given(userRepository.findById(1L)).willReturn(Optional.ofNullable(User.builder()
+        .id(1L)
+        .email(EMAIL)
+        .nickname(NICKNAME)
+        .profileImage(null)
+        .build()));
 
     // when & then
     mockMvc.perform(post("/api/v1/post")
@@ -50,7 +61,7 @@ class PostControllerTest extends ControllerTestSupport {
   }
 
   @DisplayName("게시글의 제목이 빈 값이라면 게시글을 저장할 수 없다.")
-  @WithAuthUser(email = "test123@naver.com", role = "ROLE_USER")
+  @WithAuthUser(userId = "1", role = "ROLE_USER")
   @Test
   void createPostEmptyTitle() throws Exception {
     // given
@@ -72,7 +83,7 @@ class PostControllerTest extends ControllerTestSupport {
   }
 
   @DisplayName("게시글의 내용이 빈 값이라면 게시글을 저장할 수 없다.")
-  @WithAuthUser(email = "test123@naver.com", role = "ROLE_USER")
+  @WithAuthUser(userId = "1", role = "ROLE_USER")
   @Test
   void createPostEmptyContent() throws Exception {
     // given
@@ -94,7 +105,7 @@ class PostControllerTest extends ControllerTestSupport {
   }
 
   @DisplayName("검색어와 함께 게시글을 검색하면, 게시글 목록을 볼 수 있다.")
-  @WithAuthUser(email = "test123@naver.com", role = "ROLE_USER")
+  @WithAuthUser(userId = "1", role = "ROLE_USER")
   @Test
   void getPosts() throws Exception {
     // given
@@ -165,11 +176,17 @@ class PostControllerTest extends ControllerTestSupport {
   }
 
   @DisplayName("상세 게시글 페이지에서 좋아요 버튼을 누를 수 있다.")
-  @WithAuthUser(email = "test123@naver.com", role = "ROLE_USER")
+  @WithAuthUser(userId = "1", role = "ROLE_USER")
   @Test
   void putFavorite() throws Exception {
     // given
     final int postId = 1;
+    given(userRepository.findById(1L)).willReturn(Optional.ofNullable(User.builder()
+        .id(1L)
+        .email(EMAIL)
+        .nickname(NICKNAME)
+        .profileImage(null)
+        .build()));
 
     // when & then
     mockMvc.perform(put("/api/v1/post/" + postId + "/favorite"))
@@ -177,11 +194,17 @@ class PostControllerTest extends ControllerTestSupport {
   }
 
   @DisplayName("상세 게시글 페이지에서 좋아요 버튼을 취소 할 수 있다.")
-  @WithAuthUser(email = "test123@naver.com", role = "ROLE_USER")
+  @WithAuthUser(userId = "1", role = "ROLE_USER")
   @Test
   void putFavoriteCancel() throws Exception {
     // given
     final int postId = 1;
+    given(userRepository.findById(1L)).willReturn(Optional.ofNullable(User.builder()
+        .id(1L)
+        .email(EMAIL)
+        .nickname(NICKNAME)
+        .profileImage(null)
+        .build()));
 
     // when & then
     mockMvc.perform(put("/api/v1/post/" + postId + "/favoriteCancel"))
@@ -216,7 +239,7 @@ class PostControllerTest extends ControllerTestSupport {
   }
 
   @DisplayName("회원은 게시글을 수정할 수 있습니다.")
-  @WithAuthUser(email = "test123@naver.com", role = "ROLE_USER")
+  @WithAuthUser(userId = "1", role = "ROLE_USER")
   @Test
   void editPost() throws Exception {
     // given
@@ -224,6 +247,12 @@ class PostControllerTest extends ControllerTestSupport {
     String editTitle = "테스트 수정 글의 제목";
     String editContent = "테스트 수정 글의 내용";
     PostUpdateRequestDto request = createPostUpdateRequest(editTitle, editContent);
+    given(userRepository.findById(1L)).willReturn(Optional.ofNullable(User.builder()
+        .id(1L)
+        .email(EMAIL)
+        .nickname(NICKNAME)
+        .profileImage(null)
+        .build()));
 
     // when & then
     mockMvc.perform(put("/api/v1/post/{postId}", postId)
@@ -239,11 +268,17 @@ class PostControllerTest extends ControllerTestSupport {
   }
 
   @DisplayName("회원은 게시글을 삭제할 수 있습니다.")
-  @WithAuthUser(email = "test123@naver.com", role = "ROLE_USER")
+  @WithAuthUser(userId = "1", role = "ROLE_USER")
   @Test
   void deletePost() throws Exception {
     // given
     final int postId = 1;
+    given(userRepository.findById(1L)).willReturn(Optional.ofNullable(User.builder()
+        .id(1L)
+        .email(EMAIL)
+        .nickname(NICKNAME)
+        .profileImage(null)
+        .build()));
 
     // when & then
     mockMvc.perform(delete("/api/v1/post/{postId}", postId))
@@ -254,7 +289,7 @@ class PostControllerTest extends ControllerTestSupport {
   }
 
   @DisplayName("회원은 상위 3개의 게시물을 볼 수 있다.")
-  @WithAuthUser(email = "test123@naver.com", role = "ROLE_USER")
+  @WithAuthUser(userId = "1", role = "ROLE_USER")
   @Test
   void getPostsTop3() throws Exception {
     // given

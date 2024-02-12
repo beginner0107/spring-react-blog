@@ -12,6 +12,8 @@ import com.zoo.boardback.ControllerTestSupport;
 import com.zoo.boardback.domain.auth.dto.request.SignInRequestDto;
 import com.zoo.boardback.domain.auth.dto.request.SignUpRequestDto;
 import com.zoo.boardback.domain.auth.dto.response.SignInResponseDto;
+import com.zoo.boardback.domain.user.entity.User;
+import java.util.Optional;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -21,6 +23,9 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.http.MediaType;
 
 class AuthControllerTest extends ControllerTestSupport {
+
+  final static String EMAIL = "test123@naver.com";
+  final static String NICKNAME = "개구리왕눈이123";
 
   @DisplayName("필요한 정보들을 입력하면 회원가입을 할 수 있다.")
   @Test
@@ -157,23 +162,24 @@ class AuthControllerTest extends ControllerTestSupport {
   void signIn() throws Exception{
     // given
     SignInRequestDto signInRequest = createSignInRequest("test123@naver.com", "test12324dpass");
-    given(authService.signIn(any())).willReturn(
-        SignInResponseDto.of("sdfsdfsdfsdfsdf", 0));
+    given(userRepository.findById(1L)).willReturn(Optional.ofNullable(User.builder()
+        .id(1L)
+        .email(EMAIL)
+        .nickname(NICKNAME)
+        .profileImage(null)
+        .build()));
 
     // when & then
     mockMvc.perform(
         post("/api/v1/auth/sign-in")
             .content(objectMapper.writeValueAsString(signInRequest))
             .contentType(MediaType.APPLICATION_JSON)
-            .with(csrf())
         )
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.code").value("200"))
         .andExpect(jsonPath("$.status").value("OK"))
-        .andExpect(jsonPath("$.message").value("OK"))
-        .andExpect(jsonPath("$.data.token").value("sdfsdfsdfsdfsdf"))
-        .andExpect(jsonPath("$.data.expirationTime").value(0));
+        .andExpect(jsonPath("$.message").value("OK"));
   }
 
   @DisplayName("이메일 형식이 틀리면 회원가입을 할 수 없다.")

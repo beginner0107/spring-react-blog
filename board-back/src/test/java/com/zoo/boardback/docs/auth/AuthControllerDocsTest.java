@@ -20,6 +20,9 @@ import com.zoo.boardback.domain.auth.application.AuthService;
 import com.zoo.boardback.domain.auth.dto.request.SignInRequestDto;
 import com.zoo.boardback.domain.auth.dto.request.SignUpRequestDto;
 import com.zoo.boardback.domain.auth.dto.response.SignInResponseDto;
+import com.zoo.boardback.domain.user.dao.UserRepository;
+import com.zoo.boardback.domain.user.entity.User;
+import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
@@ -27,7 +30,11 @@ import org.springframework.restdocs.payload.JsonFieldType;
 
 public class AuthControllerDocsTest extends RestDocsSupport {
 
+  final static String EMAIL = "test123@naver.com";
+  final static String NICKNAME = "개구리왕눈이123";
+
   private final AuthService authService = mock(AuthService.class);
+  private final UserRepository userRepository = mock(UserRepository.class);
 
   @Override
   protected Object initController() {
@@ -71,12 +78,12 @@ public class AuthControllerDocsTest extends RestDocsSupport {
   @Test
   void signIn() throws Exception {
     SignInRequestDto signInRequest = createSignInRequest("test123@naver.com", "test12324dpass");
-    String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6Ikpv";
-    given(authService.signIn(any(SignInRequestDto.class))).willReturn(
-        SignInResponseDto.builder()
-            .token(token)
-            .expirationTime(3600)
-            .build());
+    given(userRepository.findById(1L)).willReturn(Optional.ofNullable(User.builder()
+        .id(1L)
+        .email(EMAIL)
+        .nickname(NICKNAME)
+        .profileImage(null)
+        .build()));
 
     mockMvc.perform(
             post("/api/v1/auth/sign-in")
@@ -104,10 +111,8 @@ public class AuthControllerDocsTest extends RestDocsSupport {
                 fieldWithPath("field").type(JsonFieldType.STRING)
                     .optional()
                     .description("에러 발생 필드명"),
-                fieldWithPath("data.token").type(JsonFieldType.STRING)
-                    .description("엑세스 토큰"),
-                fieldWithPath("data.expirationTime").type(JsonFieldType.NUMBER)
-                    .description("토큰 만료시간")
+                fieldWithPath("data").type(JsonFieldType.NULL)
+                    .description("빈 값")
             )
         ));
   }

@@ -16,12 +16,17 @@ import com.zoo.boardback.domain.auth.entity.Authority;
 import com.zoo.boardback.domain.user.dao.UserRepository;
 import com.zoo.boardback.domain.user.entity.User;
 import com.zoo.boardback.global.error.BusinessException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 class AuthServiceTest extends IntegrationTestSupport {
@@ -110,6 +115,7 @@ class AuthServiceTest extends IntegrationTestSupport {
         .hasMessageContaining(USER_LOGIN_TEL_NUMBER_DUPLICATE.getMessage());
   }
 
+  // TODO: 토큰 내려 주는 방식 변경 (COOKIE) -> 어떻게 테스트할 지 고민
   @DisplayName("이메일과 비밀번호를 입력하면 로그인에 성공한다.")
   @Test
   void signIn() {
@@ -120,14 +126,13 @@ class AuthServiceTest extends IntegrationTestSupport {
     SignInRequestDto signInRequestDto = SignInRequestDto.builder()
         .email("test1@naver.com")
         .password("testpassword123").build();
+    HttpServletRequest request = new MockHttpServletRequest();
+    HttpServletResponse response = new MockHttpServletResponse();
 
     // when
-    SignInResponseDto signInResponse = authService.signIn(signInRequestDto);
+    authService.signIn(signInRequestDto, request, response);
 
     // then
-    assertThat(signInResponse)
-        .hasFieldOrProperty("token")
-        .hasFieldOrProperty("expirationTime");
   }
 
   private SignUpRequestDto createSignUpRequest(String email, String password

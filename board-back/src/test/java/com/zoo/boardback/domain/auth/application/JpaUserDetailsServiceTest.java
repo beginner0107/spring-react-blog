@@ -30,32 +30,32 @@ class JpaUserDetailsServiceTest extends IntegrationTestSupport {
   @Test
   void loadUserByUsername() {
     // given
-    final String userEmail = "test99@naver.com";
-    User user = createUser(userEmail);
-    userRepository.save(user);
+    User user = createUser();
+    User savedUser = userRepository.save(user);
+    String userId = String.valueOf(savedUser.getId());
 
     // when
-    UserDetails userDetails = jpaUserDetailsService.loadUserByUsername(userEmail);
+    UserDetails userDetails = jpaUserDetailsService.loadUserByUsername(userId);
 
     // then
-    assertThat(userDetails.getUsername()).isEqualTo(userEmail);
+    assertThat(userDetails.getUsername()).isEqualTo(userId);
   }
 
   @DisplayName("회원의 이메일이 존재하지 않는다면 로그인에 실패한다.")
   @Test
   void loadUserByUsernameNotExist() {
     // given
-    final String userEmail = "test99@naver.com";
+    final String userId = "1";
 
     // when & then
-    assertThatThrownBy(() -> jpaUserDetailsService.loadUserByUsername(userEmail))
+    assertThatThrownBy(() -> jpaUserDetailsService.loadUserByUsername(userId))
         .isInstanceOf(BusinessException.class)
         .hasMessageContaining(USER_NOT_FOUND.getMessage());
   }
 
-  private static User createUser(String userEmail) {
+  private static User createUser() {
     return User.builder()
-        .email(userEmail)
+        .email("test12@naver.com")
         .password("testpassword123")
         .nickname("test12")
         .telNumber("01011111111")

@@ -42,8 +42,8 @@ public class AccessTokenReissueCondition implements JwtTokenCondition {
   }
 
   private boolean isTokenInRedis(TokenValidationResultDto refreshTokenDto, String userAgent) {
-    long authId = jwtTokenProvider.getUserId(refreshTokenDto.getToken());
-    String refreshTokenKey = JwtProvider.getRefreshTokenKeyForRedis(String.valueOf(authId), userAgent);
+    long userId = jwtTokenProvider.getUserId(refreshTokenDto.getToken());
+    String refreshTokenKey = JwtProvider.getRefreshTokenKeyForRedis(String.valueOf(userId), userAgent);
     Optional<String> tokenInRedis = redisUtil.getData(refreshTokenKey, String.class);
     return tokenInRedis.isPresent() && tokenInRedis.get().equals(refreshTokenDto.getToken());
   }

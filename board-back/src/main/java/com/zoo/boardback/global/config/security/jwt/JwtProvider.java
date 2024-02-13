@@ -9,7 +9,6 @@ import static com.zoo.boardback.global.config.security.data.JwtValidationType.UN
 import static com.zoo.boardback.global.config.security.data.JwtValidationType.VALID;
 import static com.zoo.boardback.global.config.security.data.JwtValidationType.WRONG_SIGNATURE;
 
-import com.zoo.boardback.domain.auth.application.JpaUserDetailsService;
 import com.zoo.boardback.domain.auth.details.CustomUserDetails;
 import com.zoo.boardback.domain.auth.entity.Authority;
 import com.zoo.boardback.global.config.security.data.JwtType;
@@ -35,14 +34,12 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
-@Slf4j
 @Component
 public class JwtProvider {
 
@@ -50,16 +47,13 @@ public class JwtProvider {
   private static final String SEPARATOR = ",";
 
   final Key secretKey;
-  private final JpaUserDetailsService userDetailsService;
 
-  public JwtProvider(@Value("${jwt.secret}") String secretKey,
-      JpaUserDetailsService userDetailsService) {
+  public JwtProvider(@Value("${jwt.secret}") String secretKey) {
     this.secretKey = Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
-    this.userDetailsService = userDetailsService;
   }
 
-  public static String getRefreshTokenKeyForRedis(String userId, String userRole) {
-    String encodedUserRole = Base64.getEncoder().encodeToString((userRole == null ? "" : userRole).getBytes());
+  public static String getRefreshTokenKeyForRedis(String userId, String userAgent) {
+    String encodedUserRole = Base64.getEncoder().encodeToString((userAgent == null ? "" : userAgent).getBytes());
     return "refreshToken:" + userId + ":" + encodedUserRole;
   }
 
@@ -107,10 +101,8 @@ public class JwtProvider {
 
   // 토큰에 담겨있는 유저 account 획득
   public String getEmail(String token) {
-    String subject = Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token)
+    return Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token)
         .getBody().getSubject();
-    log.info("subject : {}", subject);
-    return subject;
   }
 
   public String resolveToken(HttpServletRequest req, JwtType jwtType) {
@@ -126,9 +118,6 @@ public class JwtProvider {
   public TokenValidationResultDto tryCheckTokenValid(HttpServletRequest req, JwtType jwtType) {
     try {
       String token = resolveToken(req, jwtType);
-      if (token == null) {
-        throw new EmptyJwtException();
-      }
       getUserId(token);
       return TokenValidationResultDto.of(true, VALID, token);
     } catch (MalformedJwtException e) {

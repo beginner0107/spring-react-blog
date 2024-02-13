@@ -41,9 +41,9 @@ public class AuthCookieService {
     httpResponse.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
   }
 
-  public void setCookieExpiredWithRedis(String authId, HttpServletResponse response) {
+  public void setCookieExpiredWithRedis(String userId, HttpServletResponse response) {
     setCookieExpired(response);
-    redisUtil.deleteData(authId);
+    redisUtil.deleteData(userId);
   }
 
   public void setCookieExpired(HttpServletResponse response) {

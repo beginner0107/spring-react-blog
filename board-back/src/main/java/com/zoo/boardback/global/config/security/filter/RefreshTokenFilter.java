@@ -9,40 +9,34 @@ import com.zoo.boardback.global.config.security.filter.token_condition.JwtTokenC
 import com.zoo.boardback.global.config.security.jwt.JwtProvider;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.ServletRequest;
-import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import org.springframework.web.filter.GenericFilterBean;
+import org.springframework.web.filter.OncePerRequestFilter;
 
-@Slf4j
 @RequiredArgsConstructor
 @Component
-public class RefreshTokenFilter extends GenericFilterBean {
+public class RefreshTokenFilter extends OncePerRequestFilter {
 
   private final JwtProvider jwtTokenProvider;
   private final JwtTokenConditionFactory jwtTokenConditionFactory;
   private final AuthCookieService authCookieService;
 
   @Override
-  public void doFilter(ServletRequest request, ServletResponse response, FilterChain filterChain)
-      throws IOException, ServletException {
-    HttpServletRequest httpRequest = (HttpServletRequest) request;
-    HttpServletResponse httpResponse = (HttpServletResponse) response;
-    final var accessTokenDto = jwtTokenProvider.tryCheckTokenValid(httpRequest, ACCESS_TOKEN);
-    final var refreshTokenDto = jwtTokenProvider.tryCheckTokenValid(httpRequest, REFRESH_TOKEN);
-    List<JwtTokenCondition> jwtTokenConditions = jwtTokenConditionFactory.createJwtTokenConditions();
+  protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
+      FilterChain filterChain) throws ServletException, IOException {
+    final var accessTokenDto = jwtTokenProvider.tryCheckTokenValid(request, ACCESS_TOKEN);
+    final var refreshTokenDto = jwtTokenProvider.tryCheckTokenValid(request, REFRESH_TOKEN);
 
+    List<JwtTokenCondition> jwtTokenConditions = jwtTokenConditionFactory.createJwtTokenConditions();
     jwtTokenConditions.stream()
-        .filter(jwtTokenCondition -> jwtTokenCondition.isSatisfiedBy(accessTokenDto, refreshTokenDto, httpRequest))
+        .filter(jwtTokenCondition -> jwtTokenCondition.isSatisfiedBy(accessTokenDto, refreshTokenDto, request))
         .findFirst()
-        .ifPresentOrElse(jwtTokenCondition -> jwtTokenCondition.setJwtToken(accessTokenDto, refreshTokenDto, httpRequest, httpResponse),
-            () -> authCookieService.setCookieExpired(httpResponse));
+        .ifPresentOrElse(jwtTokenCondition -> jwtTokenCondition.setJwtToken(accessTokenDto, refreshTokenDto, request, response),
+            () -> authCookieService.setCookieExpired(response));
 
     filterChain.doFilter(request, response);
   }

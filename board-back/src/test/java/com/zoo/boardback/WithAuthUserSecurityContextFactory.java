@@ -1,9 +1,11 @@
 package com.zoo.boardback;
 
+import static com.zoo.boardback.domain.auth.entity.role.UserRole.GENERAL_USER;
+
 import com.zoo.boardback.domain.auth.details.CustomUserDetails;
 import com.zoo.boardback.domain.auth.entity.Authority;
+import com.zoo.boardback.domain.auth.entity.role.UserRole;
 import com.zoo.boardback.domain.user.entity.User;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -16,15 +18,15 @@ public class WithAuthUserSecurityContextFactory implements WithSecurityContextFa
   @Override
   public SecurityContext createSecurityContext(WithAuthUser annotation) {
     String userId = annotation.userId();
-    String role = annotation.role();
+    UserRole role = UserRole.findRole(annotation.role());
 
     User user = User.builder()
         .id(Long.parseLong(userId))
-        .roles(List.of(Authority.builder().name(role).build()))
+        .roles(List.of(Authority.builder().role(role).build()))
         .build();
     List<Authority> authorities = user.getRoles();
     List<String> roles = authorities.stream()
-        .map(Authority::getName)
+        .map(Authority::getRoleName)
         .collect(Collectors.toList());
     CustomUserDetails userDetails = new CustomUserDetails(userId, roles);
 

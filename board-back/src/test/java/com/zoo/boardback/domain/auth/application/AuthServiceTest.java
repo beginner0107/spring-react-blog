@@ -1,5 +1,6 @@
 package com.zoo.boardback.domain.auth.application;
 
+import static com.zoo.boardback.domain.auth.entity.role.UserRole.GENERAL_USER;
 import static com.zoo.boardback.global.error.ErrorCode.USER_EMAIL_DUPLICATE;
 import static com.zoo.boardback.global.error.ErrorCode.USER_LOGIN_ID_DUPLICATE;
 import static com.zoo.boardback.global.error.ErrorCode.USER_LOGIN_TEL_NUMBER_DUPLICATE;
@@ -11,7 +12,6 @@ import com.zoo.boardback.IntegrationTestSupport;
 import com.zoo.boardback.domain.auth.dao.AuthRepository;
 import com.zoo.boardback.domain.auth.dto.request.SignInRequestDto;
 import com.zoo.boardback.domain.auth.dto.request.SignUpRequestDto;
-import com.zoo.boardback.domain.auth.dto.response.SignInResponseDto;
 import com.zoo.boardback.domain.auth.entity.Authority;
 import com.zoo.boardback.domain.user.dao.UserRepository;
 import com.zoo.boardback.domain.user.entity.User;
@@ -21,7 +21,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -121,7 +120,7 @@ class AuthServiceTest extends IntegrationTestSupport {
   void signIn() {
     // given
     User user = createUser("test1@naver.com", "nickname13", "01022222222");
-    user.addRoles(Collections.singletonList(Authority.builder().name("ROLE_USER").build()));
+    user.addRoles(Collections.singletonList(Authority.builder().role(GENERAL_USER).build()));
     userRepository.save(user);
     SignInRequestDto signInRequestDto = SignInRequestDto.builder()
         .email("test1@naver.com")

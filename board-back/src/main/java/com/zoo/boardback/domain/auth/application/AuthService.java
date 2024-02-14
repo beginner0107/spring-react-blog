@@ -1,5 +1,6 @@
 package com.zoo.boardback.domain.auth.application;
 
+import static com.zoo.boardback.domain.auth.entity.role.UserRole.GENERAL_USER;
 import static com.zoo.boardback.global.error.ErrorCode.USER_EMAIL_DUPLICATE;
 import static com.zoo.boardback.global.error.ErrorCode.USER_LOGIN_ID_DUPLICATE;
 import static com.zoo.boardback.global.error.ErrorCode.USER_LOGIN_TEL_NUMBER_DUPLICATE;
@@ -41,7 +42,7 @@ public class AuthService {
     checkIsDuplicationTelNumber(request.getTelNumber());
 
     User user = request.toEntity(passwordEncoder);
-    user.addRoles(Collections.singletonList(Authority.builder().name("ROLE_USER").build()));
+    user.addRoles(Collections.singletonList(Authority.builder().role(GENERAL_USER).build()));
 
     userRepository.save(user);
   }
@@ -75,9 +76,5 @@ public class AuthService {
     if (userRepository.existsByEmail(email)) {
       throw new BusinessException(email, "email", USER_EMAIL_DUPLICATE);
     }
-  }
-
-  public void refreshToken() {
-
   }
 }

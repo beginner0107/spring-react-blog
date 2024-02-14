@@ -34,11 +34,5 @@ public class AuthController {
     authService.signIn(request, httpRequest, httpResponse);
     return ApiResponse.ok(null);
   }
-
-  @PostMapping("/refresh-token")
-  public ApiResponse<Void> refreshToken(HttpServletRequest request, HttpServletResponse response) {
-    authService.refreshToken();
-    return ApiResponse.ok(null);
-  }
 }
 

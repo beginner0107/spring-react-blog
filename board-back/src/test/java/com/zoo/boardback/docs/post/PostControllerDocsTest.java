@@ -1,6 +1,7 @@
 package com.zoo.boardback.docs.post;
 
 
+import static com.zoo.boardback.domain.auth.entity.role.UserRole.GENERAL_USER;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
@@ -500,7 +501,7 @@ public class PostControllerDocsTest extends RestDocsSecuritySupport {
   }
 
   private List<Authority> initRole() {
-    return Collections.singletonList(Authority.builder().name("ROLE_USER").build());
+    return Collections.singletonList(Authority.builder().role(GENERAL_USER).build());
   }
 
   private static PostDetailResponseDto createPostDetailResponse(Long boardNumber, List<String> imageUrls

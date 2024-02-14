@@ -1,5 +1,6 @@
 package com.zoo.boardback.domain.image.dao;
 
+import static com.zoo.boardback.domain.auth.entity.role.UserRole.GENERAL_USER;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.zoo.boardback.IntegrationTestSupport;
@@ -75,6 +76,6 @@ class ImageRepositoryTest extends IntegrationTestSupport {
   }
 
   private List<Authority> initRole() {
-    return Collections.singletonList(Authority.builder().name("ROLE_USER").build());
+    return Collections.singletonList(Authority.builder().role(GENERAL_USER).build());
   }
 }

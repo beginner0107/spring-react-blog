@@ -33,6 +33,15 @@ class CommentControllerTest extends ControllerTestSupport {
   final static String EMAIL = "test123@naver.com";
   final static String NICKNAME = "개구리왕눈이123";
 
+  private void createMockUser() {
+    given(userRepository.findById(1L)).willReturn(Optional.ofNullable(User.builder()
+        .id(1L)
+        .email(EMAIL)
+        .nickname(NICKNAME)
+        .profileImage(null)
+        .build()));
+  }
+
   @DisplayName("댓글에 필요한 정보를 입력 후 등록을 하면 댓글이 저장된다.")
   @WithAuthUser(userId = "1", role = "ROLE_USER")
   @Test
@@ -41,12 +50,7 @@ class CommentControllerTest extends ControllerTestSupport {
     String content = "댓글내용입니다.";
     Long boardNumber = 1L;
     CommentCreateRequestDto request = createComment(boardNumber, content);
-    given(userRepository.findById(1L)).willReturn(Optional.ofNullable(User.builder()
-        .id(1L)
-        .email(EMAIL)
-        .nickname(NICKNAME)
-        .profileImage(null)
-        .build()));
+    createMockUser();
 
     // when & then
     mockMvc.perform(post("/api/v1/comments")
@@ -68,12 +72,7 @@ class CommentControllerTest extends ControllerTestSupport {
     String content = "";
     Long boardNumber = 1L;
     CommentCreateRequestDto request = createComment(boardNumber, content);
-    given(userRepository.findById(1L)).willReturn(Optional.ofNullable(User.builder()
-        .id(1L)
-        .email(EMAIL)
-        .nickname(NICKNAME)
-        .profileImage(null)
-        .build()));
+    createMockUser();
 
     // when & then
     mockMvc.perform(post("/api/v1/comments")
@@ -117,12 +116,7 @@ class CommentControllerTest extends ControllerTestSupport {
         .totalElements(2L)
         .build();
     given(commentService.getComments(anyLong(), any(Pageable.class))).willReturn(comments);
-    given(userRepository.findById(1L)).willReturn(Optional.ofNullable(User.builder()
-        .id(1L)
-        .email(EMAIL)
-        .nickname(NICKNAME)
-        .profileImage(null)
-        .build()));
+    createMockUser();
 
     // when & then
     mockMvc.perform(get("/api/v1/comments/post/{postId}", boardNumber))
@@ -153,12 +147,7 @@ class CommentControllerTest extends ControllerTestSupport {
     CommentUpdateRequestDto requestDto = CommentUpdateRequestDto.builder()
         .postId(1L)
         .content(content).build();
-    given(userRepository.findById(1L)).willReturn(Optional.ofNullable(User.builder()
-        .id(1L)
-        .email(EMAIL)
-        .nickname(NICKNAME)
-        .profileImage(null)
-        .build()));
+    createMockUser();
 
     // when & then
     mockMvc.perform(put("/api/v1/comments/{commentId}", commentId)
@@ -204,12 +193,7 @@ class CommentControllerTest extends ControllerTestSupport {
   void deleteComment() throws Exception {
     // given
     int commentId = 1;
-    given(userRepository.findById(1L)).willReturn(Optional.ofNullable(User.builder()
-        .id(1L)
-        .email(EMAIL)
-        .nickname(NICKNAME)
-        .profileImage(null)
-        .build()));
+    createMockUser();
 
     // when & then
     mockMvc.perform(delete("/api/v1/comments/{commentId}"

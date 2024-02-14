@@ -1,5 +1,6 @@
 package com.zoo.boardback.domain.post.application;
 
+import static com.zoo.boardback.domain.auth.entity.role.UserRole.GENERAL_USER;
 import static com.zoo.boardback.global.error.ErrorCode.BOARD_NOT_CUD_MATCHING_USER;
 import static com.zoo.boardback.global.error.ErrorCode.BOARD_NOT_FOUND;
 import static com.zoo.boardback.global.error.ErrorCode.USER_NOT_FOUND;
@@ -455,7 +456,7 @@ class PostServiceTest extends IntegrationTestSupport {
   }
 
   private List<Authority> initRole() {
-    return Collections.singletonList(Authority.builder().name("ROLE_USER").build());
+    return Collections.singletonList(Authority.builder().role(GENERAL_USER).build());
   }
 
   private Comment createComment(String content, Post post, User user) {

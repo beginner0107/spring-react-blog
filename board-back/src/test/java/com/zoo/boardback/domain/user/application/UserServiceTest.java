@@ -1,5 +1,6 @@
 package com.zoo.boardback.domain.user.application;
 
+import static com.zoo.boardback.domain.auth.entity.role.UserRole.GENERAL_USER;
 import static com.zoo.boardback.global.error.ErrorCode.*;
 import static org.assertj.core.api.Assertions.*;
 
@@ -129,6 +130,6 @@ class UserServiceTest extends IntegrationTestSupport {
   }
 
   private List<Authority> initRole() {
-    return Collections.singletonList(Authority.builder().name("ROLE_USER").build());
+    return Collections.singletonList(Authority.builder().role(GENERAL_USER).build());
   }
 }

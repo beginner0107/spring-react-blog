@@ -1,5 +1,6 @@
 package com.zoo.boardback.global.config.security.jwt;
 
+import static com.zoo.boardback.domain.auth.entity.role.UserRole.GENERAL_USER;
 import static com.zoo.boardback.global.config.security.data.JwtValidationType.EMPTY;
 import static com.zoo.boardback.global.config.security.data.JwtValidationType.EXPIRED;
 import static com.zoo.boardback.global.config.security.data.JwtValidationType.MALFORMED;
@@ -85,7 +86,7 @@ public class JwtProvider {
   }
 
   private static void setRoles(Claims claims, List<Authority> authorities) {
-    String roles = authorities.stream().map(Authority::getName)
+    String roles = authorities.stream().map(Authority::getRoleName)
             .collect(Collectors.joining(SEPARATOR));
     claims.put(ROLES, String.join(SEPARATOR, roles));
   }
@@ -142,7 +143,7 @@ public class JwtProvider {
     List<String> roles = getRolesBy(claims);
     List<Authority> authorityRoles = new ArrayList<>();
     for (String role : roles) {
-      authorityRoles.add(Authority.builder().name(role).build());
+      authorityRoles.add(Authority.builder().role(GENERAL_USER).build());
     }
     return authorityRoles;
   }

@@ -3,6 +3,7 @@ package com.zoo.boardback.domain.auth.entity;
 import static lombok.AccessLevel.PROTECTED;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.zoo.boardback.domain.auth.entity.role.UserRole;
 import com.zoo.boardback.domain.user.entity.User;
 import com.zoo.boardback.global.entity.BaseEntity;
 import jakarta.persistence.Entity;
@@ -28,7 +29,7 @@ public class Authority extends BaseEntity {
   @JsonIgnore
   private Long id;
 
-  private String name;
+  private String roleName;
 
   @JoinColumn(name = "roles")
   @ManyToOne(fetch = FetchType.LAZY)
@@ -40,8 +41,8 @@ public class Authority extends BaseEntity {
   }
 
   @Builder
-  public Authority(String name, User users) {
-    this.name = name;
+  public Authority(UserRole role, User users) {
+    this.roleName = role.getRoleName();
     this.users = users;
   }
 }

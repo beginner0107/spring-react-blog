@@ -223,6 +223,7 @@ public void setNewCookieInResponse(String userId, List<Authority> roles, String 
 - 한 페이지에 5개씩 게시물을 볼 수 있고, 마지막 페이지인 경우 count쿼리를 안 날려도 5페이지(마지막)이라면 5 * 5 = 25 + 페이징된 게시물 개수 = totalCount가 됩니다.
 </div>
 </details>
+<details>
 <summary><b>5. 게시글 다중 검색</b></summary>
 <div markdown="5">
 

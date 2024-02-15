@@ -38,6 +38,7 @@ public class SecurityConfiguration {
                 .requestMatchers(mvc.pattern("/api/v1/auth/**")).permitAll()
                 .requestMatchers(mvc.pattern("/api/v1/search/**")).permitAll()
                 .requestMatchers(mvc.pattern("/api/v1/comments/board/*")).permitAll()
+                .requestMatchers(mvc.pattern("/docs/*")).permitAll()
                 .requestMatchers(mvc.pattern("/file/**")).permitAll()
                 .requestMatchers(PathRequest.toH2Console()).permitAll()
                 .anyRequest().authenticated()

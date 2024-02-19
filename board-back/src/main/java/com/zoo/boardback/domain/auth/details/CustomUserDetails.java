@@ -12,12 +12,12 @@ import org.springframework.security.core.userdetails.UserDetails;
 public class CustomUserDetails implements UserDetails {
 
   private final String id;
-  private final List<String> roles;
+  private final List<String> userRoles;
 
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {
     List<SimpleGrantedAuthority> authorities = new ArrayList<>();
-    for (String role : roles) {
+    for (String role : userRoles) {
       authorities.add(new SimpleGrantedAuthority(role));
     }
     return authorities;

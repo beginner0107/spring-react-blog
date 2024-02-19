@@ -29,7 +29,7 @@ public class FavoriteService {
   private final UserRepository userRepository;
 
   @Transactional
-  public void putFavorite(Long postId, String email) {
+  public void like(Long postId, String email) {
     Post post = postRepository.findById(postId).orElseThrow(() ->
         new BusinessException(postId, "postId", BOARD_NOT_FOUND));
 
@@ -47,7 +47,7 @@ public class FavoriteService {
   }
 
   @Transactional
-  public void putFavoriteCancel(Long postId, String email) {
+  public void cancelLike(Long postId, String email) {
     Post post = postRepository.findById(postId).orElseThrow(() ->
         new BusinessException(postId, "postId", BOARD_NOT_FOUND));
 

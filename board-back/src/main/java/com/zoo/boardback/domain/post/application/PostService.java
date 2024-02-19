@@ -71,7 +71,7 @@ public class PostService {
     }
   }
 
-  public Page<PostSearchResponseDto> searchPosts(PostSearchCondition condition, Pageable pageable) {
+  public Page<PostSearchResponseDto> getPosts(PostSearchCondition condition, Pageable pageable) {
     this.saveSearchLog(condition);
     return postRepository.searchPosts(condition, pageable);
   }
@@ -102,7 +102,7 @@ public class PostService {
   }
 
   @Transactional
-  public void editPost(Long postId, String email, PostUpdateRequestDto requestDto) {
+  public void update(Long postId, String email, PostUpdateRequestDto requestDto) {
     Post post = postRepository.findById(postId).orElseThrow(() ->
         new BusinessException(postId, "postId", BOARD_NOT_FOUND));
     verifyBoardOwnership(email, post);
@@ -115,7 +115,7 @@ public class PostService {
   }
 
   @Transactional
-  public void deletePost(Long postId, String email) {
+  public void delete(Long postId, String email) {
     Post post = postRepository.findById(postId).orElseThrow(() ->
         new BusinessException(postId, "postId", BOARD_NOT_FOUND));
     verifyBoardOwnership(email, post);

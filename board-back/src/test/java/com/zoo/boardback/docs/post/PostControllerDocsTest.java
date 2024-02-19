@@ -171,7 +171,7 @@ public class PostControllerDocsTest extends RestDocsSecuritySupport {
         .build();
     Page<PostSearchResponseDto> response = new PageImpl<>(List.of(searchResponse));
 
-    given(postService.searchPosts(condition, Pageable.ofSize(5)))
+    given(postService.getPosts(condition, Pageable.ofSize(5)))
         .willReturn(response);
     given(userService.getSignUser(EMAIL))
         .willReturn(GetSignUserResponseDto.builder()

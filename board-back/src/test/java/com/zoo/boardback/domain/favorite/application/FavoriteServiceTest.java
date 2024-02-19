@@ -55,7 +55,7 @@ class FavoriteServiceTest extends IntegrationTestSupport {
     Long boardNumber = postList.get(0).getId();
 
     // when
-    favoriteService.putFavorite(boardNumber, "test12@naver.com");
+    favoriteService.like(boardNumber, "test12@naver.com");
 
     // then
     List<Favorite> favoriteList = favoriteRepository.findAll();
@@ -86,7 +86,7 @@ class FavoriteServiceTest extends IntegrationTestSupport {
     favoriteRepository.save(saveFavorite);
 
     // when
-    favoriteService.putFavoriteCancel(boardNumber, "test12@naver.com");
+    favoriteService.cancelLike(boardNumber, "test12@naver.com");
 
     // then
     List<Favorite> favoriteList = favoriteRepository.findAll();

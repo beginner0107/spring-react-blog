@@ -167,7 +167,7 @@ class PostServiceTest extends IntegrationTestSupport {
     postRepository.saveAll(List.of(post1, post2));
 
     // when
-    Page<PostSearchResponseDto> posts = postService.searchPosts(
+    Page<PostSearchResponseDto> posts = postService.getPosts(
         PostSearchCondition.builder()
             .build(), Pageable.ofSize(5)
     );
@@ -197,7 +197,7 @@ class PostServiceTest extends IntegrationTestSupport {
     imageRepository.save(image);
 
     // when
-    Page<PostSearchResponseDto> posts = postService.searchPosts(
+    Page<PostSearchResponseDto> posts = postService.getPosts(
         PostSearchCondition.builder()
             .title("테스트 글의 제목1")
             .build(), Pageable.ofSize(5)
@@ -248,7 +248,7 @@ class PostServiceTest extends IntegrationTestSupport {
     PostUpdateRequestDto request = createPostUpdateRequest(editTitle, editContent, updateImages);
 
     // when
-    postService.editPost(newPost.getId(), email, request);
+    postService.update(newPost.getId(), email, request);
 
     // then
     List<Post> posts = postRepository.findAll();
@@ -291,7 +291,7 @@ class PostServiceTest extends IntegrationTestSupport {
 
     // when & then
     assertThatThrownBy(() ->
-        postService.editPost(newPost.getId(), email2, request))
+        postService.update(newPost.getId(), email2, request))
         .isInstanceOf(BusinessException.class)
         .hasMessage(BOARD_NOT_CUD_MATCHING_USER.getMessage());
   }
@@ -321,7 +321,7 @@ class PostServiceTest extends IntegrationTestSupport {
     commentRepository.save(comment);
 
     // when
-    postService.deletePost(newPost.getId(), email);
+    postService.delete(newPost.getId(), email);
 
     // then
     List<Post> posts = postRepository.findAll();
@@ -355,7 +355,7 @@ class PostServiceTest extends IntegrationTestSupport {
 
     // when & then
     assertThatThrownBy(() ->
-        postService.deletePost(newPost.getId(), email2))
+        postService.delete(newPost.getId(), email2))
         .isInstanceOf(BusinessException.class)
         .hasMessage(BOARD_NOT_CUD_MATCHING_USER.getMessage());
   }

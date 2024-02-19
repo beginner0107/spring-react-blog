@@ -130,7 +130,7 @@ class PostControllerTest extends ControllerTestSupport {
         .build();
     Page<PostSearchResponseDto> response = new PageImpl<>(List.of(searchResponse));
 
-    given(postService.searchPosts(condition, Pageable.ofSize(5)))
+    given(postService.getPosts(condition, Pageable.ofSize(5)))
         .willReturn(response);
 
     // when & then

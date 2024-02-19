@@ -18,7 +18,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 import java.util.Collections;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -30,9 +29,6 @@ public class AuthService {
   private final UserRepository userRepository;
   private final PasswordEncoder passwordEncoder;
   private final AuthCookieService authCookieService;
-
-  @Value("${jwt.expirationTime}")
-  private int expirationTime;
 
   @Transactional
   public void signUp(SignUpRequestDto request) {
@@ -53,9 +49,8 @@ public class AuthService {
     User user = userRepository.findByEmail(request.getEmail()).orElseThrow(() ->
         new BusinessException(request.getEmail(), "email", USER_NOT_FOUND));
 
-    if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-      throw new BusinessException(null, "password", USER_WRONG_PASSWORD);
-    }
+    checkPasswordMatch(request.getPassword(), user.getPassword());
+
     authCookieService.setNewCookieInResponse(String.valueOf(user.getId()), user.getRoles(),
         httpRequest.getHeader(HttpHeaders.USER_AGENT), httpResponse);
   }
@@ -75,6 +70,12 @@ public class AuthService {
   private void checkIsDuplicationEmail(String email) {
     if (userRepository.existsByEmail(email)) {
       throw new BusinessException(email, "email", USER_EMAIL_DUPLICATE);
+    }
+  }
+
+  private void checkPasswordMatch(String enteredPassword, String storedPassword) {
+    if (!passwordEncoder.matches(enteredPassword, storedPassword)) {
+      throw new BusinessException(null, "password", USER_WRONG_PASSWORD);
     }
   }
 }

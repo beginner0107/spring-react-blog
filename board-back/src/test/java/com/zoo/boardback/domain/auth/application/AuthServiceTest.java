@@ -12,6 +12,7 @@ import com.zoo.boardback.IntegrationTestSupport;
 import com.zoo.boardback.domain.auth.dao.AuthRepository;
 import com.zoo.boardback.domain.auth.dto.request.SignInRequestDto;
 import com.zoo.boardback.domain.auth.dto.request.SignUpRequestDto;
+import com.zoo.boardback.domain.auth.dto.response.SignInResponseDto;
 import com.zoo.boardback.domain.auth.entity.Authority;
 import com.zoo.boardback.domain.user.dao.UserRepository;
 import com.zoo.boardback.domain.user.entity.User;
@@ -114,14 +115,14 @@ class AuthServiceTest extends IntegrationTestSupport {
         .hasMessageContaining(USER_LOGIN_TEL_NUMBER_DUPLICATE.getMessage());
   }
 
-  // TODO: 토큰 내려 주는 방식 변경 (COOKIE) -> 어떻게 테스트할 지 고민
   @DisplayName("이메일과 비밀번호를 입력하면 로그인에 성공한다.")
   @Test
   void signIn() {
     // given
     User user = createUser("test1@naver.com", "nickname13", "01022222222");
     user.addRoles(Collections.singletonList(Authority.builder().role(GENERAL_USER).build()));
-    userRepository.save(user);
+    User savedUser = userRepository.save(user);
+    List<String> userRoles = List.of(GENERAL_USER.getRoleName());
     SignInRequestDto signInRequestDto = SignInRequestDto.builder()
         .email("test1@naver.com")
         .password("testpassword123").build();
@@ -129,9 +130,13 @@ class AuthServiceTest extends IntegrationTestSupport {
     HttpServletResponse response = new MockHttpServletResponse();
 
     // when
-    authService.signIn(signInRequestDto, request, response);
+    SignInResponseDto responseDto = authService.signIn(signInRequestDto, request, response);
 
     // then
+    assertThat(responseDto.getUserId()).isEqualTo(savedUser.getId());
+    assertThat(responseDto.getNickname()).isEqualTo(savedUser.getNickname());
+    assertThat(responseDto.getEmail()).isEqualTo(savedUser.getEmail());
+    assertThat(responseDto.getRoles()).isEqualTo(userRoles);
   }
 
   private SignUpRequestDto createSignUpRequest(String email, String password

@@ -117,7 +117,7 @@ class CommentServiceTest extends IntegrationTestSupport {
         .build();
 
     // when
-    commentService.editComment(email, newComment.getId(), updateRequestDto);
+    commentService.update(email, newComment.getId(), updateRequestDto);
 
     // then
     List<Comment> comments = commentRepository.findAll();
@@ -138,7 +138,7 @@ class CommentServiceTest extends IntegrationTestSupport {
     Comment newComment = commentRepository.save(comment);
 
     // when
-    commentService.deleteComment(newComment.getId(), "test12@naver.com");
+    commentService.delete(newComment.getId(), "test12@naver.com");
 
     // then
     List<Comment> comments = commentRepository.findAll();

@@ -160,7 +160,7 @@ class CommentControllerTest extends ControllerTestSupport {
         .andExpect(jsonPath("$.message").value("OK"))
         .andExpect(jsonPath("$.field").isEmpty())
         .andExpect(jsonPath("$.data").isEmpty());
-    then(commentService).should(times(1)).editComment(anyString(), anyLong(), any());
+    then(commentService).should(times(1)).update(anyString(), anyLong(), any());
   }
 
   @DisplayName("댓글의 내용을 입력하지 않으면 댓글이 수정되지 않는다.")
@@ -204,7 +204,7 @@ class CommentControllerTest extends ControllerTestSupport {
         .andExpect(jsonPath("$.code").value(204))
         .andExpect(jsonPath("$.status").value("NO_CONTENT"))
         .andExpect(jsonPath("$.message").value("NO_CONTENT"));
-    then(commentService).should(times(1)).deleteComment(anyLong(), anyString());
+    then(commentService).should(times(1)).delete(anyLong(), anyString());
   }
 
   private CommentCreateRequestDto createComment(Long postId, String content) {

@@ -9,6 +9,7 @@ import static com.zoo.boardback.global.error.ErrorCode.USER_WRONG_PASSWORD;
 
 import com.zoo.boardback.domain.auth.dto.request.SignInRequestDto;
 import com.zoo.boardback.domain.auth.dto.request.SignUpRequestDto;
+import com.zoo.boardback.domain.auth.dto.response.SignInResponseDto;
 import com.zoo.boardback.domain.auth.entity.Authority;
 import com.zoo.boardback.domain.user.dao.UserRepository;
 import com.zoo.boardback.domain.user.entity.User;
@@ -17,6 +18,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -44,7 +47,7 @@ public class AuthService {
   }
 
   @Transactional
-  public void signIn(SignInRequestDto request
+  public SignInResponseDto signIn(SignInRequestDto request
       , HttpServletRequest httpRequest, HttpServletResponse httpResponse) {
     User user = userRepository.findByEmail(request.getEmail()).orElseThrow(() ->
         new BusinessException(request.getEmail(), "email", USER_NOT_FOUND));
@@ -53,6 +56,9 @@ public class AuthService {
 
     authCookieService.setNewCookieInResponse(String.valueOf(user.getId()), user.getRoles(),
         httpRequest.getHeader(HttpHeaders.USER_AGENT), httpResponse);
+
+    List<String> userRoles = mapAuthoritiesToRoleNames(user.getRoles());
+    return SignInResponseDto.of(user, userRoles);
   }
 
   private void checkIsDuplicationTelNumber(String telNumber) {
@@ -77,5 +83,11 @@ public class AuthService {
     if (!passwordEncoder.matches(enteredPassword, storedPassword)) {
       throw new BusinessException(null, "password", USER_WRONG_PASSWORD);
     }
+  }
+
+  private List<String> mapAuthoritiesToRoleNames(List<Authority> authorities) {
+    return authorities.stream()
+        .map(Authority::getRoleName)
+        .collect(Collectors.toList());
   }
 }

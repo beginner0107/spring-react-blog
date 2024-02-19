@@ -89,6 +89,12 @@ public class UserControllerDocsTest extends RestDocsSecuritySupport {
             .profileImage("http://image.png")
             .build()
         );
+    given(userRepository.findById(1L)).willReturn(Optional.ofNullable(User.builder()
+        .id(1L)
+        .email(EMAIL)
+        .nickname(NICKNAME)
+        .profileImage(null)
+        .build()));
 
     mockMvc.perform(patch("/api/v1/user/nickname")
             .content(objectMapper.writeValueAsString(request))
@@ -130,7 +136,14 @@ public class UserControllerDocsTest extends RestDocsSecuritySupport {
             .nickname(NICKNAME)
             .profileImage("http://image.png")
             .build()
-        );
+    );
+
+    given(userRepository.findById(1L)).willReturn(Optional.ofNullable(User.builder()
+        .id(1L)
+        .email(EMAIL)
+        .nickname(NICKNAME)
+        .profileImage(null)
+        .build()));
 
     mockMvc.perform(patch("/api/v1/user/profileImage")
             .content(objectMapper.writeValueAsString(request))

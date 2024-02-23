@@ -1,6 +1,6 @@
 package com.zoo.boardback.domain.comment.dao;
 
-import static com.zoo.boardback.domain.auth.entity.role.UserRole.GENERAL_USER;
+import static com.zoo.boardback.domain.user.entity.role.UserRole.GENERAL_USER;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.zoo.boardback.IntegrationTestSupport;
@@ -43,7 +43,7 @@ class CommentRepositoryTest extends IntegrationTestSupport {
     commentRepository.save(comment1);
 
     // when
-    Page<CommentQueryDto> comments = commentRepository.getCommentsList(newPost, PageRequest.of(0, 5));
+    Page<CommentQueryDto> comments = commentRepository.getComments(newPost, PageRequest.of(0, 5));
 
     // then
     assertThat(comments).hasSize(1);

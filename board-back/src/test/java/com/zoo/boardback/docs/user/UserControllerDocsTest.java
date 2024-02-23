@@ -1,6 +1,5 @@
 package com.zoo.boardback.docs.user;
 
-import static com.zoo.boardback.global.config.security.data.JwtType.ACCESS_TOKEN;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
@@ -18,9 +17,8 @@ import com.zoo.boardback.WithAuthUser;
 import com.zoo.boardback.docs.RestDocsSecuritySupport;
 import com.zoo.boardback.domain.user.dto.request.NicknameUpdateRequestDto;
 import com.zoo.boardback.domain.user.dto.request.UserProfileUpdateRequestDto;
-import com.zoo.boardback.domain.user.dto.response.GetSignUserResponseDto;
+import com.zoo.boardback.domain.user.dto.response.SignUserResponseDto;
 import com.zoo.boardback.domain.user.entity.User;
-import jakarta.servlet.http.Cookie;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -43,8 +41,8 @@ public class UserControllerDocsTest extends RestDocsSecuritySupport {
         .nickname(NICKNAME)
         .profileImage(null)
         .build()));
-    given(userService.getSignUser(EMAIL))
-        .willReturn(GetSignUserResponseDto.builder()
+    given(userService.getUser(EMAIL))
+        .willReturn(SignUserResponseDto.builder()
             .email(EMAIL)
             .nickname(NICKNAME)
             .build()
@@ -82,8 +80,8 @@ public class UserControllerDocsTest extends RestDocsSecuritySupport {
   @Test
   void updateNickname() throws Exception {
     NicknameUpdateRequestDto request = new NicknameUpdateRequestDto("마동석");
-    given(userService.getSignUser(EMAIL))
-        .willReturn(GetSignUserResponseDto.builder()
+    given(userService.getUser(EMAIL))
+        .willReturn(SignUserResponseDto.builder()
             .email(EMAIL)
             .nickname(NICKNAME)
             .profileImage("http://image.png")
@@ -130,8 +128,8 @@ public class UserControllerDocsTest extends RestDocsSecuritySupport {
     UserProfileUpdateRequestDto request = new UserProfileUpdateRequestDto(
         "http://localhost:2344/cProfileImage.png"
     );
-    given(userService.getSignUser(EMAIL))
-        .willReturn(GetSignUserResponseDto.builder()
+    given(userService.getUser(EMAIL))
+        .willReturn(SignUserResponseDto.builder()
             .email(EMAIL)
             .nickname(NICKNAME)
             .profileImage("http://image.png")

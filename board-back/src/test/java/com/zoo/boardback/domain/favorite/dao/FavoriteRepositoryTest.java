@@ -1,6 +1,6 @@
 package com.zoo.boardback.domain.favorite.dao;
 
-import static com.zoo.boardback.domain.auth.entity.role.UserRole.GENERAL_USER;
+import static com.zoo.boardback.domain.user.entity.role.UserRole.GENERAL_USER;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.zoo.boardback.IntegrationTestSupport;
@@ -83,7 +83,7 @@ class FavoriteRepositoryTest extends IntegrationTestSupport {
     favoriteRepository.save(saveFavorite1);
 
     // when
-    List<Favorite> recommenderUserList = favoriteRepository.findRecommendersByBoard(post1);
+    List<Favorite> recommenderUserList = favoriteRepository.findRecommendersByPost(post1);
 
     // then
     assertThat(recommenderUserList).hasSize(1);

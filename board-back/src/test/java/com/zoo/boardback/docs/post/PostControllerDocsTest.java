@@ -1,7 +1,7 @@
 package com.zoo.boardback.docs.post;
 
 
-import static com.zoo.boardback.domain.auth.entity.role.UserRole.GENERAL_USER;
+import static com.zoo.boardback.domain.user.entity.role.UserRole.GENERAL_USER;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
@@ -31,9 +31,9 @@ import com.zoo.boardback.domain.post.dto.response.PostDetailResponseDto;
 import com.zoo.boardback.domain.post.dto.response.PostSearchResponseDto;
 import com.zoo.boardback.domain.post.dto.response.PostsTop3ResponseDto;
 import com.zoo.boardback.domain.post.dto.response.object.PostRankItem;
-import com.zoo.boardback.domain.favorite.dto.object.FavoriteListItem;
+import com.zoo.boardback.domain.favorite.dto.response.object.FavoriteListItem;
 import com.zoo.boardback.domain.favorite.dto.response.FavoriteListResponseDto;
-import com.zoo.boardback.domain.user.dto.response.GetSignUserResponseDto;
+import com.zoo.boardback.domain.user.dto.response.SignUserResponseDto;
 import com.zoo.boardback.domain.user.entity.User;
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -98,8 +98,8 @@ public class PostControllerDocsTest extends RestDocsSecuritySupport {
         , "테스트1", "테스트내용1", "test123@naver.com", "개구리왕눈이");
 
     given(postService.find(any(Long.class))).willReturn(response);
-    given(userService.getSignUser(EMAIL))
-        .willReturn(GetSignUserResponseDto.builder()
+    given(userService.getUser(EMAIL))
+        .willReturn(SignUserResponseDto.builder()
             .email(EMAIL)
             .nickname(NICKNAME)
             .profileImage("http://image.png")
@@ -173,8 +173,8 @@ public class PostControllerDocsTest extends RestDocsSecuritySupport {
 
     given(postService.getPosts(condition, Pageable.ofSize(5)))
         .willReturn(response);
-    given(userService.getSignUser(EMAIL))
-        .willReturn(GetSignUserResponseDto.builder()
+    given(userService.getUser(EMAIL))
+        .willReturn(SignUserResponseDto.builder()
             .email(EMAIL)
             .nickname(NICKNAME)
             .profileImage("http://image.png")
@@ -286,10 +286,10 @@ public class PostControllerDocsTest extends RestDocsSecuritySupport {
             .profileImage("http://profileImage.png")
             .build())
     ).isEmpty(false).build();
-    given(favoriteService.getFavoriteList(any(Long.class)))
+    given(favoriteService.getFavorites(any(Long.class)))
         .willReturn(response);
-    given(userService.getSignUser(EMAIL))
-        .willReturn(GetSignUserResponseDto.builder()
+    given(userService.getUser(EMAIL))
+        .willReturn(SignUserResponseDto.builder()
             .email(EMAIL)
             .nickname(NICKNAME)
             .profileImage("http://image.png")
@@ -432,8 +432,8 @@ public class PostControllerDocsTest extends RestDocsSecuritySupport {
 
     given(postService.getTop3Posts(any(LocalDateTime.class), any(LocalDateTime.class)))
         .willReturn(response);
-    given(userService.getSignUser(EMAIL))
-        .willReturn(GetSignUserResponseDto.builder()
+    given(userService.getUser(EMAIL))
+        .willReturn(SignUserResponseDto.builder()
             .email(EMAIL)
             .nickname(NICKNAME)
             .profileImage("http://image.png")

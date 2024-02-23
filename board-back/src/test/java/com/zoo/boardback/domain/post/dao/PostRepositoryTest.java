@@ -1,6 +1,6 @@
 package com.zoo.boardback.domain.post.dao;
 
-import static com.zoo.boardback.domain.auth.entity.role.UserRole.GENERAL_USER;
+import static com.zoo.boardback.domain.user.entity.role.UserRole.GENERAL_USER;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.zoo.boardback.IntegrationTestSupport;

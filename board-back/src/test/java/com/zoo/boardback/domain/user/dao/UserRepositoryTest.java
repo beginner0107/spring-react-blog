@@ -1,6 +1,6 @@
 package com.zoo.boardback.domain.user.dao;
 
-import static com.zoo.boardback.domain.auth.entity.role.UserRole.GENERAL_USER;
+import static com.zoo.boardback.domain.user.entity.role.UserRole.GENERAL_USER;
 import static org.assertj.core.api.Assertions.*;
 
 import com.zoo.boardback.IntegrationTestSupport;
@@ -8,7 +8,6 @@ import com.zoo.boardback.domain.auth.entity.Authority;
 import com.zoo.boardback.domain.user.entity.User;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

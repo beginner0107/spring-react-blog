@@ -12,7 +12,7 @@ import com.zoo.boardback.ControllerTestSupport;
 import com.zoo.boardback.WithAuthUser;
 import com.zoo.boardback.domain.user.dto.request.NicknameUpdateRequestDto;
 import com.zoo.boardback.domain.user.dto.request.UserProfileUpdateRequestDto;
-import com.zoo.boardback.domain.user.dto.response.GetSignUserResponseDto;
+import com.zoo.boardback.domain.user.dto.response.SignUserResponseDto;
 import com.zoo.boardback.domain.user.entity.User;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
@@ -28,8 +28,8 @@ class UserControllerTest extends ControllerTestSupport {
     // given
     String email = "test123@naver.com";
     String nickname = "개구리왕눈이123";
-    given(userService.getSignUser(email))
-        .willReturn(GetSignUserResponseDto.builder()
+    given(userService.getUser(email))
+        .willReturn(SignUserResponseDto.builder()
             .email(email)
             .nickname(nickname)
             .build()

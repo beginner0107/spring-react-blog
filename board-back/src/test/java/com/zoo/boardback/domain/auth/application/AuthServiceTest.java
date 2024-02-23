@@ -1,6 +1,6 @@
 package com.zoo.boardback.domain.auth.application;
 
-import static com.zoo.boardback.domain.auth.entity.role.UserRole.GENERAL_USER;
+import static com.zoo.boardback.domain.user.entity.role.UserRole.GENERAL_USER;
 import static com.zoo.boardback.global.error.ErrorCode.USER_EMAIL_DUPLICATE;
 import static com.zoo.boardback.global.error.ErrorCode.USER_LOGIN_ID_DUPLICATE;
 import static com.zoo.boardback.global.error.ErrorCode.USER_LOGIN_TEL_NUMBER_DUPLICATE;

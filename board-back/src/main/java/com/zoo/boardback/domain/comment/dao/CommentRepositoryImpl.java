@@ -22,7 +22,7 @@ public class CommentRepositoryImpl implements CommentRepositoryCustom{
   }
 
   @Override
-  public Page<CommentQueryDto> getCommentsList(Post post, Pageable pageable) {
+  public Page<CommentQueryDto> getComments(Post post, Pageable pageable) {
     List<CommentQueryDto> comments = queryFactory
         .select(constructor(CommentQueryDto.class,
                 comment.id,

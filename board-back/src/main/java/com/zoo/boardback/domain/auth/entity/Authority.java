@@ -3,7 +3,7 @@ package com.zoo.boardback.domain.auth.entity;
 import static lombok.AccessLevel.PROTECTED;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.zoo.boardback.domain.auth.entity.role.UserRole;
+import com.zoo.boardback.domain.user.entity.role.UserRole;
 import com.zoo.boardback.domain.user.entity.User;
 import com.zoo.boardback.global.entity.BaseEntity;
 import jakarta.persistence.Entity;

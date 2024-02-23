@@ -4,7 +4,7 @@ import static com.zoo.boardback.global.error.ErrorCode.USER_LOGIN_ID_DUPLICATE;
 import static com.zoo.boardback.global.error.ErrorCode.USER_NOT_FOUND;
 
 import com.zoo.boardback.domain.user.dao.UserRepository;
-import com.zoo.boardback.domain.user.dto.response.GetSignUserResponseDto;
+import com.zoo.boardback.domain.user.dto.response.SignUserResponseDto;
 import com.zoo.boardback.domain.user.entity.User;
 import com.zoo.boardback.global.error.BusinessException;
 import lombok.RequiredArgsConstructor;
@@ -18,10 +18,10 @@ public class UserService {
 
   private final UserRepository userRepository;
 
-  public GetSignUserResponseDto getSignUser(String email) {
+  public SignUserResponseDto getUser(String email) {
     User user = userRepository.findByEmail(email)
         .orElseThrow(() -> new BusinessException(email, "email", USER_NOT_FOUND));
-    return GetSignUserResponseDto.from(user);
+    return SignUserResponseDto.from(user);
   }
 
   @Transactional

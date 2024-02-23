@@ -114,7 +114,7 @@ public class PostController {
   public ApiResponse<FavoriteListResponseDto> getFavoriteListForPost(
       @PathVariable Long postId
   ) {
-    return ApiResponse.ok(favoriteService.getFavoriteList(postId));
+    return ApiResponse.ok(favoriteService.getFavorites(postId));
   }
 
   @GetMapping("/top3")

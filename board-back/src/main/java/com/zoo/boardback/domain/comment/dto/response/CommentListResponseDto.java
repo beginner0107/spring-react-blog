@@ -27,9 +27,9 @@ public class CommentListResponseDto {
   public static CommentListResponseDto from(Page<CommentQueryDto> comments) {
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
-    List<CommentResponse> commentListResponse = comments.stream()
+    List<CommentResponse> commentsResponse = comments.stream()
         .map(comment -> CommentResponse.builder()
-            .commentNumber(comment.getCommentId())
+            .commentId(comment.getCommentId())
             .nickname(comment.getNickname())
             .profileImage(comment.getProfileImage())
             .content(comment.getContent())
@@ -38,6 +38,6 @@ public class CommentListResponseDto {
             .build())
         .collect(Collectors.toList());
     Long totalElements = comments.getTotalElements();
-    return new CommentListResponseDto(commentListResponse, totalElements);
+    return new CommentListResponseDto(commentsResponse, totalElements);
   }
 }

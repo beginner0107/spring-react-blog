@@ -2,8 +2,8 @@ package com.zoo.boardback.domain.post.application;
 
 import static com.zoo.boardback.domain.searchLog.entity.type.SearchType.NOT_EXIST_SEARCH_WORD;
 import static com.zoo.boardback.domain.searchLog.entity.type.SearchType.findSearchWord;
-import static com.zoo.boardback.global.error.ErrorCode.BOARD_NOT_CUD_MATCHING_USER;
-import static com.zoo.boardback.global.error.ErrorCode.BOARD_NOT_FOUND;
+import static com.zoo.boardback.global.error.ErrorCode.POST_NOT_CUD_MATCHING_USER;
+import static com.zoo.boardback.global.error.ErrorCode.POST_NOT_FOUND;
 import static com.zoo.boardback.global.error.ErrorCode.USER_NOT_FOUND;
 import static java.util.stream.Collectors.toList;
 import static org.springframework.util.StringUtils.hasText;
@@ -95,7 +95,7 @@ public class PostService {
   @Transactional
   public PostDetailResponseDto find(Long postId) {
     Post post = postRepository.findById(postId).orElseThrow(() ->
-        new BusinessException(postId, "postId", BOARD_NOT_FOUND));
+        new BusinessException(postId, "postId", POST_NOT_FOUND));
 
     List<String> boardImageList = findBoardImages(post);
     return PostDetailResponseDto.of(post, boardImageList);
@@ -104,8 +104,8 @@ public class PostService {
   @Transactional
   public void update(Long postId, String email, PostUpdateRequestDto requestDto) {
     Post post = postRepository.findById(postId).orElseThrow(() ->
-        new BusinessException(postId, "postId", BOARD_NOT_FOUND));
-    verifyBoardOwnership(email, post);
+        new BusinessException(postId, "postId", POST_NOT_FOUND));
+    checkPostAuthorMatching(email, post);
     post.editPost(requestDto.getTitle(), requestDto.getContent());
 
     List<String> boardImageList = requestDto.getBoardImageList();
@@ -117,11 +117,11 @@ public class PostService {
   @Transactional
   public void delete(Long postId, String email) {
     Post post = postRepository.findById(postId).orElseThrow(() ->
-        new BusinessException(postId, "postId", BOARD_NOT_FOUND));
-    verifyBoardOwnership(email, post);
+        new BusinessException(postId, "postId", POST_NOT_FOUND));
+    checkPostAuthorMatching(email, post);
     imageRepository.deleteByBoard(post);
-    commentRepository.deleteByBoard(post);
-    favoriteRepository.deleteByBoard(post);
+    commentRepository.deleteByPost(post);
+    favoriteRepository.deleteByPost(post);
     postRepository.delete(post);
   }
 
@@ -136,9 +136,9 @@ public class PostService {
     imageRepository.saveAll(images);
   }
 
-  private void verifyBoardOwnership(String email, Post post) {
+  private void checkPostAuthorMatching(String email, Post post) {
     if (!post.getUser().getEmail().equals(email)) {
-      throw new BusinessException(email, "email", BOARD_NOT_CUD_MATCHING_USER);
+      throw new BusinessException(email, "email", POST_NOT_CUD_MATCHING_USER);
     }
   }
 

@@ -19,9 +19,9 @@ public interface FavoriteRepository extends JpaRepository<Favorite, FavoritePk> 
       "WHERE f.favoritePk.post = :post " +
       "ORDER BY f.createdAt DESC"
   )
-  List<Favorite> findRecommendersByBoard(@Param("post") Post post);
+  List<Favorite> findRecommendersByPost(@Param("post") Post post);
 
   @Modifying
   @Query("DELETE FROM Favorite f WHERE f.favoritePk.post = :post")
-  void deleteByBoard(@Param("post") Post post);
+  void deleteByPost(@Param("post") Post post);
 }

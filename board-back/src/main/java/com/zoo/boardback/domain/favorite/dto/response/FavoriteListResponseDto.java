@@ -3,7 +3,7 @@ package com.zoo.boardback.domain.favorite.dto.response;
 import static java.util.stream.Collectors.toList;
 import static lombok.AccessLevel.PRIVATE;
 
-import com.zoo.boardback.domain.favorite.dto.object.FavoriteListItem;
+import com.zoo.boardback.domain.favorite.dto.response.object.FavoriteListItem;
 import com.zoo.boardback.domain.favorite.dto.query.FavoriteQueryDto;
 import java.util.List;
 import lombok.Builder;

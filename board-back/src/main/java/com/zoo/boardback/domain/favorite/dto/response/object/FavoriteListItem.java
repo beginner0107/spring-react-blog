@@ -1,4 +1,4 @@
-package com.zoo.boardback.domain.favorite.dto.object;
+package com.zoo.boardback.domain.favorite.dto.response.object;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

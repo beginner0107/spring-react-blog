@@ -25,7 +25,6 @@ import com.zoo.boardback.domain.comment.dto.request.CommentCreateRequestDto;
 import com.zoo.boardback.domain.comment.dto.request.CommentUpdateRequestDto;
 import com.zoo.boardback.domain.comment.dto.response.CommentListResponseDto;
 import com.zoo.boardback.domain.comment.dto.response.CommentResponse;
-import com.zoo.boardback.domain.user.dto.response.GetSignUserResponseDto;
 import com.zoo.boardback.domain.user.entity.User;
 import java.util.List;
 import java.util.Optional;
@@ -94,7 +93,7 @@ public class CommentControllerDocsTest extends RestDocsSecuritySupport {
         .commentListResponse(
             List.of(
                 CommentResponse.builder()
-                    .commentNumber(2L)
+                    .commentId(2L)
                     .content("댓글 작성2")
                     .nickname("닉네임2")
                     .profileImage("http://localhost:8080/image2.png")
@@ -131,7 +130,7 @@ public class CommentControllerDocsTest extends RestDocsSecuritySupport {
                     .description("총 댓글 개수"),
                 fieldWithPath("data.commentListResponse").type(JsonFieldType.ARRAY)
                     .description("댓글 목록"),
-                fieldWithPath("data.commentListResponse[0].commentNumber").type(JsonFieldType.NUMBER)
+                fieldWithPath("data.commentListResponse[0].commentId").type(JsonFieldType.NUMBER)
                     .description("댓글 번호"),
                 fieldWithPath("data.commentListResponse[0].content").type(JsonFieldType.STRING)
                     .description("댓글 내용"),

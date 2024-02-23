@@ -96,7 +96,7 @@ class CommentControllerTest extends ControllerTestSupport {
             .commentListResponse(
                 List.of(
                   CommentResponse.builder()
-                      .commentNumber(2L)
+                      .commentId(2L)
                       .content("댓글 작성2")
                       .nickname("닉네임2")
                       .profileImage("http://localhost:8080/image2.png")
@@ -104,7 +104,7 @@ class CommentControllerTest extends ControllerTestSupport {
                       .updatedAt("2024-01-20 22:52:59")
                       .build(),
                   CommentResponse.builder()
-                      .commentNumber(1L)
+                      .commentId(1L)
                       .content("댓글 작성1")
                       .nickname("닉네임1")
                       .profileImage("http://localhost:8080/image1.png")
@@ -127,11 +127,11 @@ class CommentControllerTest extends ControllerTestSupport {
         .andExpect(jsonPath("$.message").value("OK"))
         .andExpect(jsonPath("$.data.totalElements").value(2))
         .andExpect(jsonPath("$.data.commentListResponse").hasJsonPath())
-        .andExpect(jsonPath("$.data.commentListResponse[0].commentNumber").value(2))
+        .andExpect(jsonPath("$.data.commentListResponse[0].commentId").value(2))
         .andExpect(jsonPath("$.data.commentListResponse[0].content").value("댓글 작성2"))
         .andExpect(jsonPath("$.data.commentListResponse[0].nickname").value("닉네임2"))
         .andExpect(jsonPath("$.data.commentListResponse[0].profileImage").value("http://localhost:8080/image2.png"))
-        .andExpect(jsonPath("$.data.commentListResponse[1].commentNumber").value(1))
+        .andExpect(jsonPath("$.data.commentListResponse[1].commentId").value(1))
         .andExpect(jsonPath("$.data.commentListResponse[1].content").value("댓글 작성1"))
         .andExpect(jsonPath("$.data.commentListResponse[1].nickname").value("닉네임1"))
         .andExpect(jsonPath("$.data.commentListResponse[1].profileImage").value("http://localhost:8080/image1.png"));
@@ -160,7 +160,7 @@ class CommentControllerTest extends ControllerTestSupport {
         .andExpect(jsonPath("$.message").value("OK"))
         .andExpect(jsonPath("$.field").isEmpty())
         .andExpect(jsonPath("$.data").isEmpty());
-    then(commentService).should(times(1)).editComment(anyString(), anyLong(), any());
+    then(commentService).should(times(1)).update(anyString(), anyLong(), any());
   }
 
   @DisplayName("댓글의 내용을 입력하지 않으면 댓글이 수정되지 않는다.")
@@ -204,7 +204,7 @@ class CommentControllerTest extends ControllerTestSupport {
         .andExpect(jsonPath("$.code").value(204))
         .andExpect(jsonPath("$.status").value("NO_CONTENT"))
         .andExpect(jsonPath("$.message").value("NO_CONTENT"));
-    then(commentService).should(times(1)).deleteComment(anyLong(), anyString());
+    then(commentService).should(times(1)).delete(anyLong(), anyString());
   }
 
   private CommentCreateRequestDto createComment(Long postId, String content) {

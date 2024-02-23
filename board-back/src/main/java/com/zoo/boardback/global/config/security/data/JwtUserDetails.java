@@ -1,4 +1,4 @@
-package com.zoo.boardback.domain.auth.details;
+package com.zoo.boardback.global.config.security.data;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -9,15 +9,15 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 @RequiredArgsConstructor
-public class CustomUserDetails implements UserDetails {
+public class JwtUserDetails implements UserDetails {
 
   private final String id;
-  private final List<String> roles;
+  private final List<String> userRoles;
 
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {
     List<SimpleGrantedAuthority> authorities = new ArrayList<>();
-    for (String role : roles) {
+    for (String role : userRoles) {
       authorities.add(new SimpleGrantedAuthority(role));
     }
     return authorities;

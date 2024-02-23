@@ -1,6 +1,6 @@
 package com.zoo.boardback.domain.favorite.application;
 
-import static com.zoo.boardback.global.error.ErrorCode.BOARD_NOT_FOUND;
+import static com.zoo.boardback.global.error.ErrorCode.POST_NOT_FOUND;
 import static com.zoo.boardback.global.error.ErrorCode.USER_NOT_FOUND;
 
 import com.zoo.boardback.domain.favorite.dao.FavoriteRepository;
@@ -29,9 +29,9 @@ public class FavoriteService {
   private final UserRepository userRepository;
 
   @Transactional
-  public void putFavorite(Long postId, String email) {
+  public void like(Long postId, String email) {
     Post post = postRepository.findById(postId).orElseThrow(() ->
-        new BusinessException(postId, "postId", BOARD_NOT_FOUND));
+        new BusinessException(postId, "postId", POST_NOT_FOUND));
 
     User user = userRepository.findByEmail(email).orElseThrow(() ->
         new BusinessException(email, "email", USER_NOT_FOUND));
@@ -47,9 +47,9 @@ public class FavoriteService {
   }
 
   @Transactional
-  public void putFavoriteCancel(Long postId, String email) {
+  public void cancelLike(Long postId, String email) {
     Post post = postRepository.findById(postId).orElseThrow(() ->
-        new BusinessException(postId, "postId", BOARD_NOT_FOUND));
+        new BusinessException(postId, "postId", POST_NOT_FOUND));
 
     User user = userRepository.findByEmail(email).orElseThrow(() ->
         new BusinessException(email, "email", USER_NOT_FOUND));
@@ -61,13 +61,13 @@ public class FavoriteService {
     }
   }
 
-  public FavoriteListResponseDto getFavoriteList(Long postId) {
+  public FavoriteListResponseDto getFavorites(Long postId) {
     Post post = postRepository.findById(postId).orElseThrow(() ->
-        new BusinessException(postId, "postId", BOARD_NOT_FOUND));
-    List<Favorite> favoriteList = favoriteRepository.findRecommendersByBoard(post);
-    List<FavoriteQueryDto> favoriteQueryDtoList = favoriteList.stream()
+        new BusinessException(postId, "postId", POST_NOT_FOUND));
+    List<Favorite> favorites = favoriteRepository.findRecommendersByPost(post);
+    List<FavoriteQueryDto> favoritesQueryDtos = favorites.stream()
         .map(FavoriteQueryDto::from)
         .collect(Collectors.toList());
-    return FavoriteListResponseDto.from(favoriteQueryDtoList);
+    return FavoriteListResponseDto.from(favoritesQueryDtos);
   }
 }

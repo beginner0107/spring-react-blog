@@ -1,6 +1,6 @@
 package com.zoo.boardback.domain.favorite.application;
 
-import static com.zoo.boardback.domain.auth.entity.role.UserRole.GENERAL_USER;
+import static com.zoo.boardback.domain.user.entity.role.UserRole.GENERAL_USER;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.zoo.boardback.IntegrationTestSupport;
@@ -55,7 +55,7 @@ class FavoriteServiceTest extends IntegrationTestSupport {
     Long boardNumber = postList.get(0).getId();
 
     // when
-    favoriteService.putFavorite(boardNumber, "test12@naver.com");
+    favoriteService.like(boardNumber, "test12@naver.com");
 
     // then
     List<Favorite> favoriteList = favoriteRepository.findAll();
@@ -86,7 +86,7 @@ class FavoriteServiceTest extends IntegrationTestSupport {
     favoriteRepository.save(saveFavorite);
 
     // when
-    favoriteService.putFavoriteCancel(boardNumber, "test12@naver.com");
+    favoriteService.cancelLike(boardNumber, "test12@naver.com");
 
     // then
     List<Favorite> favoriteList = favoriteRepository.findAll();
@@ -119,7 +119,7 @@ class FavoriteServiceTest extends IntegrationTestSupport {
     Long boardNumber = postList.get(0).getId();
 
     // when
-    FavoriteListResponseDto favoriteList = favoriteService.getFavoriteList(boardNumber);
+    FavoriteListResponseDto favoriteList = favoriteService.getFavorites(boardNumber);
 
     // then
     assertThat(favoriteList.getFavoriteList()).hasSize(2);

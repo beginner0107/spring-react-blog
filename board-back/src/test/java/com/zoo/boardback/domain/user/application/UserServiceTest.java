@@ -1,6 +1,6 @@
 package com.zoo.boardback.domain.user.application;
 
-import static com.zoo.boardback.domain.auth.entity.role.UserRole.GENERAL_USER;
+import static com.zoo.boardback.domain.user.entity.role.UserRole.GENERAL_USER;
 import static com.zoo.boardback.global.error.ErrorCode.*;
 import static org.assertj.core.api.Assertions.*;
 
@@ -8,10 +8,9 @@ import com.zoo.boardback.IntegrationTestSupport;
 import com.zoo.boardback.domain.auth.dao.AuthRepository;
 import com.zoo.boardback.domain.auth.entity.Authority;
 import com.zoo.boardback.domain.user.dao.UserRepository;
-import com.zoo.boardback.domain.user.dto.response.GetSignUserResponseDto;
+import com.zoo.boardback.domain.user.dto.response.SignUserResponseDto;
 import com.zoo.boardback.domain.user.entity.User;
 import com.zoo.boardback.global.error.BusinessException;
-import com.zoo.boardback.global.error.ErrorCode;
 import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.AfterEach;
@@ -44,7 +43,7 @@ class UserServiceTest extends IntegrationTestSupport {
     userRepository.save(user);
 
     // when
-    GetSignUserResponseDto userResponseDto = userService.getSignUser(email);
+    SignUserResponseDto userResponseDto = userService.getUser(email);
 
     // then
     assertThat(userResponseDto.getEmail()).isEqualTo(email);
@@ -58,7 +57,7 @@ class UserServiceTest extends IntegrationTestSupport {
     // given
 
     // when & then
-    assertThatThrownBy(() -> userService.getSignUser("test12@naver.com"))
+    assertThatThrownBy(() -> userService.getUser("test12@naver.com"))
         .isInstanceOf(BusinessException.class)
         .hasMessage(USER_NOT_FOUND.getMessage());
   }

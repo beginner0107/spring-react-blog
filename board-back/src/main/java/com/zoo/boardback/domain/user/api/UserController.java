@@ -4,7 +4,7 @@ import com.zoo.boardback.domain.ApiResponse;
 import com.zoo.boardback.domain.user.application.UserService;
 import com.zoo.boardback.domain.user.dto.request.NicknameUpdateRequestDto;
 import com.zoo.boardback.domain.user.dto.request.UserProfileUpdateRequestDto;
-import com.zoo.boardback.domain.user.dto.response.GetSignUserResponseDto;
+import com.zoo.boardback.domain.user.dto.response.SignUserResponseDto;
 import com.zoo.boardback.domain.user.entity.User;
 import com.zoo.boardback.global.config.security.annotation.LoginUser;
 import jakarta.validation.Valid;
@@ -22,10 +22,10 @@ public class UserController {
   private final UserService userService;
 
   @GetMapping
-  public ApiResponse<GetSignUserResponseDto> getSignInUser(
+  public ApiResponse<SignUserResponseDto> getUser(
       @LoginUser User user
   ) {
-    return ApiResponse.ok(userService.getSignUser(user.getEmail()));
+    return ApiResponse.ok(userService.getUser(user.getEmail()));
   }
 
   @PatchMapping("/nickname")

@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = PRIVATE)
 @Builder
 public class CommentResponse {
-  private Long commentNumber;
+  private Long commentId;
   private String nickname;
   private String profileImage;
   private String content;
@@ -18,10 +18,10 @@ public class CommentResponse {
   private String updatedAt;
 
   @Builder
-  public CommentResponse(Long commentNumber, String nickname, String profileImage, String content
+  public CommentResponse(Long commentId, String nickname, String profileImage, String content
       , String createdAt, String updatedAt
   ) {
-    this.commentNumber = commentNumber;
+    this.commentId = commentId;
     this.nickname = nickname;
     this.profileImage = profileImage;
     this.content = content;

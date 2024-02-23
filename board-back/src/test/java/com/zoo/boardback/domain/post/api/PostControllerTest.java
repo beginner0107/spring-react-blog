@@ -19,7 +19,7 @@ import com.zoo.boardback.domain.post.dto.response.PostDetailResponseDto;
 import com.zoo.boardback.domain.post.dto.response.PostSearchResponseDto;
 import com.zoo.boardback.domain.post.dto.response.PostsTop3ResponseDto;
 import com.zoo.boardback.domain.post.dto.response.object.PostRankItem;
-import com.zoo.boardback.domain.favorite.dto.object.FavoriteListItem;
+import com.zoo.boardback.domain.favorite.dto.response.object.FavoriteListItem;
 import com.zoo.boardback.domain.favorite.dto.response.FavoriteListResponseDto;
 import com.zoo.boardback.domain.user.entity.User;
 import java.time.LocalDateTime;
@@ -130,7 +130,7 @@ class PostControllerTest extends ControllerTestSupport {
         .build();
     Page<PostSearchResponseDto> response = new PageImpl<>(List.of(searchResponse));
 
-    given(postService.searchPosts(condition, Pageable.ofSize(5)))
+    given(postService.getPosts(condition, Pageable.ofSize(5)))
         .willReturn(response);
 
     // when & then
@@ -223,7 +223,7 @@ class PostControllerTest extends ControllerTestSupport {
             .profileImage("https://profileImage.png")
             .build())
     ).isEmpty(false).build();
-    given(favoriteService.getFavoriteList(any(Long.class)))
+    given(favoriteService.getFavorites(any(Long.class)))
         .willReturn(response);
 
     // when & then

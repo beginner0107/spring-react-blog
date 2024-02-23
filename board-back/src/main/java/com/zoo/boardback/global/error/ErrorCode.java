@@ -18,11 +18,11 @@ public enum ErrorCode {
   USER_WRONG_ID_OR_PASSWORD("아이디 혹은 비밀번호가 잘못되었습니다.", HttpStatus.BAD_REQUEST),
   USER_WRONG_PASSWORD("비밀번호가 잘못되었습니다.", HttpStatus.BAD_REQUEST),
 
-  // BOARD
-  BOARD_NOT_FOUND("해당 게시물을 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
-  BOARD_CONTENT_NEED("게시글의 내용을 입력해주세요.", HttpStatus.BAD_REQUEST),
-  BOARD_COMMENT_NEED("게시글의 댓글 작성이 필요합니다.", HttpStatus.BAD_REQUEST),
-  BOARD_NOT_CUD_MATCHING_USER("게시글 작성자만 게시글을 변경 가능합니다.", HttpStatus.BAD_REQUEST),
+  // POST
+  POST_NOT_FOUND("해당 게시물을 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
+  POST_CONTENT_NEED("게시글의 내용을 입력해주세요.", HttpStatus.BAD_REQUEST),
+  POST_COMMENT_NEED("게시글의 댓글 작성이 필요합니다.", HttpStatus.BAD_REQUEST),
+  POST_NOT_CUD_MATCHING_USER("게시글 작성자만 게시글을 변경 가능합니다.", HttpStatus.BAD_REQUEST),
 
   // COMMENT
   COMMENT_NOT_FOUND("존재하지 않는 댓글입니다.", HttpStatus.NOT_FOUND),

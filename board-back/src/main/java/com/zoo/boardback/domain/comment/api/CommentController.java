@@ -30,7 +30,7 @@ public class CommentController {
   private final CommentService commentService;
 
   @PostMapping
-  public ApiResponse<Void> create(
+  public ApiResponse<Void> createComment(
       @RequestBody @Valid CommentCreateRequestDto requestDto,
       @LoginUser User user
   ) {
@@ -48,12 +48,12 @@ public class CommentController {
   }
 
   @PutMapping("/{commentId}")
-  public ApiResponse<Void> editComment(
+  public ApiResponse<Void> updateComment(
       @PathVariable Long commentId,
       @RequestBody @Valid CommentUpdateRequestDto commentUpdateRequestDto,
       @LoginUser User user
       ) {
-    commentService.editComment(user.getEmail(), commentId, commentUpdateRequestDto);
+    commentService.update(user.getEmail(), commentId, commentUpdateRequestDto);
     return ApiResponse.ok(null);
   }
 
@@ -62,7 +62,7 @@ public class CommentController {
       @LoginUser User user,
       @PathVariable Long commentId
   ) {
-    commentService.deleteComment(commentId, user.getEmail());
+    commentService.delete(commentId, user.getEmail());
     return ApiResponse.of(HttpStatus.NO_CONTENT, null);
   }
 }

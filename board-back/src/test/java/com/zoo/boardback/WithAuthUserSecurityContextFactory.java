@@ -1,10 +1,8 @@
 package com.zoo.boardback;
 
-import static com.zoo.boardback.domain.auth.entity.role.UserRole.GENERAL_USER;
-
-import com.zoo.boardback.domain.auth.details.CustomUserDetails;
+import com.zoo.boardback.global.config.security.data.JwtUserDetails;
 import com.zoo.boardback.domain.auth.entity.Authority;
-import com.zoo.boardback.domain.auth.entity.role.UserRole;
+import com.zoo.boardback.domain.user.entity.role.UserRole;
 import com.zoo.boardback.domain.user.entity.User;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -28,7 +26,7 @@ public class WithAuthUserSecurityContextFactory implements WithSecurityContextFa
     List<String> roles = authorities.stream()
         .map(Authority::getRoleName)
         .collect(Collectors.toList());
-    CustomUserDetails userDetails = new CustomUserDetails(userId, roles);
+    JwtUserDetails userDetails = new JwtUserDetails(userId, roles);
 
     UsernamePasswordAuthenticationToken token =
         new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());

@@ -7,6 +7,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.query.Param;
 
 public interface CommentRepositoryCustom {
-  Page<CommentQueryDto> getCommentsList(@Param("post") Post post, Pageable pageable);
+  Page<CommentQueryDto> getComments(@Param("post") Post post, Pageable pageable);
 
 }

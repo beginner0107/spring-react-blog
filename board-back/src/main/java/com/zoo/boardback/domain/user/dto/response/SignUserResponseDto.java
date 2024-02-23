@@ -12,14 +12,14 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor(access = PRIVATE)
 @Builder
-public class GetSignUserResponseDto {
+public class SignUserResponseDto {
 
   private String email;
   private String nickname;
   private String profileImage;
 
-  public static GetSignUserResponseDto from(User user) {
-    return GetSignUserResponseDto.builder()
+  public static SignUserResponseDto from(User user) {
+    return SignUserResponseDto.builder()
         .email(user.getEmail())
         .nickname(user.getNickname())
         .profileImage(user.getProfileImage())

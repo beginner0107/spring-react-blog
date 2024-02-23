@@ -1,4 +1,4 @@
-package com.zoo.boardback.domain.auth.entity.role;
+package com.zoo.boardback.domain.user.entity.role;
 
 import lombok.Getter;
 

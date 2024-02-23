@@ -35,5 +35,7 @@ public class AuthController {
     SignInResponseDto signInResponseDto = authService.signIn(request, httpRequest, httpResponse);
     return ApiResponse.ok(signInResponseDto);
   }
+
+  // TODO: 로그아웃 빠짐
 }
 

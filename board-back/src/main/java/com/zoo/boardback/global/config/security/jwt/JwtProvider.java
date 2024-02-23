@@ -1,6 +1,6 @@
 package com.zoo.boardback.global.config.security.jwt;
 
-import static com.zoo.boardback.domain.auth.entity.role.UserRole.GENERAL_USER;
+import static com.zoo.boardback.domain.user.entity.role.UserRole.GENERAL_USER;
 import static com.zoo.boardback.global.config.security.data.JwtValidationType.EMPTY;
 import static com.zoo.boardback.global.config.security.data.JwtValidationType.EXPIRED;
 import static com.zoo.boardback.global.config.security.data.JwtValidationType.MALFORMED;
@@ -10,7 +10,7 @@ import static com.zoo.boardback.global.config.security.data.JwtValidationType.UN
 import static com.zoo.boardback.global.config.security.data.JwtValidationType.VALID;
 import static com.zoo.boardback.global.config.security.data.JwtValidationType.WRONG_SIGNATURE;
 
-import com.zoo.boardback.domain.auth.details.CustomUserDetails;
+import com.zoo.boardback.global.config.security.data.JwtUserDetails;
 import com.zoo.boardback.domain.auth.entity.Authority;
 import com.zoo.boardback.global.config.security.data.JwtType;
 import com.zoo.boardback.global.config.security.data.TokenValidationResultDto;
@@ -96,7 +96,7 @@ public class JwtProvider {
   public Authentication getAuthentication(String token) {
     Claims claims = getClaim(token);
     List<String> roles = getRolesBy(claims);
-    UserDetails userDetails = new CustomUserDetails(claims.getSubject(), roles);
+    UserDetails userDetails = new JwtUserDetails(claims.getSubject(), roles);
     return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
   }
 

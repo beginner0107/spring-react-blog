@@ -1,0 +1,11 @@
+[[comments-getComments]]
+=== 대댓글 목록
+
+==== HTTP Request
+include::{snippets}/comments-getChildComments/http-request.adoc[]
+include::{snippets}/comments-getChildComments/path-parameters.adoc[]
+include::{snippets}/comments-getChildComments/query-parameters.adoc[]
+
+==== HTTP Response
+include::{snippets}/comments-getChildComments/http-response.adoc[]
+include::{snippets}/comments-getChildComments/response-fields.adoc[]

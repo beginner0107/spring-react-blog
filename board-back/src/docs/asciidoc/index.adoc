@@ -28,6 +28,7 @@ include::api/post/post-getPostsTop3.adoc[]
 == COMMENT API
 include::api/comments/comments-create.adoc[]
 include::api/comments/comments-getComments.adoc[]
+include::api/comments/comments-getChildComments.adoc[]
 include::api/comments/comments-editComment.adoc[]
 include::api/comments/comments-delete.adoc[]
 

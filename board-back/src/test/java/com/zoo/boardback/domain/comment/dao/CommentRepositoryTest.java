@@ -67,6 +67,8 @@ class CommentRepositoryTest extends IntegrationTestSupport {
         .content(content)
         .post(post)
         .user(user)
+        .parent(null)
+        .delYn(false)
         .build();
   }
 

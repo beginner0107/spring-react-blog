@@ -142,7 +142,9 @@ class CommentServiceTest extends IntegrationTestSupport {
 
     // then
     List<Comment> comments = commentRepository.findAll();
-    assertThat(comments).hasSize(0);
+    assertThat(comments).hasSize(1);
+    assertThat(comments.get(0).getDelYn()).isTrue();
+    assertThat(comments.get(0).getContent()).isEqualTo("[삭제된 댓글입니다]");
   }
 
   private User createUser(String email, String password, String telNumber, String nickname) {
@@ -178,6 +180,8 @@ class CommentServiceTest extends IntegrationTestSupport {
         .content(content)
         .post(post)
         .user(user)
+        .parent(null)
+        .delYn(false)
         .build();
   }
 

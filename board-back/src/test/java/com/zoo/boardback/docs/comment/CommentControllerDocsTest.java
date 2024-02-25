@@ -40,7 +40,7 @@ public class CommentControllerDocsTest extends RestDocsSecuritySupport {
   final static String EMAIL = "test123@naver.com";
   final static String NICKNAME = "개구리왕눈이123";
 
-  @DisplayName("게시글에 필요한 정보를 입력 후 등록을 하면 게시글이 저장된다.")
+  @DisplayName("댓글에 필요한 정보를 입력 후 등록을 하면 댓글이 저장된다.")
   @WithAuthUser(userId = "1", role = "ROLE_USER")
   @Test
   void createComment() throws Exception {
@@ -65,6 +65,8 @@ public class CommentControllerDocsTest extends RestDocsSecuritySupport {
             requestFields(
                 fieldWithPath("postId").type(JsonFieldType.NUMBER)
                     .description("Post Id"),
+                fieldWithPath("commentId").type(JsonFieldType.NUMBER)
+                    .description("Comment Id"),
                 fieldWithPath("content").type(JsonFieldType.STRING)
                     .description("게시글 내용")
             ),
@@ -99,6 +101,8 @@ public class CommentControllerDocsTest extends RestDocsSecuritySupport {
                     .profileImage("http://localhost:8080/image2.png")
                     .createdAt("2024-01-20 22:52:59")
                     .updatedAt("2024-01-20 22:52:59")
+                    .childCount(0L)
+                    .delYn(false)
                     .build()
             )
         ).totalElements(1L)
@@ -141,7 +145,11 @@ public class CommentControllerDocsTest extends RestDocsSecuritySupport {
                 fieldWithPath("data.commentListResponse[0].createdAt").type(JsonFieldType.STRING)
                     .description("댓글 생성일자"),
                 fieldWithPath("data.commentListResponse[0].updatedAt").type(JsonFieldType.STRING)
-                    .description("댓글 수정일자")
+                    .description("댓글 수정일자"),
+                fieldWithPath("data.commentListResponse[0].childCount").type(JsonFieldType.NUMBER)
+                    .description("자식 댓글의 개수"),
+                fieldWithPath("data.commentListResponse[0].delYn").type(JsonFieldType.BOOLEAN)
+                    .description("삭제 유무")
             )
         ));
   }
@@ -242,6 +250,7 @@ public class CommentControllerDocsTest extends RestDocsSecuritySupport {
     return CommentCreateRequestDto.builder()
         .postId(postId)
         .content(content)
+        .commentId(1L)
         .build();
   }
 }

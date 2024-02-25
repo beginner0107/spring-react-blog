@@ -16,10 +16,12 @@ public class CommentResponse {
   private String content;
   private String createdAt;
   private String updatedAt;
+  private Long childCount;
+  private Boolean delYn;
 
   @Builder
   public CommentResponse(Long commentId, String nickname, String profileImage, String content
-      , String createdAt, String updatedAt
+      , String createdAt, String updatedAt, Long childCount, Boolean delYn
   ) {
     this.commentId = commentId;
     this.nickname = nickname;
@@ -27,5 +29,7 @@ public class CommentResponse {
     this.content = content;
     this.createdAt = createdAt;
     this.updatedAt = updatedAt;
+    this.childCount = childCount;
+    this.delYn = delYn;
   }
 }

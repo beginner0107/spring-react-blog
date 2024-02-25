@@ -65,4 +65,14 @@ public class CommentController {
     commentService.delete(commentId, user.getEmail());
     return ApiResponse.of(HttpStatus.NO_CONTENT, null);
   }
+
+  @GetMapping("/post/{postId}/parentId/{parentId}")
+  public ApiResponse<CommentListResponseDto> getChildComments(
+      @PathVariable Long postId,
+      @PathVariable("parentId") Long commentId
+  ) {
+    CommentListResponseDto comments = commentService.getChildComments(
+        postId, commentId);
+    return ApiResponse.ok(comments);
+  }
 }

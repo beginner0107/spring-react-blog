@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @Builder
-public class CommentQueryDto {
+public class ChildCommentQueryDto {
   private Long commentId;
   private String nickname;
   private String profileImage;
@@ -19,7 +19,7 @@ public class CommentQueryDto {
   private Long childCount;
   private Boolean delYn;
 
-  public CommentQueryDto(Long commentId, String nickname, String profileImage, String content
+  public ChildCommentQueryDto(Long commentId, String nickname, String profileImage, String content
       , LocalDateTime createdAt, LocalDateTime updatedAt, Long childCount, Boolean delYn
   ) {
     this.commentId = commentId;

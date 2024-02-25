@@ -21,14 +21,17 @@ public class CommentCreateRequestDto {
   @NotNull(message = "게시글 번호를 입력해주세요")
   private Long postId;
 
+  private Long commentId;
+
   @NotBlank(message = "댓글 내용을 입력해주세요")
   @Size(max = MAX_REQUEST_COMMENT_LENGTH, message = "댓글 내용은 300자 이하로 입력해주세요.")
   private String content;
 
   @Builder
-  public CommentCreateRequestDto(Long postId, String content) {
+  public CommentCreateRequestDto(Long postId, String content, Long commentId) {
     this.postId = postId;
     this.content = content;
+    this.commentId = commentId;
   }
 
   public Comment toEntity(User user, Post post) {
@@ -36,6 +39,7 @@ public class CommentCreateRequestDto {
         .post(post)
         .user(user)
         .content(content)
+        .delYn(false)
         .build();
   }
 }

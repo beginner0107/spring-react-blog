@@ -315,8 +315,6 @@ class PostServiceTest extends IntegrationTestSupport {
     Image image = createImage(imageUrl, post);
     imageRepository.save(image);
 
-    LocalDateTime createdAt = LocalDateTime.now();
-    LocalDateTime updatedAt = LocalDateTime.now();
     Comment comment = createComment("댓글을 답니다1.!", newPost, newUser);
     commentRepository.save(comment);
 
@@ -348,8 +346,6 @@ class PostServiceTest extends IntegrationTestSupport {
     Image image = createImage(imageUrl, post);
     imageRepository.save(image);
 
-    LocalDateTime createdAt = LocalDateTime.now();
-    LocalDateTime updatedAt = LocalDateTime.now();
     Comment comment = createComment("댓글을 답니다1.!", newPost, newUser);
     commentRepository.save(comment);
 
@@ -464,6 +460,8 @@ class PostServiceTest extends IntegrationTestSupport {
         .content(content)
         .post(post)
         .user(user)
+        .parent(null)
+        .delYn(false)
         .build();
   }
 

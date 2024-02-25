@@ -100,6 +100,8 @@ class CommentControllerTest extends ControllerTestSupport {
                       .content("댓글 작성2")
                       .nickname("닉네임2")
                       .profileImage("http://localhost:8080/image2.png")
+                      .childCount(0L)
+                      .delYn(false)
                       .createdAt("2024-01-20 22:52:59")
                       .updatedAt("2024-01-20 22:52:59")
                       .build(),
@@ -108,6 +110,8 @@ class CommentControllerTest extends ControllerTestSupport {
                       .content("댓글 작성1")
                       .nickname("닉네임1")
                       .profileImage("http://localhost:8080/image1.png")
+                      .childCount(0L)
+                      .delYn(false)
                       .createdAt("2024-01-20 23:52:59")
                       .updatedAt("2024-01-20 23:52:59")
                       .build()
@@ -131,10 +135,74 @@ class CommentControllerTest extends ControllerTestSupport {
         .andExpect(jsonPath("$.data.commentListResponse[0].content").value("댓글 작성2"))
         .andExpect(jsonPath("$.data.commentListResponse[0].nickname").value("닉네임2"))
         .andExpect(jsonPath("$.data.commentListResponse[0].profileImage").value("http://localhost:8080/image2.png"))
+        .andExpect(jsonPath("$.data.commentListResponse[0].profileImage").value("http://localhost:8080/image2.png"))
+        .andExpect(jsonPath("$.data.commentListResponse[0].childCount").value(0))
+        .andExpect(jsonPath("$.data.commentListResponse[0].delYn").value(false))
         .andExpect(jsonPath("$.data.commentListResponse[1].commentId").value(1))
         .andExpect(jsonPath("$.data.commentListResponse[1].content").value("댓글 작성1"))
         .andExpect(jsonPath("$.data.commentListResponse[1].nickname").value("닉네임1"))
-        .andExpect(jsonPath("$.data.commentListResponse[1].profileImage").value("http://localhost:8080/image1.png"));
+        .andExpect(jsonPath("$.data.commentListResponse[1].profileImage").value("http://localhost:8080/image1.png"))
+        .andExpect(jsonPath("$.data.commentListResponse[1].childCount").value(0))
+        .andExpect(jsonPath("$.data.commentListResponse[1].delYn").value(false));
+  }
+
+  @DisplayName("게시글의 댓글의 대댓글 목록을 조회할 수 있다.")
+  @Test
+  void givenPostIdAndCommentId_whenGetChildComments_thenReturnChildComments() throws Exception {
+    // given
+    Long postId = 1L;
+    Long commentId = 1L;
+    CommentListResponseDto comments = CommentListResponseDto.builder()
+        .commentListResponse(
+            List.of(
+                CommentResponse.builder()
+                    .commentId(4L)
+                    .content("1번 댓글의 자식 2번 댓글")
+                    .nickname("닉네임2")
+                    .profileImage("http://localhost:8080/image2.png")
+                    .childCount(0L)
+                    .delYn(false)
+                    .createdAt("2024-01-22 23:55:59")
+                    .updatedAt("2024-01-22 23:55:59")
+                    .build(),
+                CommentResponse.builder()
+                    .commentId(3L)
+                    .content("1번 댓글의 자식 1번 댓글")
+                    .nickname("닉네임1")
+                    .profileImage("http://localhost:8080/image1.png")
+                    .childCount(0L)
+                    .delYn(false)
+                    .createdAt("2024-01-21 23:52:59")
+                    .updatedAt("2024-01-21 23:52:59")
+                    .build()
+            )
+        )
+        .totalElements(2L)
+        .build();
+    given(commentService.getChildComments(anyLong(), anyLong())).willReturn(comments);
+    createMockUser();
+
+    // when & then
+    mockMvc.perform(get("/api/v1/comments/post/{postId}/parentId/{parentId}", postId, commentId))
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.code").value(200))
+        .andExpect(jsonPath("$.status").value("OK"))
+        .andExpect(jsonPath("$.message").value("OK"))
+        .andExpect(jsonPath("$.data.totalElements").value(2))
+        .andExpect(jsonPath("$.data.commentListResponse").hasJsonPath())
+        .andExpect(jsonPath("$.data.commentListResponse[0].commentId").value(4))
+        .andExpect(jsonPath("$.data.commentListResponse[0].content").value("1번 댓글의 자식 2번 댓글"))
+        .andExpect(jsonPath("$.data.commentListResponse[0].nickname").value("닉네임2"))
+        .andExpect(jsonPath("$.data.commentListResponse[0].profileImage").value("http://localhost:8080/image2.png"))
+        .andExpect(jsonPath("$.data.commentListResponse[0].childCount").value(0))
+        .andExpect(jsonPath("$.data.commentListResponse[0].delYn").value(false))
+        .andExpect(jsonPath("$.data.commentListResponse[1].commentId").value(3))
+        .andExpect(jsonPath("$.data.commentListResponse[1].content").value("1번 댓글의 자식 1번 댓글"))
+        .andExpect(jsonPath("$.data.commentListResponse[1].nickname").value("닉네임1"))
+        .andExpect(jsonPath("$.data.commentListResponse[1].profileImage").value("http://localhost:8080/image1.png"))
+        .andExpect(jsonPath("$.data.commentListResponse[1].childCount").value(0))
+        .andExpect(jsonPath("$.data.commentListResponse[1].delYn").value(false));
   }
 
   @DisplayName("댓글의 내용을 변경 하면 댓글이 수정된다.")

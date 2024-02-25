@@ -111,7 +111,7 @@ public class CommentControllerDocsTest extends RestDocsSecuritySupport {
 
     mockMvc.perform(get("/api/v1/comments/post/{postId}", boardNumber))
         .andExpect(status().isOk())
-        .andDo(document("comments-getComments",
+        .andDo(document("comments-getChildComments",
             preprocessResponse(prettyPrint()),
             pathParameters(
                 parameterWithName("postId").description("Post Id")
@@ -132,6 +132,75 @@ public class CommentControllerDocsTest extends RestDocsSecuritySupport {
                     .description("에러 발생 필드명"),
                 fieldWithPath("data.totalElements").type(JsonFieldType.NUMBER)
                     .description("총 댓글 개수"),
+                fieldWithPath("data.commentListResponse").type(JsonFieldType.ARRAY)
+                    .description("댓글 목록"),
+                fieldWithPath("data.commentListResponse[0].commentId").type(JsonFieldType.NUMBER)
+                    .description("댓글 번호"),
+                fieldWithPath("data.commentListResponse[0].content").type(JsonFieldType.STRING)
+                    .description("댓글 내용"),
+                fieldWithPath("data.commentListResponse[0].nickname").type(JsonFieldType.STRING)
+                    .description("댓글 작성자 닉네임"),
+                fieldWithPath("data.commentListResponse[0].profileImage").type(JsonFieldType.STRING)
+                    .description("댓글 작성자 프로필 이미지 URL"),
+                fieldWithPath("data.commentListResponse[0].createdAt").type(JsonFieldType.STRING)
+                    .description("댓글 생성일자"),
+                fieldWithPath("data.commentListResponse[0].updatedAt").type(JsonFieldType.STRING)
+                    .description("댓글 수정일자"),
+                fieldWithPath("data.commentListResponse[0].childCount").type(JsonFieldType.NUMBER)
+                    .description("자식 댓글의 개수"),
+                fieldWithPath("data.commentListResponse[0].delYn").type(JsonFieldType.BOOLEAN)
+                    .description("삭제 유무")
+            )
+        ));
+  }
+
+  @DisplayName("대댓글의 목록을 조회한다.")
+  @Test
+  void getChildComments() throws Exception {
+    Long postId = 1L;
+    Long commentId = 1L;
+    CommentListResponseDto comments = CommentListResponseDto.builder()
+        .commentListResponse(
+            List.of(
+                CommentResponse.builder()
+                    .commentId(3L)
+                    .content("1번 댓글의 자식 1번 댓글")
+                    .nickname("닉네임1")
+                    .profileImage("http://localhost:8080/image1.png")
+                    .childCount(0L)
+                    .delYn(false)
+                    .createdAt("2024-01-21 23:52:59")
+                    .updatedAt("2024-01-21 23:52:59")
+                    .build()
+            )
+        ).totalElements(1L)
+        .build();
+    given(commentService.getChildComments(anyLong(), anyLong())).willReturn(comments);
+
+    mockMvc.perform(get("/api/v1/comments/post/{postId}/parentId/{parentId}", postId, commentId))
+        .andExpect(status().isOk())
+        .andDo(document("comments-getComments",
+            preprocessResponse(prettyPrint()),
+            pathParameters(
+                parameterWithName("postId").description("Post Id"),
+                parameterWithName("parentId").description("Parent Id")
+            ),
+            queryParameters(
+                parameterWithName("page").optional().description("페이지 번호"),
+                parameterWithName("size").optional().description("페이지 크기")
+            ),
+            responseFields(
+                fieldWithPath("code").type(JsonFieldType.NUMBER)
+                    .description("코드"),
+                fieldWithPath("status").type(JsonFieldType.STRING)
+                    .description("상태"),
+                fieldWithPath("message").type(JsonFieldType.STRING)
+                    .description("메시지"),
+                fieldWithPath("field").type(JsonFieldType.STRING)
+                    .optional()
+                    .description("에러 발생 필드명"),
+                fieldWithPath("data.totalElements").type(JsonFieldType.NUMBER)
+                    .description("총 댓글 개수"), // 페이징 수행 X, 전체 자식 댓글 목록 조회
                 fieldWithPath("data.commentListResponse").type(JsonFieldType.ARRAY)
                     .description("댓글 목록"),
                 fieldWithPath("data.commentListResponse[0].commentId").type(JsonFieldType.NUMBER)

@@ -20,8 +20,7 @@ class SearchLogControllerTest extends ControllerTestSupport {
   @Test
   void getPopularSearchWords() throws Exception {
     // given
-    PopularSearchWordResponseDto response = PopularSearchWordResponseDto.builder()
-        .searchWords(List.of()).build();
+    PopularSearchWordResponseDto response = PopularSearchWordResponseDto.withSearchWords(List.of());
     given(searchLogService.getPopularSearchWords(any(SearchType.class)))
         .willReturn(response);
 

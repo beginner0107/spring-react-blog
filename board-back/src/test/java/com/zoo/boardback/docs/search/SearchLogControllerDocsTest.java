@@ -37,10 +37,9 @@ public class SearchLogControllerDocsTest extends RestDocsSupport {
   @Test
   void getPopularSearchWords() throws Exception {
     // given
-    PopularSearchWordResponseDto response = PopularSearchWordResponseDto.builder()
-        .searchWords(List.of(
+    PopularSearchWordResponseDto response = PopularSearchWordResponseDto.withSearchWords(List.of(
             createPopularSearchWordDto()
-        )).build();
+        ));
     given(searchLogService.getPopularSearchWords(any(SearchType.class)))
         .willReturn(response);
 
@@ -78,9 +77,6 @@ public class SearchLogControllerDocsTest extends RestDocsSupport {
   }
 
   private PopularSearchWordDto createPopularSearchWordDto() {
-    return PopularSearchWordDto.builder()
-        .searchWord("검색")
-        .count(3L)
-        .build();
+      return new PopularSearchWordDto("검색", 3L);
   }
 }

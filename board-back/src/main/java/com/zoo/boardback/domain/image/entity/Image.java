@@ -47,12 +47,12 @@ public class Image extends BaseEntity {
         this.titleImageYn = titleImageYn;
     }
 
-    public static Image createPostImage(Post post, String imageUrl, Boolean titleImageYn) {
-        return createImage(post, imageUrl, titleImageYn);
+    public static Image createPostImage(Post post, String imageUrl) {
+        return createImage(post, imageUrl, false);
     }
 
-    public static Image createPostTitleImage(Post post, String imageUrl, Boolean titleImageYn) {
-        return createImage(post, imageUrl, titleImageYn);
+    public static Image createPostTitleImage(Post post, String imageUrl) {
+        return createImage(post, imageUrl, true);
     }
 
     private static Image createImage(Post post, String imageUrl, Boolean titleImageYn) {

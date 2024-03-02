@@ -16,6 +16,7 @@ import com.zoo.boardback.domain.post.entity.Post;
 import com.zoo.boardback.domain.user.entity.User;
 import com.zoo.boardback.global.error.BusinessException;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -29,68 +30,74 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class CommentService {
 
-  private final PostRepository postRepository;
-  private final CommentRepository commentRepository;
+    private final PostRepository postRepository;
+    private final CommentRepository commentRepository;
 
-  @Transactional
-  public void create(User user, CommentCreateRequestDto requestDto) {
-    Long postId = requestDto.getPostId();
-    Post post = postRepository.findById(postId).orElseThrow(
-        () -> new BusinessException(postId, "postId", POST_NOT_FOUND));
+    // 디미터 법칙
+    // findPostById
+    @Transactional
+    public void create(User user, CommentCreateRequestDto requestDto) {
+        Long postId = requestDto.getPostId();
+        Post post = postRepository.findById(postId).orElseThrow(
+            () -> new BusinessException(postId, "postId", POST_NOT_FOUND));
 
-    Comment parent = findOrCreateParentComment(requestDto.getCommentId());
+        // maybeParentComment
+        Optional<Comment> parent = findOrCreateParentComment(requestDto.getCommentId());
 
-    Comment child = requestDto.toEntity(user, post);
-    if (parent != null) {
-      parent.addChild(child);
+        Comment child = requestDto.toEntity(user, post);
+        linkParent(parent, child);
+        // Lock
+        // message queue
+        // 순차적으로 만든다.
+        //
+        post.increaseCommentCount();
     }
 
-    commentRepository.save(child);
-    post.increaseCommentCount();
-  }
+    private void linkParent(Optional<Comment> parent, Comment child) {
+        parent.ifPresent(comment -> comment.addChild(child));
 
-  public CommentListResponseDto getComments(Long postId, Pageable pageable) {
-    Post post = postRepository.findById(postId).orElseThrow(
-        () -> new BusinessException(postId, "postId", POST_NOT_FOUND));
-    Page<CommentQueryDto> comments = commentRepository.getComments(post, pageable);
-    return CommentListResponseDto.from(comments);
-  }
-
-  @Transactional
-  public void update(String email, Long commentId, CommentUpdateRequestDto requestDto) {
-    Comment comment = commentRepository.findById(commentId).orElseThrow(
-        () -> new BusinessException(commentId, "commentId", COMMENT_NOT_FOUND));
-    checkCommenterMatching(email, comment);
-    comment.editComment(requestDto);
-  }
-
-  @Transactional
-  public void delete(Long commentId, String email) {
-    Comment comment = commentRepository.findById(commentId).orElseThrow(
-        () -> new BusinessException(commentId, "commentId", COMMENT_NOT_FOUND));
-    checkCommenterMatching(email, comment);
-    comment.deleteComment();
-  }
-
-  public CommentListResponseDto getChildComments(Long postId, Long commentId) {
-    postRepository.findById(postId).orElseThrow(
-        () -> new BusinessException(postId, "postId", POST_NOT_FOUND));
-    List<ChildCommentQueryDto> comments = commentRepository.getChildComments(postId,
-        commentId);
-    return CommentListResponseDto.of(comments);
-  }
-
-  private void checkCommenterMatching(String email, Comment comment) {
-    if (!comment.getUser().getEmail().equals(email)) {
-      throw new BusinessException(comment, "comment", COMMENT_NOT_CUD_MATCHING_USER);
+        commentRepository.save(child);
     }
-  }
 
-  private Comment findOrCreateParentComment(Long parentId) {
-    if (parentId == null) {
-      return null;
+    public CommentListResponseDto getComments(Long postId, Pageable pageable) {
+        Post post = postRepository.findById(postId).orElseThrow(
+            () -> new BusinessException(postId, "postId", POST_NOT_FOUND));
+        Page<CommentQueryDto> comments = commentRepository.getComments(post, pageable);
+        return CommentListResponseDto.from(comments);
     }
-    return commentRepository.findById(parentId)
-        .orElseThrow(() -> new BusinessException(parentId, "commentId", COMMENT_NOT_FOUND));
-  }
+
+    @Transactional
+    public void update(String email, Long commentId, CommentUpdateRequestDto requestDto) {
+        Comment comment = commentRepository.findById(commentId).orElseThrow(
+            () -> new BusinessException(commentId, "commentId", COMMENT_NOT_FOUND));
+        checkCommenterMatching(email, comment);
+        comment.editComment(requestDto);
+    }
+
+    @Transactional
+    public void delete(Long commentId, String email) {
+        Comment comment = commentRepository.findById(commentId).orElseThrow(
+            () -> new BusinessException(commentId, "commentId", COMMENT_NOT_FOUND));
+        checkCommenterMatching(email, comment);
+        comment.deleteComment();
+    }
+
+    public CommentListResponseDto getChildComments(Long postId, Long commentId) {
+        postRepository.findById(postId).orElseThrow(
+            () -> new BusinessException(postId, "postId", POST_NOT_FOUND));
+        List<ChildCommentQueryDto> comments = commentRepository.getChildComments(postId,
+            commentId);
+        return CommentListResponseDto.of(comments);
+    }
+
+    private void checkCommenterMatching(String email, Comment comment) {
+        if (!comment.getUser().getEmail().equals(email)) {
+            throw new BusinessException(comment, "comment", COMMENT_NOT_CUD_MATCHING_USER);
+        }
+    }
+
+    private Optional<Comment> findOrCreateParentComment(Long parentId) {
+        return Optional.ofNullable(commentRepository.findById(parentId)
+            .orElseThrow(() -> new BusinessException(parentId, "commentId", COMMENT_NOT_FOUND)));
+    }
 }

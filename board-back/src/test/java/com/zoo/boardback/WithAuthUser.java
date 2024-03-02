@@ -7,6 +7,8 @@ import org.springframework.security.test.context.support.WithSecurityContext;
 @Retention(RetentionPolicy.RUNTIME)
 @WithSecurityContext(factory = WithAuthUserSecurityContextFactory.class)
 public @interface WithAuthUser {
-  String userId();
-  String role();
+
+    String userId();
+
+    String role();
 }

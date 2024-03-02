@@ -41,131 +41,130 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class PostService {
 
-  private final PostRepository postRepository;
-  private final UserRepository userRepository;
-  private final ImageRepository imageRepository;
-  private final CommentRepository commentRepository;
-  private final FavoriteRepository favoriteRepository;
-  private final SearchLogRepository searchLogRepository;
+    private final PostRepository postRepository;
+    private final UserRepository userRepository;
+    private final ImageRepository imageRepository;
+    private final CommentRepository commentRepository;
+    private final FavoriteRepository favoriteRepository;
+    private final SearchLogRepository searchLogRepository;
 
-  @Transactional
-  public void create(PostCreateRequestDto request, String email) {
-    User user = userRepository.findByEmail(email).orElseThrow(() ->
-        new BusinessException(email, "email", USER_NOT_FOUND));
+    @Transactional
+    public void create(PostCreateRequestDto request, String email) {
+        User user = userRepository.findByEmail(email).orElseThrow(() ->
+            new BusinessException(email, "email", USER_NOT_FOUND));
 
-    Post post = request.toEntity(user);
-    postRepository.save(post);
+        Post post = request.toEntity(user);
+        postRepository.save(post);
 
-    String boardTitleImage = request.getPostTitleImage();
-    if (hasText(boardTitleImage)) {
-      imageRepository.save(Image.builder()
-          .imageUrl(boardTitleImage)
-          .post(post)
-          .titleImageYn(true)
-          .build()
-      );
+        String boardTitleImage = request.getPostTitleImage();
+        if (hasText(boardTitleImage)) {
+            imageRepository.save(Image.builder()
+                .imageUrl(boardTitleImage)
+                .post(post)
+                .titleImageYn(true)
+                .build()
+            );
+        }
+        List<String> postImageList = request.getPostImageList();
+        if (!postImageList.isEmpty()) {
+            saveImages(postImageList, post);
+        }
     }
-    List<String> postImageList = request.getPostImageList();
-    if (!postImageList.isEmpty()) {
-      saveImages(postImageList, post);
+
+    public Page<PostSearchResponseDto> getPosts(PostSearchCondition condition, Pageable pageable) {
+        this.saveSearchLog(condition);
+        return postRepository.searchPosts(condition, pageable);
     }
-  }
 
-  public Page<PostSearchResponseDto> getPosts(PostSearchCondition condition, Pageable pageable) {
-    this.saveSearchLog(condition);
-    return postRepository.searchPosts(condition, pageable);
-  }
-
-  @Transactional
-  private void saveSearchLog(PostSearchCondition condition) {
-    SearchType searchType = SearchType.findSearchType(condition);
-    if (searchType != NOT_EXIST_SEARCH_WORD) {
-      String searchWord = findSearchWord(searchType, condition);
-      searchLogRepository.save(createdSearchLog(searchType, searchWord));
+    @Transactional
+    private void saveSearchLog(PostSearchCondition condition) {
+        SearchType searchType = SearchType.findSearchType(condition);
+        if (searchType != NOT_EXIST_SEARCH_WORD) {
+            String searchWord = findSearchWord(searchType, condition);
+            searchLogRepository.save(createdSearchLog(searchType, searchWord));
+        }
     }
-  }
 
-  private SearchLog createdSearchLog(SearchType searchType, String searchWord) {
-    return SearchLog.builder()
-        .searchType(searchType)
-        .searchWord(searchWord)
-        .build();
-  }
-
-  @Transactional
-  public PostDetailResponseDto find(Long postId) {
-    Post post = postRepository.findById(postId).orElseThrow(() ->
-        new BusinessException(postId, "postId", POST_NOT_FOUND));
-
-    List<String> boardImageList = findBoardImages(post);
-    return PostDetailResponseDto.of(post, boardImageList);
-  }
-
-  @Transactional
-  public void update(Long postId, String email, PostUpdateRequestDto requestDto) {
-    Post post = postRepository.findById(postId).orElseThrow(() ->
-        new BusinessException(postId, "postId", POST_NOT_FOUND));
-    checkPostAuthorMatching(email, post);
-    post.editPost(requestDto.getTitle(), requestDto.getContent());
-
-    List<String> boardImageList = requestDto.getBoardImageList();
-    List<Image> imageEntities = new ArrayList<>();
-
-    editImages(post, boardImageList, imageEntities);
-  }
-
-  @Transactional
-  public void delete(Long postId, String email) {
-    Post post = postRepository.findById(postId).orElseThrow(() ->
-        new BusinessException(postId, "postId", POST_NOT_FOUND));
-    checkPostAuthorMatching(email, post);
-    imageRepository.deleteByBoard(post);
-    commentRepository.deleteByPost(post);
-    favoriteRepository.deleteByPost(post);
-    postRepository.delete(post);
-  }
-
-  private void saveImages(List<String> boardImageList, Post post) {
-    List<Image> images = boardImageList.stream()
-        .map(image -> Image.builder()
-            .post(post)
-            .imageUrl(image)
-            .titleImageYn(false)
-            .build())
-        .collect(toList());
-    imageRepository.saveAll(images);
-  }
-
-  private void checkPostAuthorMatching(String email, Post post) {
-    if (!post.getUser().getEmail().equals(email)) {
-      throw new BusinessException(email, "email", POST_NOT_CUD_MATCHING_USER);
+    private SearchLog createdSearchLog(SearchType searchType, String searchWord) {
+        return SearchLog.builder()
+            .searchType(searchType)
+            .searchWord(searchWord)
+            .build();
     }
-  }
 
-  private List<String> findBoardImages(Post post) {
-    List<Image> imageList = imageRepository.findByPost(post);
-    List<String> boardImageList = new ArrayList<>();
-    for (Image image : imageList) {
-      String imageUrl = image.getImageUrl();
-      boardImageList.add(imageUrl);
+    @Transactional
+    public PostDetailResponseDto find(Long postId) {
+        Post post = postRepository.findById(postId).orElseThrow(() ->
+            new BusinessException(postId, "postId", POST_NOT_FOUND));
+
+        List<String> boardImageList = findBoardImages(post);
+        return PostDetailResponseDto.of(post, boardImageList);
     }
-    return boardImageList;
-  }
 
-  private void editImages(Post post, List<String> boardImageList, List<Image> imageEntities) {
-    imageRepository.deleteByBoard(post);
-    for (String image : boardImageList) {
-      Image imageEntity = Image.builder()
-          .post(post)
-          .imageUrl(image)
-          .build();
-      imageEntities.add(imageEntity);
+    @Transactional
+    public void update(Long postId, String email, PostUpdateRequestDto requestDto) {
+        Post post = postRepository.findById(postId).orElseThrow(() ->
+            new BusinessException(postId, "postId", POST_NOT_FOUND));
+        checkPostAuthorMatching(email, post);
+        post.editPost(requestDto.getTitle(), requestDto.getContent());
+
+        List<String> boardImageList = requestDto.getBoardImageList();
+        List<Image> imageEntities = new ArrayList<>();
+
+        editImages(post, boardImageList, imageEntities);
     }
-    imageRepository.saveAll(imageEntities);
-  }
 
-  public PostsTop3ResponseDto getTop3Posts(LocalDateTime startDate, LocalDateTime endDate) {
-    List<PostRankItem> posts = postRepository.getTop3Posts(startDate, endDate);
-    return PostsTop3ResponseDto.builder().top3List(posts).build();
-  }
+    @Transactional
+    public void delete(Long postId, String email) {
+        Post post = postRepository.findById(postId).orElseThrow(() ->
+            new BusinessException(postId, "postId", POST_NOT_FOUND));
+        checkPostAuthorMatching(email, post);
+        imageRepository.deleteByBoard(post);
+        commentRepository.deleteByPost(post);
+        favoriteRepository.deleteByPost(post);
+        postRepository.delete(post);
+    }
+
+    private void saveImages(List<String> postImageUrls, Post post) {
+        imageRepository.saveAll(postImageUrls.stream()
+            .map(image -> Image.builder()
+                .post(post)
+                .imageUrl(image)
+                .titleImageYn(false)
+                .build())
+            .collect(toList()));
+    }
+
+    private void checkPostAuthorMatching(String email, Post post) {
+        if (!post.getUser().getEmail().equals(email)) {
+            throw new BusinessException(email, "email", POST_NOT_CUD_MATCHING_USER);
+        }
+    }
+
+    private List<String> findBoardImages(Post post) {
+        List<Image> imageList = imageRepository.findByPost(post);
+        List<String> boardImageList = new ArrayList<>();
+        for (Image image : imageList) {
+            String imageUrl = image.getImageUrl();
+            boardImageList.add(imageUrl);
+        }
+        return boardImageList;
+    }
+
+    private void editImages(Post post, List<String> boardImageList, List<Image> imageEntities) {
+        imageRepository.deleteByBoard(post);
+        for (String image : boardImageList) {
+            Image imageEntity = Image.builder()
+                .post(post)
+                .imageUrl(image)
+                .build();
+            imageEntities.add(imageEntity);
+        }
+        imageRepository.saveAll(imageEntities);
+    }
+
+    public PostsTop3ResponseDto getTop3Posts(LocalDateTime startDate, LocalDateTime endDate) {
+        List<PostRankItem> posts = postRepository.getTop3Posts(startDate, endDate);
+        return PostsTop3ResponseDto.builder().top3List(posts).build();
+    }
 }

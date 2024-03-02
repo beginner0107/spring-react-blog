@@ -1,6 +1,5 @@
 package com.zoo.boardback.domain.post.application;
 
-import static com.zoo.boardback.domain.searchLog.entity.type.SearchType.NOT_EXIST_SEARCH_WORD;
 import static com.zoo.boardback.domain.searchLog.entity.type.SearchType.findSearchWord;
 import static com.zoo.boardback.global.error.ErrorCode.POST_NOT_CUD_MATCHING_USER;
 import static com.zoo.boardback.global.error.ErrorCode.POST_NOT_FOUND;
@@ -63,18 +62,20 @@ public class PostService {
     }
 
     private void savePostTitleImage(PostCreateRequestDto request, Post post) {
-        request.getPostTitleImageUrl().ifPresent(imageUrl -> {
-            Image titleImage = Image.createPostTitleImage(post, imageUrl, true);
-            imageRepository.save(titleImage);
-        });
+        if (!request.existsByPostTitleImageUrl()) return;
+        imageRepository.save(
+            Image.createPostTitleImage(post, request.getPostTitleImageUrl()));
     }
 
     private void savePostImages(PostCreateRequestDto request, Post post) {
-        request.getPostImageUrls().ifPresent(
-            postImageUrls -> imageRepository.saveAll(postImageUrls.stream()
-                .map(imageUrl -> Image.createPostImage(post, imageUrl, false))
-                .collect(toList()))
-        );
+        if (!request.existsByPostImageUrls()) return;
+        imageRepository.saveAll(createPostImages(request, post));
+    }
+
+    private List<Image> createPostImages(PostCreateRequestDto request, Post post) {
+        return request.getPostImageUrls().stream()
+            .map(imageUrl -> Image.createPostImage(post, imageUrl))
+            .collect(toList());
     }
 
     private User findUserByEmail(String email) {
@@ -82,25 +83,16 @@ public class PostService {
             new BusinessException(email, "email", USER_NOT_FOUND));
     }
 
+    @Transactional
     public Page<PostSearchResponseDto> getPosts(PostSearchCondition condition, Pageable pageable) {
         this.saveSearchLog(condition);
         return postRepository.searchPosts(condition, pageable);
     }
 
-    @Transactional
     private void saveSearchLog(PostSearchCondition condition) {
-        SearchType searchType = SearchType.findSearchType(condition);
-        if (searchType != NOT_EXIST_SEARCH_WORD) {
-            String searchWord = findSearchWord(searchType, condition);
-            searchLogRepository.save(createdSearchLog(searchType, searchWord));
-        }
-    }
-
-    private SearchLog createdSearchLog(SearchType searchType, String searchWord) {
-        return SearchLog.builder()
-            .searchType(searchType)
-            .searchWord(searchWord)
-            .build();
+        SearchType.findSearchType(condition).ifPresent(searchType ->
+            findSearchWord(searchType, condition).ifPresent(searchWord ->
+            searchLogRepository.save(SearchLog.create(searchType, searchWord))));
     }
 
     @Transactional

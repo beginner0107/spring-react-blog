@@ -39,5 +39,16 @@ public class SearchLog extends BaseEntity {
         this.searchWord = searchWord;
         this.searchType = searchType;
     }
+
+    private SearchLog(SearchType searchType, String searchWord
+    ) {
+        this.searchType = searchType;
+        this.searchWord = searchWord;
+    }
+
+    public static SearchLog create(SearchType searchType, String searchWord
+    ) {
+        return new SearchLog(searchType, searchWord);
+    }
 }
 

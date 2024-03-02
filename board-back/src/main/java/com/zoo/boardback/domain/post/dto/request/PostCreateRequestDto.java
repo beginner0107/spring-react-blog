@@ -35,12 +35,12 @@ public class PostCreateRequestDto {
         this.postTitleImageUrl = postTitleImageUrl;
     }
 
-    public Optional<String> getPostTitleImageUrl() {
-        return Optional.ofNullable(postTitleImageUrl);
+    public boolean existsByPostTitleImageUrl() {
+        return !postTitleImageUrl.isEmpty();
     }
 
-    public Optional<List<String>> getPostImageUrls() {
-        return Optional.ofNullable(postImageUrls);
+    public boolean existsByPostImageUrls() {
+        return !postImageUrls.isEmpty();
     }
 
     public Post toEntity(User user) {

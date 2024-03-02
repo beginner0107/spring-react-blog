@@ -6,7 +6,6 @@ import static com.zoo.boardback.global.error.ErrorCode.POST_NOT_CUD_MATCHING_USE
 import static com.zoo.boardback.global.error.ErrorCode.POST_NOT_FOUND;
 import static com.zoo.boardback.global.error.ErrorCode.USER_NOT_FOUND;
 import static java.util.stream.Collectors.toList;
-import static org.springframework.util.StringUtils.hasText;
 
 import com.zoo.boardback.domain.comment.dao.CommentRepository;
 import com.zoo.boardback.domain.favorite.dao.FavoriteRepository;
@@ -27,7 +26,11 @@ import com.zoo.boardback.domain.searchLog.entity.type.SearchType;
 import com.zoo.boardback.domain.user.dao.UserRepository;
 import com.zoo.boardback.domain.user.entity.User;
 import com.zoo.boardback.global.error.BusinessException;
+import java.time.DayOfWeek;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -50,25 +53,33 @@ public class PostService {
 
     @Transactional
     public void create(PostCreateRequestDto request, String email) {
-        User user = userRepository.findByEmail(email).orElseThrow(() ->
-            new BusinessException(email, "email", USER_NOT_FOUND));
-
+        User user = findUserByEmail(email);
         Post post = request.toEntity(user);
         postRepository.save(post);
 
-        String boardTitleImage = request.getPostTitleImage();
-        if (hasText(boardTitleImage)) {
-            imageRepository.save(Image.builder()
-                .imageUrl(boardTitleImage)
-                .post(post)
-                .titleImageYn(true)
-                .build()
-            );
-        }
-        List<String> postImageList = request.getPostImageList();
-        if (!postImageList.isEmpty()) {
-            saveImages(postImageList, post);
-        }
+        savePostTitleImage(request, post);
+
+        savePostImages(request, post);
+    }
+
+    private void savePostTitleImage(PostCreateRequestDto request, Post post) {
+        request.getPostTitleImageUrl().ifPresent(imageUrl -> {
+            Image titleImage = Image.createPostTitleImage(post, imageUrl, true);
+            imageRepository.save(titleImage);
+        });
+    }
+
+    private void savePostImages(PostCreateRequestDto request, Post post) {
+        request.getPostImageUrls().ifPresent(
+            postImageUrls -> imageRepository.saveAll(postImageUrls.stream()
+                .map(imageUrl -> Image.createPostImage(post, imageUrl, false))
+                .collect(toList()))
+        );
+    }
+
+    private User findUserByEmail(String email) {
+        return userRepository.findByEmail(email).orElseThrow(() ->
+            new BusinessException(email, "email", USER_NOT_FOUND));
     }
 
     public Page<PostSearchResponseDto> getPosts(PostSearchCondition condition, Pageable pageable) {
@@ -115,7 +126,7 @@ public class PostService {
     }
 
     @Transactional
-    public void delete(Long postId, String email) {
+    public void delete(Long postId, String email) { // cascade 옵션 활용하기
         Post post = postRepository.findById(postId).orElseThrow(() ->
             new BusinessException(postId, "postId", POST_NOT_FOUND));
         checkPostAuthorMatching(email, post);
@@ -123,16 +134,6 @@ public class PostService {
         commentRepository.deleteByPost(post);
         favoriteRepository.deleteByPost(post);
         postRepository.delete(post);
-    }
-
-    private void saveImages(List<String> postImageUrls, Post post) {
-        imageRepository.saveAll(postImageUrls.stream()
-            .map(image -> Image.builder()
-                .post(post)
-                .imageUrl(image)
-                .titleImageYn(false)
-                .build())
-            .collect(toList()));
     }
 
     private void checkPostAuthorMatching(String email, Post post) {
@@ -163,8 +164,20 @@ public class PostService {
         imageRepository.saveAll(imageEntities);
     }
 
-    public PostsTop3ResponseDto getTop3Posts(LocalDateTime startDate, LocalDateTime endDate) {
-        List<PostRankItem> posts = postRepository.getTop3Posts(startDate, endDate);
-        return PostsTop3ResponseDto.builder().top3List(posts).build();
+    public PostsTop3ResponseDto getTop3PostsThisWeek() {
+        LocalDateTime currentDate = LocalDateTime.now();
+        LocalDateTime weekStartDate = getStartOfWeek(currentDate);
+        LocalDateTime weekEndDate = getEndOfWeek(currentDate);
+        List<PostRankItem> posts = postRepository.getTop3Posts(weekStartDate, weekEndDate);
+        return PostsTop3ResponseDto.create(posts);
+    }
+
+    private LocalDateTime getStartOfWeek(LocalDateTime dateTime) {
+        return dateTime.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
+            .truncatedTo(ChronoUnit.DAYS);
+    }
+
+    private LocalDateTime getEndOfWeek(LocalDateTime dateTime) {
+        return dateTime.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY)).with(LocalTime.MAX);
     }
 }

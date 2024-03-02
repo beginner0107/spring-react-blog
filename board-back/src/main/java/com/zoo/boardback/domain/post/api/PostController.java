@@ -118,20 +118,8 @@ public class PostController {
     }
 
     @GetMapping("/top3")
-    public ApiResponse<PostsTop3ResponseDto> getTop3PostsOfWeek() {
-        LocalDateTime currentDate = LocalDateTime.now();
-        LocalDateTime weekStartDate = getStartOfWeek(currentDate);
-        LocalDateTime weekEndDate = getEndOfWeek(currentDate);
-        PostsTop3ResponseDto posts = postService.getTop3Posts(weekStartDate, weekEndDate);
+    public ApiResponse<PostsTop3ResponseDto> getTop3PostsThisWeek() {
+        PostsTop3ResponseDto posts = postService.getTop3PostsThisWeek();
         return ApiResponse.ok(posts);
-    }
-
-    private LocalDateTime getStartOfWeek(LocalDateTime dateTime) {
-        return dateTime.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
-            .truncatedTo(ChronoUnit.DAYS);
-    }
-
-    private LocalDateTime getEndOfWeek(LocalDateTime dateTime) {
-        return dateTime.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY)).with(LocalTime.MAX);
     }
 }

@@ -1,12 +1,12 @@
 package com.zoo.boardback.domain.post.entity;
 
+import static com.zoo.boardback.global.error.ErrorCode.FAVORITE_CANCEL;
 import static jakarta.persistence.FetchType.LAZY;
 import static lombok.AccessLevel.PROTECTED;
 
 import com.zoo.boardback.domain.user.entity.User;
 import com.zoo.boardback.global.entity.BaseEntity;
 import com.zoo.boardback.global.error.BusinessException;
-import com.zoo.boardback.global.error.ErrorCode;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -69,7 +69,7 @@ public class Post extends BaseEntity {
 
     public void decreaseFavoriteCount() {
         if (this.favoriteCount <= 0) {
-            throw new BusinessException(favoriteCount, "favoriteCount", ErrorCode.FAVORITE_CANCEL);
+            throw new BusinessException(favoriteCount, "favoriteCount", FAVORITE_CANCEL);
         }
         this.favoriteCount--;
     }

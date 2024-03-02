@@ -35,4 +35,8 @@ public class ApiResponse<T> {
   public static<T>ApiResponse<T> of(HttpStatus httpStatus, String message, String field) {
     return new ApiResponse<>(httpStatus, message, null, field);
   }
+
+  public static <T>ApiResponse<T> noContent() {
+    return of(HttpStatus.NO_CONTENT, HttpStatus.NO_CONTENT.name(), null);
+  }
 }

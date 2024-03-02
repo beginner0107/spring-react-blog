@@ -34,7 +34,7 @@ public class UserController {
       @LoginUser User user
   ) {
     userService.updateNickname(user.getEmail(), nicknameUpdateRequestDto.getNickname());
-    return ApiResponse.ok(null);
+    return ApiResponse.noContent();
   }
 
   @PatchMapping("/profileImage")
@@ -43,6 +43,6 @@ public class UserController {
       @LoginUser User user
   ) {
     userService.updateProfileImage(user.getEmail(), userProfileUpdateDto.getProfileImage());
-    return ApiResponse.ok(null);
+    return ApiResponse.noContent();
   }
 }

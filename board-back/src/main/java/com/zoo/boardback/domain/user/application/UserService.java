@@ -19,18 +19,14 @@ public class UserService {
   private final UserRepository userRepository;
 
   public SignUserResponseDto getUser(String email) {
-    User user = userRepository.findByEmail(email)
-        .orElseThrow(() -> new BusinessException(email, "email", USER_NOT_FOUND));
+    User user = findUserByEmail(email);
     return SignUserResponseDto.from(user);
   }
 
   @Transactional
   public void updateNickname(String email, String nickname) {
-    User user = userRepository.findByEmail(email)
-        .orElseThrow(() -> new BusinessException(email, "email", USER_NOT_FOUND));
-
+    User user = findUserByEmail(email);
     checkIsDuplicationNickname(nickname);
-
     user.changeNickname(nickname);
   }
 
@@ -42,9 +38,12 @@ public class UserService {
 
   @Transactional
   public void updateProfileImage(String email, String profileImage) {
-    User user = userRepository.findByEmail(email)
-        .orElseThrow(() -> new BusinessException(email, "email", USER_NOT_FOUND));
-
+    User user = findUserByEmail(email);
     user.changeProfileImage(profileImage);
+  }
+
+  private User findUserByEmail(String email) {
+    return userRepository.findByEmail(email)
+        .orElseThrow(() -> new BusinessException(email, "email", USER_NOT_FOUND));
   }
 }

@@ -14,10 +14,10 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class SearchLogService {
 
-  private final SearchLogRepository searchLogRepository;
+    private final SearchLogRepository searchLogRepository;
 
-  public PopularSearchWordResponseDto getPopularSearchWords(SearchType searchType) {
-    return PopularSearchWordResponseDto
-        .withSearchWords(searchLogRepository.getPopularSearchWords(searchType));
-  }
+    public PopularSearchWordResponseDto getPopularSearchWords(SearchType searchType) {
+        return PopularSearchWordResponseDto
+            .withSearchWords(searchLogRepository.getPopularSearchWords(searchType));
+    }
 }

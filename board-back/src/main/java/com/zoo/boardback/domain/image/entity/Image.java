@@ -23,26 +23,27 @@ import lombok.NoArgsConstructor;
 @Table(name = "Images")
 @EqualsAndHashCode(of = {"id"}, callSuper = false)
 public class Image extends BaseEntity {
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
 
-  @ManyToOne(fetch = LAZY)
-  @JoinColumn(name = "postId")
-  private Post post;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-  private String imageUrl;
+    @ManyToOne(fetch = LAZY)
+    @JoinColumn(name = "postId")
+    private Post post;
 
-  private Boolean titleImageYn;
+    private String imageUrl;
 
-  @Builder
-  public Image(
-      Post post,
-      String imageUrl,
-      Boolean titleImageYn
-  ) {
-    this.post = post;
-    this.imageUrl = imageUrl;
-    this.titleImageYn = titleImageYn;
-  }
+    private Boolean titleImageYn;
+
+    @Builder
+    public Image(
+        Post post,
+        String imageUrl,
+        Boolean titleImageYn
+    ) {
+        this.post = post;
+        this.imageUrl = imageUrl;
+        this.titleImageYn = titleImageYn;
+    }
 }

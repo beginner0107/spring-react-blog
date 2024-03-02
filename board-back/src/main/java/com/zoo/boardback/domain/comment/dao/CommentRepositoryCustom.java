@@ -10,7 +10,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.query.Param;
 
 public interface CommentRepositoryCustom {
-  Page<CommentQueryDto> getComments(@Param("post") Post post, Pageable pageable);
 
-  List<ChildCommentQueryDto> getChildComments(Long postId, Long parentId);
+    Page<CommentQueryDto> getComments(@Param("post") Post post, Pageable pageable);
+
+    List<ChildCommentQueryDto> getChildComments(Long postId, Long parentId);
 }

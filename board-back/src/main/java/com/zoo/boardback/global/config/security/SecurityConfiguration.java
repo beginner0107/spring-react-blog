@@ -24,60 +24,62 @@ import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
 @RequiredArgsConstructor
 public class SecurityConfiguration {
 
-  private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
-  private final CustomAccessDeniedHandler customAccessDeniedHandler;
-  private final RefreshTokenFilter refreshTokenFilter;
+    private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
+    private final CustomAccessDeniedHandler customAccessDeniedHandler;
+    private final RefreshTokenFilter refreshTokenFilter;
 
-  @Bean
-  public SecurityFilterChain filterChain(HttpSecurity http, MvcRequestMatcher.Builder mvc) throws Exception {
-    return
-        http
-        .authorizeHttpRequests(auth ->
-            auth
-                .requestMatchers(mvc.pattern("/")).permitAll()
-                .requestMatchers(mvc.pattern("/api/v1/auth/**")).permitAll()
-                .requestMatchers(mvc.pattern("/api/v1/search/**")).permitAll()
-                .requestMatchers(mvc.pattern("/api/v1/post")).permitAll()
-                .requestMatchers(mvc.pattern("/api/v1/post/top3")).permitAll()
-                .requestMatchers(mvc.pattern("/api/v1/comments/post/*")).permitAll()
-                .requestMatchers(mvc.pattern("/api/v1/search")).permitAll()
-                .requestMatchers(mvc.pattern("/docs/*")).permitAll()
-                .requestMatchers(mvc.pattern("/file/**")).permitAll()
-                .requestMatchers(PathRequest.toH2Console()).permitAll()
-                .anyRequest().authenticated()
-        )
-        .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-        .httpBasic().disable()
-        .csrf().disable()
-        .headers().frameOptions().sameOrigin().and()
-            .addFilterBefore(refreshTokenFilter, UsernamePasswordAuthenticationFilter.class)
-            .exceptionHandling() // 권한 문제 발생했을 경우
-            .accessDeniedHandler(customAccessDeniedHandler)
-            .authenticationEntryPoint(customAuthenticationEntryPoint)
-            .and()
-        .build();
-  }
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http, MvcRequestMatcher.Builder mvc)
+        throws Exception {
+        return
+            http
+                .authorizeHttpRequests(auth ->
+                    auth
+                        .requestMatchers(mvc.pattern("/")).permitAll()
+                        .requestMatchers(mvc.pattern("/api/v1/auth/**")).permitAll()
+                        .requestMatchers(mvc.pattern("/api/v1/search/**")).permitAll()
+                        .requestMatchers(mvc.pattern("/api/v1/post")).permitAll()
+                        .requestMatchers(mvc.pattern("/api/v1/post/top3")).permitAll()
+                        .requestMatchers(mvc.pattern("/api/v1/comments/post/*")).permitAll()
+                        .requestMatchers(mvc.pattern("/api/v1/search")).permitAll()
+                        .requestMatchers(mvc.pattern("/docs/*")).permitAll()
+                        .requestMatchers(mvc.pattern("/file/**")).permitAll()
+                        .requestMatchers(PathRequest.toH2Console()).permitAll()
+                        .anyRequest().authenticated()
+                )
+                .sessionManagement(
+                    session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .httpBasic().disable()
+                .csrf().disable()
+                .headers().frameOptions().sameOrigin().and()
+                .addFilterBefore(refreshTokenFilter, UsernamePasswordAuthenticationFilter.class)
+                .exceptionHandling() // 권한 문제 발생했을 경우
+                .accessDeniedHandler(customAccessDeniedHandler)
+                .authenticationEntryPoint(customAuthenticationEntryPoint)
+                .and()
+                .build();
+    }
 
-  @Bean
-  public WebMvcConfigurer corsConfigurer() {
-    return new WebMvcConfigurer() {
-      @Override
-      public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/**") // 모든 URL에 대한 요청을 허용
-            .allowedMethods("*") // GET, POST, PUT, PATCH, DELETE 등등 method 허용
-            .allowedOrigins("http://localhost:3000");
-      }
-    };
-  }
+    @Bean
+    public WebMvcConfigurer corsConfigurer() {
+        return new WebMvcConfigurer() {
+            @Override
+            public void addCorsMappings(CorsRegistry registry) {
+                registry.addMapping("/**") // 모든 URL에 대한 요청을 허용
+                    .allowedMethods("*") // GET, POST, PUT, PATCH, DELETE 등등 method 허용
+                    .allowedOrigins("http://localhost:3000");
+            }
+        };
+    }
 
-  @Bean
-  MvcRequestMatcher.Builder mvc(HandlerMappingIntrospector introspector) {
-    return new MvcRequestMatcher.Builder(introspector);
-  }
+    @Bean
+    MvcRequestMatcher.Builder mvc(HandlerMappingIntrospector introspector) {
+        return new MvcRequestMatcher.Builder(introspector);
+    }
 
-  @Bean // Ioc 컨테이너에 BCryptPasswordEncoder() 객체가 등록됨.
-  public PasswordEncoder passwordEncoder() {
-    return new BCryptPasswordEncoder();
-  }
+    @Bean // Ioc 컨테이너에 BCryptPasswordEncoder() 객체가 등록됨.
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
 
 }

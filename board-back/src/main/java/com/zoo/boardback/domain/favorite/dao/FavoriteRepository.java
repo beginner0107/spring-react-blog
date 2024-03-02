@@ -11,17 +11,17 @@ import org.springframework.data.repository.query.Param;
 
 public interface FavoriteRepository extends JpaRepository<Favorite, FavoritePk> {
 
-  Favorite findByFavoritePk(FavoritePk favoritePk);
+    Favorite findByFavoritePk(FavoritePk favoritePk);
 
-  @Query("SELECT f " +
-      "FROM Favorite f " +
-      "JOIN FETCH f.favoritePk.user u " +
-      "WHERE f.favoritePk.post = :post " +
-      "ORDER BY f.createdAt DESC"
-  )
-  List<Favorite> findRecommendersByPost(@Param("post") Post post);
+    @Query("SELECT f " +
+        "FROM Favorite f " +
+        "JOIN FETCH f.favoritePk.user u " +
+        "WHERE f.favoritePk.post = :post " +
+        "ORDER BY f.createdAt DESC"
+    )
+    List<Favorite> findRecommendersByPost(@Param("post") Post post);
 
-  @Modifying
-  @Query("DELETE FROM Favorite f WHERE f.favoritePk.post = :post")
-  void deleteByPost(@Param("post") Post post);
+    @Modifying
+    @Query("DELETE FROM Favorite f WHERE f.favoritePk.post = :post")
+    void deleteByPost(@Param("post") Post post);
 }

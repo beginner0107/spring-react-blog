@@ -24,50 +24,50 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class FavoriteService {
 
-  private final FavoriteRepository favoriteRepository;
-  private final PostRepository postRepository;
-  private final UserRepository userRepository;
+    private final FavoriteRepository favoriteRepository;
+    private final PostRepository postRepository;
+    private final UserRepository userRepository;
 
-  @Transactional
-  public void like(Long postId, String email) {
-    Post post = postRepository.findById(postId).orElseThrow(() ->
-        new BusinessException(postId, "postId", POST_NOT_FOUND));
+    @Transactional
+    public void like(Long postId, String email) {
+        Post post = postRepository.findById(postId).orElseThrow(() ->
+            new BusinessException(postId, "postId", POST_NOT_FOUND));
 
-    User user = userRepository.findByEmail(email).orElseThrow(() ->
-        new BusinessException(email, "email", USER_NOT_FOUND));
-    FavoritePk favoritePk = new FavoritePk(post, user);
-    Favorite favorite = favoriteRepository.findByFavoritePk(favoritePk);
-    if (favorite == null) {
-      favorite = Favorite.builder()
-          .favoritePk(favoritePk)
-          .build();
-      favoriteRepository.save(favorite);
-      post.increaseFavoriteCount();
+        User user = userRepository.findByEmail(email).orElseThrow(() ->
+            new BusinessException(email, "email", USER_NOT_FOUND));
+        FavoritePk favoritePk = new FavoritePk(post, user);
+        Favorite favorite = favoriteRepository.findByFavoritePk(favoritePk);
+        if (favorite == null) {
+            favorite = Favorite.builder()
+                .favoritePk(favoritePk)
+                .build();
+            favoriteRepository.save(favorite);
+            post.increaseFavoriteCount();
+        }
     }
-  }
 
-  @Transactional
-  public void cancelLike(Long postId, String email) {
-    Post post = postRepository.findById(postId).orElseThrow(() ->
-        new BusinessException(postId, "postId", POST_NOT_FOUND));
+    @Transactional
+    public void cancelLike(Long postId, String email) {
+        Post post = postRepository.findById(postId).orElseThrow(() ->
+            new BusinessException(postId, "postId", POST_NOT_FOUND));
 
-    User user = userRepository.findByEmail(email).orElseThrow(() ->
-        new BusinessException(email, "email", USER_NOT_FOUND));
-    FavoritePk favoritePk = new FavoritePk(post, user);
-    Favorite favorite = favoriteRepository.findByFavoritePk(favoritePk);
-    if (favorite != null) {
-      favoriteRepository.delete(favorite);
-      post.decreaseFavoriteCount();
+        User user = userRepository.findByEmail(email).orElseThrow(() ->
+            new BusinessException(email, "email", USER_NOT_FOUND));
+        FavoritePk favoritePk = new FavoritePk(post, user);
+        Favorite favorite = favoriteRepository.findByFavoritePk(favoritePk);
+        if (favorite != null) {
+            favoriteRepository.delete(favorite);
+            post.decreaseFavoriteCount();
+        }
     }
-  }
 
-  public FavoriteListResponseDto getFavorites(Long postId) {
-    Post post = postRepository.findById(postId).orElseThrow(() ->
-        new BusinessException(postId, "postId", POST_NOT_FOUND));
-    List<Favorite> favorites = favoriteRepository.findRecommendersByPost(post);
-    List<FavoriteQueryDto> favoritesQueryDtos = favorites.stream()
-        .map(FavoriteQueryDto::from)
-        .collect(Collectors.toList());
-    return FavoriteListResponseDto.from(favoritesQueryDtos);
-  }
+    public FavoriteListResponseDto getFavorites(Long postId) {
+        Post post = postRepository.findById(postId).orElseThrow(() ->
+            new BusinessException(postId, "postId", POST_NOT_FOUND));
+        List<Favorite> favorites = favoriteRepository.findRecommendersByPost(post);
+        List<FavoriteQueryDto> favoritesQueryDtos = favorites.stream()
+            .map(FavoriteQueryDto::from)
+            .collect(Collectors.toList());
+        return FavoriteListResponseDto.from(favoritesQueryDtos);
+    }
 }

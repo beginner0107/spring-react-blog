@@ -18,15 +18,15 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @MappedSuperclass
 public abstract class BaseEntity {
 
-  @CreatedDate
-  @Column(nullable = false)
-  @JsonSerialize(using = LocalDateTimeSerializer.class)
-  @JsonDeserialize(using = LocalDateTimeDeserializer.class)
-  private LocalDateTime createdAt;
+    @CreatedDate
+    @Column(nullable = false)
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+    private LocalDateTime createdAt;
 
-  @LastModifiedDate
-  @Column(nullable = false)
-  @JsonSerialize(using = LocalDateTimeSerializer.class)
-  @JsonDeserialize(using = LocalDateTimeDeserializer.class)
-  private LocalDateTime updatedAt;
+    @LastModifiedDate
+    @Column(nullable = false)
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+    private LocalDateTime updatedAt;
 }

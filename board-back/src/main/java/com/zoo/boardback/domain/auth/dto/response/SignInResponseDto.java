@@ -12,17 +12,18 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = PRIVATE)
 @AllArgsConstructor
 public class SignInResponseDto {
-  private Long userId;
-  private String email;
-  private String nickname;
-  private List<String> roles;
 
-  public static SignInResponseDto of(User user, List<String> roles) {
-    return new SignInResponseDto(
-        user.getId(),
-        user.getEmail(),
-        user.getNickname(),
-        roles
-    );
-  }
+    private Long userId;
+    private String email;
+    private String nickname;
+    private List<String> roles;
+
+    public static SignInResponseDto of(User user, List<String> roles) {
+        return new SignInResponseDto(
+            user.getId(),
+            user.getEmail(),
+            user.getNickname(),
+            roles
+        );
+    }
 }

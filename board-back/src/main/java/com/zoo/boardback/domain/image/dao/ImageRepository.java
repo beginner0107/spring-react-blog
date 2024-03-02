@@ -9,9 +9,10 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 public interface ImageRepository extends JpaRepository<Image, Long> {
-  List<Image> findByPost(Post post);
 
-  @Modifying
-  @Query("DELETE FROM Image i WHERE i.post = :post")
-  void deleteByBoard(@Param("post") Post post);
+    List<Image> findByPost(Post post);
+
+    @Modifying
+    @Query("DELETE FROM Image i WHERE i.post = :post")
+    void deleteByBoard(@Param("post") Post post);
 }

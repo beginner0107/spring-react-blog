@@ -39,46 +39,46 @@ import org.springframework.web.context.WebApplicationContext;
 @ExtendWith({RestDocumentationExtension.class, SpringExtension.class})
 public abstract class RestDocsSecuritySupport {
 
-  @Autowired
-  protected MockMvc mockMvc;
-  protected ObjectMapper objectMapper = new ObjectMapper();
+    @Autowired
+    protected MockMvc mockMvc;
+    protected ObjectMapper objectMapper = new ObjectMapper();
 
-  @MockBean
-  protected PostService postService;
+    @MockBean
+    protected PostService postService;
 
-  @MockBean
-  protected FavoriteService favoriteService;
+    @MockBean
+    protected FavoriteService favoriteService;
 
-  @MockBean
-  protected UserService userService;
+    @MockBean
+    protected UserService userService;
 
-  @MockBean
-  protected CommentService commentService;
+    @MockBean
+    protected CommentService commentService;
 
-  @MockBean
-  protected PostCacheService postCacheService;
+    @MockBean
+    protected PostCacheService postCacheService;
 
-  @MockBean
-  protected UserRepository userRepository;
+    @MockBean
+    protected UserRepository userRepository;
 
-  @MockBean
-  protected RefreshTokenFilter refreshTokenFilter;
+    @MockBean
+    protected RefreshTokenFilter refreshTokenFilter;
 
-  @MockBean
-  protected JwtProvider jwtProvider;
+    @MockBean
+    protected JwtProvider jwtProvider;
 
-  @MockBean
-  protected JwtTokenConditionFactory jwtTokenConditionFactory;
+    @MockBean
+    protected JwtTokenConditionFactory jwtTokenConditionFactory;
 
-  @MockBean
-  protected AuthCookieService authCookieService;
+    @MockBean
+    protected AuthCookieService authCookieService;
 
 
-  @BeforeEach
-  void setUp(WebApplicationContext webApplicationContext
-      ,RestDocumentationContextProvider provider) {
-    this.mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext)
-        .apply(documentationConfiguration(provider))
-        .build();
-  }
+    @BeforeEach
+    void setUp(WebApplicationContext webApplicationContext
+        , RestDocumentationContextProvider provider) {
+        this.mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext)
+            .apply(documentationConfiguration(provider))
+            .build();
+    }
 }

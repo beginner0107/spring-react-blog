@@ -37,45 +37,46 @@ import org.springframework.test.web.servlet.MockMvc;
     SearchLogController.class
 })
 public abstract class ControllerTestSupport {
-  @Autowired
-  protected MockMvc mockMvc;
-  @Autowired
-  protected ObjectMapper objectMapper;
 
-  @MockBean
-  protected AuthService authService;
+    @Autowired
+    protected MockMvc mockMvc;
+    @Autowired
+    protected ObjectMapper objectMapper;
 
-  @MockBean
-  protected PostService postService;
+    @MockBean
+    protected AuthService authService;
 
-  @MockBean
-  protected FavoriteService favoriteService;
+    @MockBean
+    protected PostService postService;
 
-  @MockBean
-  protected FileUtil fileUtil;
+    @MockBean
+    protected FavoriteService favoriteService;
 
-  @MockBean
-  protected UserService userService;
+    @MockBean
+    protected FileUtil fileUtil;
 
-  @MockBean
-  protected CommentService commentService;
+    @MockBean
+    protected UserService userService;
 
-  @MockBean
-  protected SearchLogService searchLogService;
+    @MockBean
+    protected CommentService commentService;
 
-  @MockBean
-  protected PostCacheService postCacheService;
+    @MockBean
+    protected SearchLogService searchLogService;
 
-  @MockBean
-  protected UserRepository userRepository;
+    @MockBean
+    protected PostCacheService postCacheService;
 
-  @MockBean
-  protected JwtProvider jwtProvider;
+    @MockBean
+    protected UserRepository userRepository;
 
-  @MockBean
-  protected JwtTokenConditionFactory jwtTokenConditionFactory;
+    @MockBean
+    protected JwtProvider jwtProvider;
 
-  @MockBean
-  protected AuthCookieService authCookieService;
+    @MockBean
+    protected JwtTokenConditionFactory jwtTokenConditionFactory;
+
+    @MockBean
+    protected AuthCookieService authCookieService;
 }
 

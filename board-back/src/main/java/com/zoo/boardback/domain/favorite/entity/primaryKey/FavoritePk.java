@@ -22,28 +22,28 @@ import lombok.NoArgsConstructor;
 @Embeddable
 public class FavoritePk implements Serializable {
 
-  @ManyToOne(fetch = LAZY, cascade = ALL)
-  @JoinColumn(name = "boardNumber")
-  private Post post;
+    @ManyToOne(fetch = LAZY, cascade = ALL)
+    @JoinColumn(name = "boardNumber")
+    private Post post;
 
-  @OneToOne(fetch = LAZY, cascade = ALL)
-  @JoinColumn(name = "id")
-  private User user;
+    @OneToOne(fetch = LAZY, cascade = ALL)
+    @JoinColumn(name = "id")
+    private User user;
 
-  @Override
-  public boolean equals(Object object) {
-    if (this == object) {
-      return true;
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        }
+        if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+        FavoritePk that = (FavoritePk) object;
+        return Objects.equals(post, that.post) && Objects.equals(user, that.user);
     }
-    if (object == null || getClass() != object.getClass()) {
-      return false;
-    }
-    FavoritePk that = (FavoritePk) object;
-    return Objects.equals(post, that.post) && Objects.equals(user, that.user);
-  }
 
-  @Override
-  public int hashCode() {
-    return Objects.hash(post, user);
-  }
+    @Override
+    public int hashCode() {
+        return Objects.hash(post, user);
+    }
 }

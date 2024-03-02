@@ -8,13 +8,15 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 public class PopularSearchWordResponseDto {
-  List<PopularSearchWordDto> searchWords;
 
-  private PopularSearchWordResponseDto(List<PopularSearchWordDto> searchWords) {
-    this.searchWords = searchWords;
-  }
+    List<PopularSearchWordDto> searchWords;
 
-  public static PopularSearchWordResponseDto withSearchWords(List<PopularSearchWordDto> searchWords) {
-    return new PopularSearchWordResponseDto(searchWords);
-  }
+    private PopularSearchWordResponseDto(List<PopularSearchWordDto> searchWords) {
+        this.searchWords = searchWords;
+    }
+
+    public static PopularSearchWordResponseDto withSearchWords(
+        List<PopularSearchWordDto> searchWords) {
+        return new PopularSearchWordResponseDto(searchWords);
+    }
 }

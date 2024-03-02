@@ -18,17 +18,18 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping("/file")
 public class FileController {
 
-  private final FileUtil fileUtil;
+    private final FileUtil fileUtil;
 
-  @PostMapping("/upload")
-  public ApiResponse<String> upload(@RequestParam("file")MultipartFile file) {
-    return ApiResponse.ok(fileUtil.upload(file));
-  }
+    @PostMapping("/upload")
+    public ApiResponse<String> upload(@RequestParam("file") MultipartFile file) {
+        return ApiResponse.ok(fileUtil.upload(file));
+    }
 
-  @GetMapping(value="{fileName}", produces = {MediaType.IMAGE_JPEG_VALUE, MediaType.IMAGE_PNG_VALUE})
-  public Resource getImage(
-      @PathVariable("fileName") String fileName
-  ) {
-    return fileUtil.getImage(fileName);
-  }
+    @GetMapping(value = "{fileName}", produces = {MediaType.IMAGE_JPEG_VALUE,
+        MediaType.IMAGE_PNG_VALUE})
+    public Resource getImage(
+        @PathVariable("fileName") String fileName
+    ) {
+        return fileUtil.getImage(fileName);
+    }
 }

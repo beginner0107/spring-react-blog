@@ -12,10 +12,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = PRIVATE)
 public class PostsTop3ResponseDto {
 
-  private List<PostRankItem> top3List;
+    private List<PostRankItem> top3List;
 
-  @Builder
-  public PostsTop3ResponseDto(List<PostRankItem> top3List) {
-    this.top3List = top3List;
-  }
+    @Builder
+    public PostsTop3ResponseDto(List<PostRankItem> top3List) {
+        this.top3List = top3List;
+    }
 }

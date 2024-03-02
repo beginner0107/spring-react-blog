@@ -18,17 +18,17 @@ import org.springframework.web.filter.CharacterEncodingFilter;
 @ExtendWith(RestDocumentationExtension.class)
 public abstract class RestDocsSupport {
 
-  protected MockMvc mockMvc;
-  protected ObjectMapper objectMapper = new ObjectMapper();
+    protected MockMvc mockMvc;
+    protected ObjectMapper objectMapper = new ObjectMapper();
 
-  @BeforeEach
-  void setUp(RestDocumentationContextProvider provider) {
-    this.mockMvc = MockMvcBuilders.standaloneSetup(initController())
-        .addFilters(new CharacterEncodingFilter("UTF-8", true))
-        .apply(documentationConfiguration(provider))
-        .build();
-  }
+    @BeforeEach
+    void setUp(RestDocumentationContextProvider provider) {
+        this.mockMvc = MockMvcBuilders.standaloneSetup(initController())
+            .addFilters(new CharacterEncodingFilter("UTF-8", true))
+            .apply(documentationConfiguration(provider))
+            .build();
+    }
 
-  protected abstract Object initController();
+    protected abstract Object initController();
 
 }

@@ -9,7 +9,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 public interface PostRepositoryCustom {
-  Page<PostSearchResponseDto> searchPosts(PostSearchCondition condition, Pageable pageable);
 
-  List<PostRankItem> getTop3Posts(LocalDateTime startDate, LocalDateTime endDate);
+    Page<PostSearchResponseDto> searchPosts(PostSearchCondition condition, Pageable pageable);
+
+    List<PostRankItem> getTop3Posts(LocalDateTime startDate, LocalDateTime endDate);
 }

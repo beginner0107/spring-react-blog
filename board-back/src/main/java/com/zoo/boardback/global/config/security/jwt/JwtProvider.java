@@ -44,114 +44,116 @@ import org.springframework.stereotype.Component;
 @Component
 public class JwtProvider {
 
-  private static final String ROLES = "roles";
-  private static final String SEPARATOR = ",";
+    private static final String ROLES = "roles";
+    private static final String SEPARATOR = ",";
 
-  final Key secretKey;
+    final Key secretKey;
 
-  public JwtProvider(@Value("${jwt.secret}") String secretKey) {
-    this.secretKey = Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
-  }
+    public JwtProvider(@Value("${jwt.secret}") String secretKey) {
+        this.secretKey = Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
+    }
 
-  public static String getRefreshTokenKeyForRedis(String userId, String userAgent) {
-    String encodedUserRole = Base64.getEncoder().encodeToString((userAgent == null ? "" : userAgent).getBytes());
-    return "refreshToken:" + userId + ":" + encodedUserRole;
-  }
+    public static String getRefreshTokenKeyForRedis(String userId, String userAgent) {
+        String encodedUserRole = Base64.getEncoder()
+            .encodeToString((userAgent == null ? "" : userAgent).getBytes());
+        return "refreshToken:" + userId + ":" + encodedUserRole;
+    }
 
-  public long getUserId(String token) {
-    return Long.parseLong(getClaim(token).getSubject());
-  }
+    public long getUserId(String token) {
+        return Long.parseLong(getClaim(token).getSubject());
+    }
 
-  private Claims getClaim(String token) {
-    return Jwts
-        .parserBuilder()
-        .setSigningKey(secretKey)
-        .build()
-        .parseClaimsJws(token)
-        .getBody();
-  }
+    private Claims getClaim(String token) {
+        return Jwts
+            .parserBuilder()
+            .setSigningKey(secretKey)
+            .build()
+            .parseClaimsJws(token)
+            .getBody();
+    }
 
 
-  // 토큰 생성
-  public String createAccessToken(JwtType jwtType, String userPk, List<Authority> roles) {
-    Claims claims = Jwts.claims().setSubject(userPk);
-    setRoles(claims, roles);
-    Date now = new Date();
-    return Jwts.builder()
-        .setClaims(claims)
-        .setIssuedAt(now)
-        .setExpiration(new Date(now.getTime() + jwtType.getExpiredMillis()))
-        .signWith(secretKey, SignatureAlgorithm.HS256)
-        .compact();
-  }
+    // 토큰 생성
+    public String createAccessToken(JwtType jwtType, String userPk, List<Authority> roles) {
+        Claims claims = Jwts.claims().setSubject(userPk);
+        setRoles(claims, roles);
+        Date now = new Date();
+        return Jwts.builder()
+            .setClaims(claims)
+            .setIssuedAt(now)
+            .setExpiration(new Date(now.getTime() + jwtType.getExpiredMillis()))
+            .signWith(secretKey, SignatureAlgorithm.HS256)
+            .compact();
+    }
 
-  private static void setRoles(Claims claims, List<Authority> authorities) {
-    String roles = authorities.stream().map(Authority::getRoleName)
+    private static void setRoles(Claims claims, List<Authority> authorities) {
+        String roles = authorities.stream().map(Authority::getRoleName)
             .collect(Collectors.joining(SEPARATOR));
-    claims.put(ROLES, String.join(SEPARATOR, roles));
-  }
-
-  // 권한정보 획득
-  // Spring Security 인증과정에서 권한확인을 위한 기능
-  public Authentication getAuthentication(String token) {
-    Claims claims = getClaim(token);
-    List<String> roles = getRolesBy(claims);
-    UserDetails userDetails = new JwtUserDetails(claims.getSubject(), roles);
-    return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
-  }
-
-  // 토큰에 담겨있는 유저 account 획득
-  public String getEmail(String token) {
-    return Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token)
-        .getBody().getSubject();
-  }
-
-  public String resolveToken(HttpServletRequest req, JwtType jwtType) {
-    Optional<Cookie> accessToken = Arrays.stream(req.getCookies())
-        .filter(cookie -> cookie.getName().equals(jwtType.getTokenName()))
-        .findFirst();
-    if (accessToken.isEmpty()) {
-      throw new EmptyJwtException();
+        claims.put(ROLES, String.join(SEPARATOR, roles));
     }
-    return accessToken.get().getValue();
-  }
 
-  public TokenValidationResultDto tryCheckTokenValid(HttpServletRequest req, JwtType jwtType) {
-    try {
-      String token = resolveToken(req, jwtType);
-      getUserId(token);
-      return TokenValidationResultDto.of(true, VALID, token);
-    } catch (MalformedJwtException e) {
-      return TokenValidationResultDto.of(false, MALFORMED);
-    } catch (ExpiredJwtException e) {
-      return TokenValidationResultDto.of(false, EXPIRED);
-    } catch (UnsupportedJwtException e) {
-      return TokenValidationResultDto.of(false, UNSUPPORTED);
-    } catch (SignatureException e) {
-      return TokenValidationResultDto.of(false, WRONG_SIGNATURE);
-    } catch (EmptyJwtException e) {
-      return TokenValidationResultDto.of(false, EMPTY);
-    } catch (BearerTokenMissingException e) {
-      return TokenValidationResultDto.of(false, NOT_EXIST_BEARER);
-    } catch (Exception e) {
-      return TokenValidationResultDto.of(false, UNKNOWN);
+    // 권한정보 획득
+    // Spring Security 인증과정에서 권한확인을 위한 기능
+    public Authentication getAuthentication(String token) {
+        Claims claims = getClaim(token);
+        List<String> roles = getRolesBy(claims);
+        UserDetails userDetails = new JwtUserDetails(claims.getSubject(), roles);
+        return new UsernamePasswordAuthenticationToken(userDetails, "",
+            userDetails.getAuthorities());
     }
-  }
 
-  public List<Authority> getRoles(String token) {
-    Claims claims = getClaim(token);
-    List<String> roles = getRolesBy(claims);
-    List<Authority> authorityRoles = new ArrayList<>();
-    for (String role : roles) {
-      authorityRoles.add(Authority.builder().role(GENERAL_USER).build());
+    // 토큰에 담겨있는 유저 account 획득
+    public String getEmail(String token) {
+        return Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token)
+            .getBody().getSubject();
     }
-    return authorityRoles;
-  }
 
-  private static List<String> getRolesBy(Claims claims) {
-    return List.of(claims.get(ROLES)
-        .toString()
-        .split(SEPARATOR));
-  }
+    public String resolveToken(HttpServletRequest req, JwtType jwtType) {
+        Optional<Cookie> accessToken = Arrays.stream(req.getCookies())
+            .filter(cookie -> cookie.getName().equals(jwtType.getTokenName()))
+            .findFirst();
+        if (accessToken.isEmpty()) {
+            throw new EmptyJwtException();
+        }
+        return accessToken.get().getValue();
+    }
+
+    public TokenValidationResultDto tryCheckTokenValid(HttpServletRequest req, JwtType jwtType) {
+        try {
+            String token = resolveToken(req, jwtType);
+            getUserId(token);
+            return TokenValidationResultDto.of(true, VALID, token);
+        } catch (MalformedJwtException e) {
+            return TokenValidationResultDto.of(false, MALFORMED);
+        } catch (ExpiredJwtException e) {
+            return TokenValidationResultDto.of(false, EXPIRED);
+        } catch (UnsupportedJwtException e) {
+            return TokenValidationResultDto.of(false, UNSUPPORTED);
+        } catch (SignatureException e) {
+            return TokenValidationResultDto.of(false, WRONG_SIGNATURE);
+        } catch (EmptyJwtException e) {
+            return TokenValidationResultDto.of(false, EMPTY);
+        } catch (BearerTokenMissingException e) {
+            return TokenValidationResultDto.of(false, NOT_EXIST_BEARER);
+        } catch (Exception e) {
+            return TokenValidationResultDto.of(false, UNKNOWN);
+        }
+    }
+
+    public List<Authority> getRoles(String token) {
+        Claims claims = getClaim(token);
+        List<String> roles = getRolesBy(claims);
+        List<Authority> authorityRoles = new ArrayList<>();
+        for (String role : roles) {
+            authorityRoles.add(Authority.builder().role(GENERAL_USER).build());
+        }
+        return authorityRoles;
+    }
+
+    private static List<String> getRolesBy(Claims claims) {
+        return List.of(claims.get(ROLES)
+            .toString()
+            .split(SEPARATOR));
+    }
 }
 

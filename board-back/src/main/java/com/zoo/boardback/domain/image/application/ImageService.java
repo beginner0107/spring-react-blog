@@ -10,5 +10,5 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class ImageService {
 
-  private final ImageRepository imageRepository;
+    private final ImageRepository imageRepository;
 }

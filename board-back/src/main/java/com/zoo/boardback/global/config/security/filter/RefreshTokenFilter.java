@@ -21,23 +21,26 @@ import org.springframework.web.filter.OncePerRequestFilter;
 @Component
 public class RefreshTokenFilter extends OncePerRequestFilter {
 
-  private final JwtProvider jwtTokenProvider;
-  private final JwtTokenConditionFactory jwtTokenConditionFactory;
-  private final AuthCookieService authCookieService;
+    private final JwtProvider jwtTokenProvider;
+    private final JwtTokenConditionFactory jwtTokenConditionFactory;
+    private final AuthCookieService authCookieService;
 
-  @Override
-  protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
-      FilterChain filterChain) throws ServletException, IOException {
-    final var accessTokenDto = jwtTokenProvider.tryCheckTokenValid(request, ACCESS_TOKEN);
-    final var refreshTokenDto = jwtTokenProvider.tryCheckTokenValid(request, REFRESH_TOKEN);
+    @Override
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
+        FilterChain filterChain) throws ServletException, IOException {
+        final var accessTokenDto = jwtTokenProvider.tryCheckTokenValid(request, ACCESS_TOKEN);
+        final var refreshTokenDto = jwtTokenProvider.tryCheckTokenValid(request, REFRESH_TOKEN);
 
-    List<JwtTokenCondition> jwtTokenConditions = jwtTokenConditionFactory.createJwtTokenConditions();
-    jwtTokenConditions.stream()
-        .filter(jwtTokenCondition -> jwtTokenCondition.isSatisfiedBy(accessTokenDto, refreshTokenDto, request))
-        .findFirst()
-        .ifPresentOrElse(jwtTokenCondition -> jwtTokenCondition.setJwtToken(accessTokenDto, refreshTokenDto, request, response),
-            () -> authCookieService.setCookieExpired(response));
+        List<JwtTokenCondition> jwtTokenConditions = jwtTokenConditionFactory.createJwtTokenConditions();
+        jwtTokenConditions.stream()
+            .filter(jwtTokenCondition -> jwtTokenCondition.isSatisfiedBy(accessTokenDto,
+                refreshTokenDto, request))
+            .findFirst()
+            .ifPresentOrElse(
+                jwtTokenCondition -> jwtTokenCondition.setJwtToken(accessTokenDto, refreshTokenDto,
+                    request, response),
+                () -> authCookieService.setCookieExpired(response));
 
-    filterChain.doFilter(request, response);
-  }
+        filterChain.doFilter(request, response);
+    }
 }

@@ -10,7 +10,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class FavoriteListItem {
-  private String email;
-  private String nickname;
-  private String profileImage;
+
+    private String email;
+    private String nickname;
+    private String profileImage;
 }

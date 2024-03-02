@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PopularSearchWordDto {
-  private String searchWord;
-  private Long count;
+
+    private String searchWord;
+    private Long count;
 }

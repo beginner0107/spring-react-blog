@@ -9,7 +9,7 @@ import org.springframework.data.repository.query.Param;
 
 public interface CommentRepository extends JpaRepository<Comment, Long>, CommentRepositoryCustom {
 
-  @Modifying
-  @Query("DELETE FROM Comment i WHERE i.post = :post")
-  void deleteByPost(@Param("post") Post post);
+    @Modifying
+    @Query("DELETE FROM Comment i WHERE i.post = :post")
+    void deleteByPost(@Param("post") Post post);
 }

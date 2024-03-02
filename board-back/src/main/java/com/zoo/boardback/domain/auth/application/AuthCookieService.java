@@ -17,37 +17,40 @@ import org.springframework.stereotype.Service;
 @Service
 public class AuthCookieService {
 
-  private final JwtProvider jwtProvider;
-  private final RedisUtil redisUtil;
+    private final JwtProvider jwtProvider;
+    private final RedisUtil redisUtil;
 
-  public void setNewCookieInResponse(String userId, List<Authority> roles, String userAgent, HttpServletResponse response) {
-    String newRefreshToken = jwtProvider.createAccessToken(REFRESH_TOKEN, userId, roles);
-    setTokenInCookie(response, newRefreshToken, (int) REFRESH_TOKEN.getExpiredMillis() / 1000,
-        REFRESH_TOKEN.getTokenName());
-    String newAccessToken = jwtProvider.createAccessToken(ACCESS_TOKEN, userId, roles);
-    setTokenInCookie(response, newAccessToken, (int) REFRESH_TOKEN.getExpiredMillis() / 1000,
-        ACCESS_TOKEN.getTokenName());
-    redisUtil.setDataExpire(JwtProvider.getRefreshTokenKeyForRedis(userId, userAgent), newRefreshToken, REFRESH_TOKEN.getExpiredMillis());
-  }
+    public void setNewCookieInResponse(String userId, List<Authority> roles, String userAgent,
+        HttpServletResponse response) {
+        String newRefreshToken = jwtProvider.createAccessToken(REFRESH_TOKEN, userId, roles);
+        setTokenInCookie(response, newRefreshToken, (int) REFRESH_TOKEN.getExpiredMillis() / 1000,
+            REFRESH_TOKEN.getTokenName());
+        String newAccessToken = jwtProvider.createAccessToken(ACCESS_TOKEN, userId, roles);
+        setTokenInCookie(response, newAccessToken, (int) REFRESH_TOKEN.getExpiredMillis() / 1000,
+            ACCESS_TOKEN.getTokenName());
+        redisUtil.setDataExpire(JwtProvider.getRefreshTokenKeyForRedis(userId, userAgent),
+            newRefreshToken, REFRESH_TOKEN.getExpiredMillis());
+    }
 
-  private void setTokenInCookie(HttpServletResponse httpResponse, String token, int expiredSeconds, String cookieName) {
-    ResponseCookie cookie = ResponseCookie.from(cookieName, token)
-        .path("/")
-        .sameSite("None")
-        .httpOnly(true)
-        .maxAge(expiredSeconds)
-        .secure(true)
-        .build();
-    httpResponse.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
-  }
+    private void setTokenInCookie(HttpServletResponse httpResponse, String token,
+        int expiredSeconds, String cookieName) {
+        ResponseCookie cookie = ResponseCookie.from(cookieName, token)
+            .path("/")
+            .sameSite("None")
+            .httpOnly(true)
+            .maxAge(expiredSeconds)
+            .secure(true)
+            .build();
+        httpResponse.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+    }
 
-  public void setCookieExpiredWithRedis(String userId, HttpServletResponse response) {
-    setCookieExpired(response);
-    redisUtil.deleteData(userId);
-  }
+    public void setCookieExpiredWithRedis(String userId, HttpServletResponse response) {
+        setCookieExpired(response);
+        redisUtil.deleteData(userId);
+    }
 
-  public void setCookieExpired(HttpServletResponse response) {
-    setTokenInCookie(response, "", 0, REFRESH_TOKEN.getTokenName());
-    setTokenInCookie(response, "", 0, ACCESS_TOKEN.getTokenName());
-  }
+    public void setCookieExpired(HttpServletResponse response) {
+        setTokenInCookie(response, "", 0, REFRESH_TOKEN.getTokenName());
+        setTokenInCookie(response, "", 0, ACCESS_TOKEN.getTokenName());
+    }
 }

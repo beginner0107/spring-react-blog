@@ -17,78 +17,79 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
 
-public class CommentRepositoryImpl implements CommentRepositoryCustom{
-  private final JPAQueryFactory queryFactory;
+public class CommentRepositoryImpl implements CommentRepositoryCustom {
 
-  public CommentRepositoryImpl(EntityManager em) {
-    this.queryFactory = new JPAQueryFactory(em);
-  }
+    private final JPAQueryFactory queryFactory;
 
-  @Override
-  public Page<CommentQueryDto> getComments(Post post, Pageable pageable) {
-    QComment selfComment = new QComment("selfComment");
+    public CommentRepositoryImpl(EntityManager em) {
+        this.queryFactory = new JPAQueryFactory(em);
+    }
 
-    List<CommentQueryDto> comments = queryFactory
-        .select(constructor(CommentQueryDto.class,
-                comment.id,
-                user.nickname,
-                user.profileImage,
-                comment.content,
-                comment.createdAt,
-                comment.updatedAt,
-                selfComment.parent.count().as("childCount"),
-                comment.delYn
+    @Override
+    public Page<CommentQueryDto> getComments(Post post, Pageable pageable) {
+        QComment selfComment = new QComment("selfComment");
+
+        List<CommentQueryDto> comments = queryFactory
+            .select(constructor(CommentQueryDto.class,
+                    comment.id,
+                    user.nickname,
+                    user.profileImage,
+                    comment.content,
+                    comment.createdAt,
+                    comment.updatedAt,
+                    selfComment.parent.count().as("childCount"),
+                    comment.delYn
+                )
             )
-        )
-        .from(comment)
-        .leftJoin(selfComment).on(comment.id.eq(selfComment.parent.id))
-        .join(comment.user, user)
-        .where(
-            comment.post.id.eq(post.getId())
-            .and(comment.parent.id.isNull())
-        )
-        .groupBy(comment.id)
-        .offset(pageable.getOffset())
-        .limit(pageable.getPageSize())
-        .orderBy(comment.createdAt.desc())
-        .fetch();
-
-    JPAQuery<Long> countQuery = queryFactory
-        .select(comment.count())
-        .leftJoin(selfComment).on(comment.id.eq(selfComment.parent.id))
-        .where(
-            comment.post.id.eq(post.getId())
-                .and(comment.parent.id.isNull())
-        )
-        .groupBy(comment.id)
-        .from(comment);
-    return PageableExecutionUtils.getPage(comments, pageable, countQuery::fetchOne);
-  }
-
-  @Override
-  public List<ChildCommentQueryDto> getChildComments(Long postId, Long parentId) {
-    QComment selfComment = new QComment("selfComment");
-    return queryFactory
-        .select(constructor(ChildCommentQueryDto.class,
-                comment.id,
-                user.nickname,
-                user.profileImage,
-                comment.content,
-                comment.createdAt,
-                comment.updatedAt,
-                selfComment.parent.count().as("childCount"),
-                comment.delYn
+            .from(comment)
+            .leftJoin(selfComment).on(comment.id.eq(selfComment.parent.id))
+            .join(comment.user, user)
+            .where(
+                comment.post.id.eq(post.getId())
+                    .and(comment.parent.id.isNull())
             )
-        )
-        .from(comment)
-        .leftJoin(selfComment).on(comment.id.eq(selfComment.parent.id))
-        .join(comment.user, user)
-        .where(
-            comment.post.id.eq(postId)
-                .and(comment.parent.id.eq(parentId))
-        )
-        .groupBy(comment.id)
-        .orderBy(comment.createdAt.desc())
-        .fetch();
-  }
+            .groupBy(comment.id)
+            .offset(pageable.getOffset())
+            .limit(pageable.getPageSize())
+            .orderBy(comment.createdAt.desc())
+            .fetch();
+
+        JPAQuery<Long> countQuery = queryFactory
+            .select(comment.count())
+            .leftJoin(selfComment).on(comment.id.eq(selfComment.parent.id))
+            .where(
+                comment.post.id.eq(post.getId())
+                    .and(comment.parent.id.isNull())
+            )
+            .groupBy(comment.id)
+            .from(comment);
+        return PageableExecutionUtils.getPage(comments, pageable, countQuery::fetchOne);
+    }
+
+    @Override
+    public List<ChildCommentQueryDto> getChildComments(Long postId, Long parentId) {
+        QComment selfComment = new QComment("selfComment");
+        return queryFactory
+            .select(constructor(ChildCommentQueryDto.class,
+                    comment.id,
+                    user.nickname,
+                    user.profileImage,
+                    comment.content,
+                    comment.createdAt,
+                    comment.updatedAt,
+                    selfComment.parent.count().as("childCount"),
+                    comment.delYn
+                )
+            )
+            .from(comment)
+            .leftJoin(selfComment).on(comment.id.eq(selfComment.parent.id))
+            .join(comment.user, user)
+            .where(
+                comment.post.id.eq(postId)
+                    .and(comment.parent.id.eq(parentId))
+            )
+            .groupBy(comment.id)
+            .orderBy(comment.createdAt.desc())
+            .fetch();
+    }
 }

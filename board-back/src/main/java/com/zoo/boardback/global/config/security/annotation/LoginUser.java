@@ -9,5 +9,5 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface LoginUser {
 
-  boolean required() default true;
+    boolean required() default true;
 }

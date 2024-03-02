@@ -11,14 +11,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 public interface PostRepository extends JpaRepository<Post, Long>, PostRepositoryCustom {
 
-  @EntityGraph(attributePaths = "user")
-  Optional<Post> findById(Long id);
+    @EntityGraph(attributePaths = "user")
+    Optional<Post> findById(Long id);
 
-  @Query("select p.viewCount from Post p where p.id = :id")
-  Long findViewCount(@Param("id") Long id);
+    @Query("select p.viewCount from Post p where p.id = :id")
+    Long findViewCount(@Param("id") Long id);
 
-  @Transactional
-  @Modifying
-  @Query("update Post p set p.viewCount = :viewCount where p.id = :id")
-  void applyViewCntToRDB(@Param("id") Long id, @Param("viewCount") Long viewCount);
+    @Transactional
+    @Modifying
+    @Query("update Post p set p.viewCount = :viewCount where p.id = :id")
+    void applyViewCntToRDB(@Param("id") Long id, @Param("viewCount") Long viewCount);
 }

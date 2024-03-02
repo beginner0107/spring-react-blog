@@ -19,19 +19,19 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 @Slf4j
 public class LoginUserArgumentResolver implements HandlerMethodArgumentResolver {
 
-  private final UserRepository userRepository;
+    private final UserRepository userRepository;
 
-  @Override
-  public boolean supportsParameter(MethodParameter parameter) {
-    return parameter.hasParameterAnnotation(LoginUser.class);
-  }
+    @Override
+    public boolean supportsParameter(MethodParameter parameter) {
+        return parameter.hasParameterAnnotation(LoginUser.class);
+    }
 
-  @Override
-  public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
-      NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
-    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    long loginUserId = Long.parseLong(authentication.getName());
-    return userRepository.findById(loginUserId)
-        .orElseThrow(() -> new BusinessException(loginUserId, "JWT", ErrorCode.USER_NOT_FOUND));
-  }
+    @Override
+    public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
+        NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        long loginUserId = Long.parseLong(authentication.getName());
+        return userRepository.findById(loginUserId)
+            .orElseThrow(() -> new BusinessException(loginUserId, "JWT", ErrorCode.USER_NOT_FOUND));
+    }
 }

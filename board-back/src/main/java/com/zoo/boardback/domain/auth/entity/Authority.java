@@ -24,25 +24,25 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(of = {"id"}, callSuper = false)
 public class Authority extends BaseEntity {
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  @JsonIgnore
-  private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @JsonIgnore
+    private Long id;
 
-  private String roleName;
+    private String roleName;
 
-  @JoinColumn(name = "roles")
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JsonIgnore
-  private User users;
+    @JoinColumn(name = "roles")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnore
+    private User users;
 
-  public void setUser(User user) {
-    this.users = user;
-  }
+    public void setUser(User user) {
+        this.users = user;
+    }
 
-  @Builder
-  public Authority(UserRole role, User users) {
-    this.roleName = role.getRoleName();
-    this.users = users;
-  }
+    @Builder
+    public Authority(UserRole role, User users) {
+        this.roleName = role.getRoleName();
+        this.users = users;
+    }
 }

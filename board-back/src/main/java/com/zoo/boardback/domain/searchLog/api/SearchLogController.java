@@ -15,14 +15,14 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/search")
 public class SearchLogController {
 
-  private final SearchLogService searchLogService;
+    private final SearchLogService searchLogService;
 
-  @GetMapping
-  public ApiResponse<PopularSearchWordResponseDto> getPopularSearchWords(
-      @RequestParam("searchType") String searchType
-  ) {
-    PopularSearchWordResponseDto searchWords = searchLogService.getPopularSearchWords(
-        SearchType.fromCode(searchType));
-    return ApiResponse.ok(searchWords);
-  }
+    @GetMapping
+    public ApiResponse<PopularSearchWordResponseDto> getPopularSearchWords(
+        @RequestParam("searchType") String searchType
+    ) {
+        PopularSearchWordResponseDto searchWords = searchLogService.getPopularSearchWords(
+            SearchType.fromCode(searchType));
+        return ApiResponse.ok(searchWords);
+    }
 }

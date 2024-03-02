@@ -14,34 +14,34 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = PRIVATE)
 public class PostCreateRequestDto {
 
-  @NotBlank(message = "게시글 제목을 입력해주세요.")
-  private String title;
-  @NotBlank
-  private String content;
-  private List<String> postImageList;
-  private String postTitleImage;
+    @NotBlank(message = "게시글 제목을 입력해주세요.")
+    private String title;
+    @NotBlank
+    private String content;
+    private List<String> postImageList;
+    private String postTitleImage;
 
-  @Builder
-  public PostCreateRequestDto(
-      String title,
-      String content,
-      List<String> postImageList,
-      String postTitleImage
-      ) {
-    this.title = title;
-    this.content = content;
-    this.postImageList = postImageList;
-    this.postTitleImage = postTitleImage;
-  }
+    @Builder
+    public PostCreateRequestDto(
+        String title,
+        String content,
+        List<String> postImageList,
+        String postTitleImage
+    ) {
+        this.title = title;
+        this.content = content;
+        this.postImageList = postImageList;
+        this.postTitleImage = postTitleImage;
+    }
 
-  public Post toEntity(User user) {
-    return Post.builder()
-        .user(user)
-        .title(title)
-        .content(content)
-        .favoriteCount(0)
-        .commentCount(0)
-        .viewCount(0)
-        .build();
-  }
+    public Post toEntity(User user) {
+        return Post.builder()
+            .user(user)
+            .title(title)
+            .content(content)
+            .favoriteCount(0)
+            .commentCount(0)
+            .viewCount(0)
+            .build();
+    }
 }

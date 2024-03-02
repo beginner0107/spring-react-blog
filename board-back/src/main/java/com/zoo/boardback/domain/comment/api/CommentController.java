@@ -27,52 +27,53 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class CommentController {
 
-  private final CommentService commentService;
+    private final CommentService commentService;
 
-  @PostMapping
-  public ApiResponse<Void> createComment(
-      @RequestBody @Valid CommentCreateRequestDto requestDto,
-      @LoginUser User user
-  ) {
-    commentService.create(user, requestDto);
-    return ApiResponse.ok(null);
-  }
-  @GetMapping("/post/{postId}")
-  public ApiResponse<CommentListResponseDto> getComments(
-      @PathVariable Long postId,
-      @PageableDefault(size = 5, sort = "createdAt", direction = Direction.DESC) Pageable pageable
-      ) {
-    CommentListResponseDto comments = commentService.getComments(
-        postId, pageable);
-    return ApiResponse.ok(comments);
-  }
+    @PostMapping
+    public ApiResponse<Void> createComment(
+        @RequestBody @Valid CommentCreateRequestDto requestDto,
+        @LoginUser User user
+    ) {
+        commentService.create(user, requestDto);
+        return ApiResponse.ok(null);
+    }
 
-  @PutMapping("/{commentId}")
-  public ApiResponse<Void> updateComment(
-      @PathVariable Long commentId,
-      @RequestBody @Valid CommentUpdateRequestDto commentUpdateRequestDto,
-      @LoginUser User user
-      ) {
-    commentService.update(user.getEmail(), commentId, commentUpdateRequestDto);
-    return ApiResponse.ok(null);
-  }
+    @GetMapping("/post/{postId}")
+    public ApiResponse<CommentListResponseDto> getComments(
+        @PathVariable Long postId,
+        @PageableDefault(size = 5, sort = "createdAt", direction = Direction.DESC) Pageable pageable
+    ) {
+        CommentListResponseDto comments = commentService.getComments(
+            postId, pageable);
+        return ApiResponse.ok(comments);
+    }
 
-  @DeleteMapping("/{commentId}")
-  public ApiResponse<Void> deleteComment(
-      @LoginUser User user,
-      @PathVariable Long commentId
-  ) {
-    commentService.delete(commentId, user.getEmail());
-    return ApiResponse.of(HttpStatus.NO_CONTENT, null);
-  }
+    @PutMapping("/{commentId}")
+    public ApiResponse<Void> updateComment(
+        @PathVariable Long commentId,
+        @RequestBody @Valid CommentUpdateRequestDto commentUpdateRequestDto,
+        @LoginUser User user
+    ) {
+        commentService.update(user.getEmail(), commentId, commentUpdateRequestDto);
+        return ApiResponse.ok(null);
+    }
 
-  @GetMapping("/post/{postId}/parentId/{parentId}")
-  public ApiResponse<CommentListResponseDto> getChildComments(
-      @PathVariable Long postId,
-      @PathVariable("parentId") Long commentId
-  ) {
-    CommentListResponseDto comments = commentService.getChildComments(
-        postId, commentId);
-    return ApiResponse.ok(comments);
-  }
+    @DeleteMapping("/{commentId}")
+    public ApiResponse<Void> deleteComment(
+        @LoginUser User user,
+        @PathVariable Long commentId
+    ) {
+        commentService.delete(commentId, user.getEmail());
+        return ApiResponse.of(HttpStatus.NO_CONTENT, null);
+    }
+
+    @GetMapping("/post/{postId}/parentId/{parentId}")
+    public ApiResponse<CommentListResponseDto> getChildComments(
+        @PathVariable Long postId,
+        @PathVariable("parentId") Long commentId
+    ) {
+        CommentListResponseDto comments = commentService.getChildComments(
+            postId, commentId);
+        return ApiResponse.ok(comments);
+    }
 }

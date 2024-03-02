@@ -14,15 +14,15 @@ import lombok.NoArgsConstructor;
 @Builder
 public class SignUserResponseDto {
 
-  private String email;
-  private String nickname;
-  private String profileImage;
+    private String email;
+    private String nickname;
+    private String profileImage;
 
-  public static SignUserResponseDto from(User user) {
-    return SignUserResponseDto.builder()
-        .email(user.getEmail())
-        .nickname(user.getNickname())
-        .profileImage(user.getProfileImage())
-        .build();
-  }
+    public static SignUserResponseDto from(User user) {
+        return SignUserResponseDto.builder()
+            .email(user.getEmail())
+            .nickname(user.getNickname())
+            .profileImage(user.getProfileImage())
+            .build();
+    }
 }

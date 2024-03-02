@@ -9,6 +9,10 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.zoo.boardback.IntegrationTestSupport;
 import com.zoo.boardback.domain.auth.entity.Authority;
+import com.zoo.boardback.domain.comment.dao.CommentRepository;
+import com.zoo.boardback.domain.comment.entity.Comment;
+import com.zoo.boardback.domain.image.dao.ImageRepository;
+import com.zoo.boardback.domain.image.entity.Image;
 import com.zoo.boardback.domain.post.dao.PostRepository;
 import com.zoo.boardback.domain.post.dto.request.PostCreateRequestDto;
 import com.zoo.boardback.domain.post.dto.request.PostSearchCondition;
@@ -17,10 +21,6 @@ import com.zoo.boardback.domain.post.dto.response.PostDetailResponseDto;
 import com.zoo.boardback.domain.post.dto.response.PostSearchResponseDto;
 import com.zoo.boardback.domain.post.dto.response.PostsTop3ResponseDto;
 import com.zoo.boardback.domain.post.entity.Post;
-import com.zoo.boardback.domain.comment.dao.CommentRepository;
-import com.zoo.boardback.domain.comment.entity.Comment;
-import com.zoo.boardback.domain.image.dao.ImageRepository;
-import com.zoo.boardback.domain.image.entity.Image;
 import com.zoo.boardback.domain.searchLog.dao.SearchLogRepository;
 import com.zoo.boardback.domain.searchLog.entity.SearchLog;
 import com.zoo.boardback.domain.searchLog.entity.type.SearchType;
@@ -358,7 +358,7 @@ class PostServiceTest extends IntegrationTestSupport {
             .hasMessage(POST_NOT_CUD_MATCHING_USER.getMessage());
     }
 
-    @DisplayName("회원은 상위 3개의 게시물을 볼 수 있다.")
+    @DisplayName("회원은 일주일 이내 상위 3개의 게시물을 볼 수 있다.")
     @Test
     void getTop3Posts() {
         // given
@@ -376,12 +376,8 @@ class PostServiceTest extends IntegrationTestSupport {
         Post post3 = createPostViewCount(title3, content3, user, 3);
         postRepository.saveAll(List.of(post1, post2, post3));
 
-        LocalDateTime now = LocalDateTime.now();
-        LocalDateTime startDate = getStartOfWeek(now);
-        LocalDateTime endDate = getEndOfWeek(now);
-
         // when
-        PostsTop3ResponseDto posts = postService.getTop3Posts(startDate, endDate);
+        PostsTop3ResponseDto posts = postService.getTop3PostsThisWeek();
 
         // then
         assertThat(posts).isNotNull();
@@ -427,7 +423,7 @@ class PostServiceTest extends IntegrationTestSupport {
         return PostCreateRequestDto.builder()
             .title(title)
             .content(content)
-            .postImageList(List.of("https://testImage2.png",
+            .postImageUrls(List.of("https://testImage2.png",
                 "https://testImage3.png"))
             .build();
     }

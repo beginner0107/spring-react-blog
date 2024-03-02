@@ -418,20 +418,13 @@ public class PostControllerDocsTest extends RestDocsSecuritySupport {
             ));
     }
 
-    @DisplayName("회원은 상위 3개의 게시물을 볼 수 있다.")
+    @DisplayName("회원은 일주일 이내 상위 3개의 게시물을 볼 수 있다.")
     @WithAuthUser(userId = "1", role = "ROLE_USER")
     @Test
     void getPostsTop3() throws Exception {
-        PostsTop3ResponseDto response = PostsTop3ResponseDto.builder()
-            .top3List(
-                List.of(
-                    createPostRankItem("제목3", "내용3", 3),
-                    createPostRankItem("제목2", "내용2", 2),
-                    createPostRankItem("제목1", "내용1", 1)
-                )
-            ).build();
+        PostsTop3ResponseDto response = createPostsTop3ThisWeek();
 
-        given(postService.getTop3Posts(any(LocalDateTime.class), any(LocalDateTime.class)))
+        given(postService.getTop3PostsThisWeek())
             .willReturn(response);
         given(userService.getUser(EMAIL))
             .willReturn(SignUserResponseDto.builder()
@@ -482,11 +475,21 @@ public class PostControllerDocsTest extends RestDocsSecuritySupport {
             ));
     }
 
+    private PostsTop3ResponseDto createPostsTop3ThisWeek() {
+        return PostsTop3ResponseDto.create(
+            List.of(
+                createPostRankItem("제목3", "내용3", 3),
+                createPostRankItem("제목2", "내용2", 2),
+                createPostRankItem("제목1", "내용1", 1)
+            )
+        );
+    }
+
     private PostCreateRequestDto createPostRequest(String title, String content) {
         return PostCreateRequestDto.builder()
             .title(title)
             .content(content)
-            .postImageList(List.of("https://testImage.png"))
+            .postImageUrls(List.of("https://testImage.png"))
             .build();
     }
 

@@ -82,8 +82,12 @@ public class Post extends BaseEntity {
         this.commentCount--;
     }
 
-    public void editPost(String title, String content) {
+    public void edit(String title, String content) {
         this.title = title;
         this.content = content;
+    }
+
+    public boolean isPostAuthorMatching(String email) {
+        return user.getEmail().equals(email);
     }
 }

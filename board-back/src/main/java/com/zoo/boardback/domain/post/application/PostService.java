@@ -6,8 +6,6 @@ import static com.zoo.boardback.global.error.ErrorCode.POST_NOT_FOUND;
 import static com.zoo.boardback.global.error.ErrorCode.USER_NOT_FOUND;
 import static java.util.stream.Collectors.toList;
 
-import com.zoo.boardback.domain.comment.dao.CommentRepository;
-import com.zoo.boardback.domain.favorite.dao.FavoriteRepository;
 import com.zoo.boardback.domain.image.dao.ImageRepository;
 import com.zoo.boardback.domain.image.entity.Image;
 import com.zoo.boardback.domain.post.dao.PostRepository;
@@ -30,12 +28,12 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjusters;
-import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
@@ -46,9 +44,8 @@ public class PostService {
     private final PostRepository postRepository;
     private final UserRepository userRepository;
     private final ImageRepository imageRepository;
-    private final CommentRepository commentRepository;
-    private final FavoriteRepository favoriteRepository;
     private final SearchLogRepository searchLogRepository;
+    private final PostDeleteService postDeleteService;
 
     @Transactional
     public void create(PostCreateRequestDto request, String email) {
@@ -58,7 +55,7 @@ public class PostService {
 
         savePostTitleImage(request, post);
 
-        savePostImages(request, post);
+        savePostImages(request.getPostImageUrls(), post);
     }
 
     private void savePostTitleImage(PostCreateRequestDto request, Post post) {
@@ -66,20 +63,9 @@ public class PostService {
         imageRepository.save(Image.createPostTitleImage(post, request.getPostTitleImageUrl()));
     }
 
-    private void savePostImages(PostCreateRequestDto request, Post post) {
-        if (!request.existsByPostImageUrls()) return;
-        imageRepository.saveAll(createPostImages(request.getPostImageUrls(), post));
-    }
-
-    private List<Image> createPostImages(List<String> postImageUrls, Post post) {
-        return postImageUrls.stream()
-            .map(imageUrl -> Image.createPostImage(post, imageUrl))
-            .collect(toList());
-    }
-
-    private User findUserByEmail(String email) {
-        return userRepository.findByEmail(email).orElseThrow(() ->
-            new BusinessException(email, "email", USER_NOT_FOUND));
+    private void savePostImages(List<String> postImageUrls, Post post) {
+        if (postImageUrls == null) return;
+        imageRepository.saveAll(createPostImages(postImageUrls, post));
     }
 
     @Transactional
@@ -103,23 +89,17 @@ public class PostService {
     @Transactional
     public void update(Long postId, String email, PostUpdateRequestDto requestDto) {
         Post post = findPostByPostId(postId);
-        checkPostAuthorMatching(email, post);
-        post.editPost(requestDto.getTitle(), requestDto.getContent());
+        validatePostAuthorMatching(post, email);
+        post.edit(requestDto.getTitle(), requestDto.getContent());
 
-        List<String> boardImageList = requestDto.getBoardImageList();
-        List<Image> imageEntities = new ArrayList<>();
-
-        editImages(post, boardImageList, imageEntities);
+        editImages(post, requestDto.getPostImageUrls());
     }
 
-    @Transactional
-    public void delete(Long postId, String email) { // cascade 옵션 활용하기
+    @Transactional(propagation = Propagation.REQUIRED)
+    public void delete(Long postId, String email) {
         Post post = findPostByPostId(postId);
-        checkPostAuthorMatching(email, post);
-        imageRepository.deleteByBoard(post);
-        commentRepository.deleteByPost(post);
-        favoriteRepository.deleteByPost(post);
-        postRepository.delete(post);
+        validatePostAuthorMatching(post, email);
+        postDeleteService.delete(post);
     }
 
     private Post findPostByPostId(Long postId) {
@@ -127,8 +107,8 @@ public class PostService {
             new BusinessException(postId, "postId", POST_NOT_FOUND));
     }
 
-    private void checkPostAuthorMatching(String email, Post post) {
-        if (!post.getUser().getEmail().equals(email)) {
+    private void validatePostAuthorMatching(Post post, String email) {
+        if (!post.isPostAuthorMatching(email)) {
             throw new BusinessException(email, "email", POST_NOT_CUD_MATCHING_USER);
         }
     }
@@ -138,18 +118,6 @@ public class PostService {
             .stream()
             .map(Image::getImageUrl)
             .collect(toList());
-    }
-
-    private void editImages(Post post, List<String> boardImageList, List<Image> imageEntities) {
-        imageRepository.deleteByBoard(post);
-        for (String image : boardImageList) {
-            Image imageEntity = Image.builder()
-                .post(post)
-                .imageUrl(image)
-                .build();
-            imageEntities.add(imageEntity);
-        }
-        imageRepository.saveAll(imageEntities);
     }
 
     public PostsTop3ResponseDto getTop3PostsThisWeek() {
@@ -168,4 +136,24 @@ public class PostService {
     private LocalDateTime getEndOfWeek(LocalDateTime dateTime) {
         return dateTime.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY)).with(LocalTime.MAX);
     }
+
+    private User findUserByEmail(String email) {
+        return userRepository.findByEmail(email).orElseThrow(() ->
+            new BusinessException(email, "email", USER_NOT_FOUND));
+    }
+
+    private List<Image> createPostImages(List<String> postImageUrls, Post post) {
+        return postImageUrls.stream()
+            .map(imageUrl -> Image.createPostImage(post, imageUrl))
+            .collect(toList());
+    }
+    private void editImages(Post post, List<String> postImageUrls) {
+        imageRepository.deleteByPostId(post.getId());
+        imageRepository.saveAll(
+            postImageUrls.stream()
+                .map(imageUrl -> Image.createPostImage(post, imageUrl))
+                .collect(toList())
+        );
+    }
+
 }

@@ -20,13 +20,13 @@ public class PostUpdateRequestDto {
     @NotBlank
     private String content;
     @NotNull
-    private List<String> boardImageList;
+    private List<String> postImageUrls;
 
     @Builder
-    public PostUpdateRequestDto(String title, String content, List<String> boardImageList) {
+    public PostUpdateRequestDto(String title, String content, List<String> postImageUrls) {
         this.title = title;
         this.content = content;
-        this.boardImageList = boardImageList;
+        this.postImageUrls = postImageUrls;
     }
 
     public Post toEntity(User user) {

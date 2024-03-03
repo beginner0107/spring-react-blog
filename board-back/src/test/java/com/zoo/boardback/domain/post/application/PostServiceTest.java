@@ -55,6 +55,8 @@ class PostServiceTest extends IntegrationTestSupport {
     private SearchLogRepository searchLogRepository;
     @Autowired
     private PostService postService;
+    @Autowired
+    private PostDeleteService postDeleteService;
 
     @AfterEach
     void tearDown() {
@@ -433,7 +435,7 @@ class PostServiceTest extends IntegrationTestSupport {
         return PostUpdateRequestDto.builder()
             .title(title)
             .content(content)
-            .boardImageList(updateImages)
+            .postImageUrls(updateImages)
             .build();
     }
 

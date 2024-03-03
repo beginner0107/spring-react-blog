@@ -361,7 +361,7 @@ public class PostControllerDocsTest extends RestDocsSecuritySupport {
                         .description("게시글 제목"),
                     fieldWithPath("content").type(JsonFieldType.STRING)
                         .description("게시글 내용"),
-                    fieldWithPath("boardImageList").type(JsonFieldType.ARRAY)
+                    fieldWithPath("postImageUrls").type(JsonFieldType.ARRAY)
                         .description("게시글 이미지 목록(URL 경로 목록)")
                 ),
                 responseFields(
@@ -528,7 +528,7 @@ public class PostControllerDocsTest extends RestDocsSecuritySupport {
         return PostUpdateRequestDto.builder()
             .title(title)
             .content(content)
-            .boardImageList(List.of("https://updateImage1.png",
+            .postImageUrls(List.of("https://updateImage1.png",
                 "https://updateImage2.png"))
             .build();
     }

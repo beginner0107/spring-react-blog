@@ -367,7 +367,7 @@ class PostControllerTest extends ControllerTestSupport {
         return PostUpdateRequestDto.builder()
             .title(title)
             .content(content)
-            .boardImageList(List.of("https://updateImage1.png",
+            .postImageUrls(List.of("https://updateImage1.png",
                 "https://updateImage2.png"))
             .build();
     }

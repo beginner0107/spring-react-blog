@@ -24,4 +24,8 @@ public class Favorite extends BaseEntity {
     public Favorite(FavoritePk favoritePk) {
         this.favoritePk = favoritePk;
     }
+
+    public static Favorite create(FavoritePk favoritePk) {
+        return new Favorite(favoritePk);
+    }
 }

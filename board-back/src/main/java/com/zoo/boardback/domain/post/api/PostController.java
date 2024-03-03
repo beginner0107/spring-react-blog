@@ -51,7 +51,7 @@ public class PostController {
     ) {
         String email = user.getEmail();
         postService.create(requestDto, email);
-        return ApiResponse.ok(null);
+        return ApiResponse.create();
     }
 
     @GetMapping
@@ -80,7 +80,7 @@ public class PostController {
     ) {
         String email = user.getEmail();
         postService.update(postId, email, postUpdateRequestDto);
-        return ApiResponse.ok(null);
+        return ApiResponse.create();
     }
 
     @DeleteMapping("/{postId}")
@@ -89,7 +89,7 @@ public class PostController {
         @LoginUser User user) {
         String email = user.getEmail();
         postService.delete(postId, email);
-        return ApiResponse.of(NO_CONTENT, null);
+        return ApiResponse.noContent();
     }
 
     @PutMapping("/{postId}/favorite")
@@ -98,7 +98,7 @@ public class PostController {
         @LoginUser User user) {
         String email = user.getEmail();
         favoriteService.like(postId, email);
-        return ApiResponse.ok(null);
+        return ApiResponse.create();
     }
 
     @PutMapping("/{postId}/favoriteCancel")
@@ -107,7 +107,7 @@ public class PostController {
         @LoginUser User user) {
         String email = user.getEmail();
         favoriteService.cancelLike(postId, email);
-        return ApiResponse.ok(null);
+        return ApiResponse.noContent();
     }
 
     @GetMapping("/{postId}/favorite-list")

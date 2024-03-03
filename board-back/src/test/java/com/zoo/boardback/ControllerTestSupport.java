@@ -10,14 +10,12 @@ import com.zoo.boardback.domain.post.application.PostService;
 import com.zoo.boardback.domain.comment.api.CommentController;
 import com.zoo.boardback.domain.comment.application.CommentService;
 import com.zoo.boardback.domain.favorite.application.FavoriteService;
-import com.zoo.boardback.domain.file.api.FileController;
+import com.zoo.boardback.domain.image.api.ImageController;
 import com.zoo.boardback.domain.searchLog.api.SearchLogController;
 import com.zoo.boardback.domain.searchLog.application.SearchLogService;
 import com.zoo.boardback.domain.user.api.UserController;
 import com.zoo.boardback.domain.user.application.UserService;
 import com.zoo.boardback.domain.user.dao.UserRepository;
-import com.zoo.boardback.global.config.security.annotation.LoginUser;
-import com.zoo.boardback.global.config.security.annotation.LoginUserArgumentResolver;
 import com.zoo.boardback.global.config.security.filter.token_condition.JwtTokenConditionFactory;
 import com.zoo.boardback.global.config.security.jwt.JwtProvider;
 import com.zoo.boardback.global.util.file.FileUtil;
@@ -31,7 +29,7 @@ import org.springframework.test.web.servlet.MockMvc;
 @WebMvcTest(controllers = {
     AuthController.class,
     PostController.class,
-    FileController.class,
+    ImageController.class,
     UserController.class,
     CommentController.class,
     SearchLogController.class

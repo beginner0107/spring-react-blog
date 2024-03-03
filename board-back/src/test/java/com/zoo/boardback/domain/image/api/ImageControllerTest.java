@@ -1,4 +1,4 @@
-package com.zoo.boardback.domain.file.api;
+package com.zoo.boardback.domain.image.api;
 
 import static org.mockito.BDDMockito.given;
 import static org.springframework.http.MediaType.IMAGE_JPEG_VALUE;
@@ -20,7 +20,7 @@ import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-class FileControllerTest extends ControllerTestSupport {
+class ImageControllerTest extends ControllerTestSupport {
 
 
     @DisplayName("회원은 파일을 업로드 한다.")
@@ -32,11 +32,11 @@ class FileControllerTest extends ControllerTestSupport {
         String saveFileName = UUID.randomUUID() + extension;
         MockMultipartFile file = new MockMultipartFile("file", originalFileName, IMAGE_JPEG_VALUE,
             "test data".getBytes());
-        String savePath = "http://localhost:8084/file" + saveFileName;
+        String savePath = "http://localhost:8084/image" + saveFileName;
         given(fileUtil.upload(file)).willReturn(savePath);
 
         // when & then
-        mockMvc.perform(multipart("/file/upload")
+        mockMvc.perform(multipart("/image/upload")
                 .file(file))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.code").value(200))
@@ -54,7 +54,7 @@ class FileControllerTest extends ControllerTestSupport {
         given(fileUtil.getImage(fileName)).willReturn(imageResource);
 
         // when & then
-        mockMvc.perform(get("/file/{fileName}", fileName))
+        mockMvc.perform(get("/image/{fileName}", fileName))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.IMAGE_JPEG_VALUE));
     }

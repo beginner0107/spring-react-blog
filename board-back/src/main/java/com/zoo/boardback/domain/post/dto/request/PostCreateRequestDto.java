@@ -36,11 +36,11 @@ public class PostCreateRequestDto {
     }
 
     public boolean existsByPostTitleImageUrl() {
-        return !postTitleImageUrl.isEmpty();
+        return postTitleImageUrl != null;
     }
 
     public boolean existsByPostImageUrls() {
-        return !postImageUrls.isEmpty();
+        return postImageUrls != null;
     }
 
     public Post toEntity(User user) {

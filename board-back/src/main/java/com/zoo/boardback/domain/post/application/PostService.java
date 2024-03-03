@@ -63,17 +63,16 @@ public class PostService {
 
     private void savePostTitleImage(PostCreateRequestDto request, Post post) {
         if (!request.existsByPostTitleImageUrl()) return;
-        imageRepository.save(
-            Image.createPostTitleImage(post, request.getPostTitleImageUrl()));
+        imageRepository.save(Image.createPostTitleImage(post, request.getPostTitleImageUrl()));
     }
 
     private void savePostImages(PostCreateRequestDto request, Post post) {
         if (!request.existsByPostImageUrls()) return;
-        imageRepository.saveAll(createPostImages(request, post));
+        imageRepository.saveAll(createPostImages(request.getPostImageUrls(), post));
     }
 
-    private List<Image> createPostImages(PostCreateRequestDto request, Post post) {
-        return request.getPostImageUrls().stream()
+    private List<Image> createPostImages(List<String> postImageUrls, Post post) {
+        return postImageUrls.stream()
             .map(imageUrl -> Image.createPostImage(post, imageUrl))
             .collect(toList());
     }
@@ -92,7 +91,7 @@ public class PostService {
     private void saveSearchLog(PostSearchCondition condition) {
         SearchType.findSearchType(condition).ifPresent(searchType ->
             findSearchWord(searchType, condition).ifPresent(searchWord ->
-            searchLogRepository.save(SearchLog.create(searchType, searchWord))));
+                searchLogRepository.save(SearchLog.create(searchType, searchWord))));
     }
 
     @Transactional

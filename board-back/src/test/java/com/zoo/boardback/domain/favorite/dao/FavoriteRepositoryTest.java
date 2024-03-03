@@ -13,6 +13,7 @@ import com.zoo.boardback.domain.user.dao.UserRepository;
 import com.zoo.boardback.domain.user.entity.User;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,10 +41,10 @@ class FavoriteRepositoryTest extends IntegrationTestSupport {
         FavoritePk favoritePk = new FavoritePk(post1, user1);
 
         // when
-        Favorite favorite = favoriteRepository.findByFavoritePk(favoritePk);
+        Optional<Favorite> favorite = favoriteRepository.findByFavoritePk(favoritePk);
 
         // then
-        assertThat(favorite).isNull();
+        assertThat(favorite).isEmpty();
     }
 
     @DisplayName("회원이 하나의 게시글에 좋아요 버튼을 누른 기록을 조회한다.[좋아요 클릭 이후]")
@@ -60,11 +61,12 @@ class FavoriteRepositoryTest extends IntegrationTestSupport {
         favoriteRepository.save(saveFavorite);
 
         // when
-        Favorite favorite = favoriteRepository.findByFavoritePk(favoritePk);
+        Optional<Favorite> favorite = favoriteRepository.findByFavoritePk(favoritePk);
 
         // then
-        assertThat(favorite.getFavoritePk().getUser()).isEqualTo(user1);
-        assertThat(favorite.getFavoritePk().getPost()).isEqualTo(post1);
+        assertThat(favorite).isPresent();
+        assertThat(favorite.get().getFavoritePk().getUser()).isEqualTo(user1);
+        assertThat(favorite.get().getFavoritePk().getPost()).isEqualTo(post1);
     }
 
     @DisplayName("좋아요를 누른 유저들의 목록을 가져온다.")
@@ -83,7 +85,7 @@ class FavoriteRepositoryTest extends IntegrationTestSupport {
         favoriteRepository.save(saveFavorite1);
 
         // when
-        List<Favorite> recommenderUserList = favoriteRepository.findRecommendersByPost(post1);
+        List<Favorite> recommenderUserList = favoriteRepository.findFavoritesByPost(post1);
 
         // then
         assertThat(recommenderUserList).hasSize(1);

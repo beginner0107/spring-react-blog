@@ -37,6 +37,15 @@ class PostControllerTest extends ControllerTestSupport {
     final static String EMAIL = "test123@naver.com";
     final static String NICKNAME = "개구리왕눈이123";
 
+    private void createMockUser() {
+        given(userRepository.findById(1L)).willReturn(Optional.ofNullable(User.builder()
+            .id(1L)
+            .email(EMAIL)
+            .nickname(NICKNAME)
+            .profileImage(null)
+            .build()));
+    }
+
     @DisplayName("게시글에 필요한 정보를 입력 후 등록을 하면 게시글이 저장된다.")
     @WithAuthUser(userId = "1", role = "ROLE_USER")
     @Test
@@ -45,12 +54,7 @@ class PostControllerTest extends ControllerTestSupport {
         String title = "게시글제목";
         String content = "게시글내용";
         PostCreateRequestDto request = createPostRequest(title, content);
-        given(userRepository.findById(1L)).willReturn(Optional.ofNullable(User.builder()
-            .id(1L)
-            .email(EMAIL)
-            .nickname(NICKNAME)
-            .profileImage(null)
-            .build()));
+        createMockUser();
 
         // when & then
         mockMvc.perform(post("/api/v1/post")
@@ -181,12 +185,7 @@ class PostControllerTest extends ControllerTestSupport {
     void putFavorite() throws Exception {
         // given
         final int postId = 1;
-        given(userRepository.findById(1L)).willReturn(Optional.ofNullable(User.builder()
-            .id(1L)
-            .email(EMAIL)
-            .nickname(NICKNAME)
-            .profileImage(null)
-            .build()));
+        createMockUser();
 
         // when & then
         mockMvc.perform(put("/api/v1/post/" + postId + "/favorite"))
@@ -199,12 +198,7 @@ class PostControllerTest extends ControllerTestSupport {
     void putFavoriteCancel() throws Exception {
         // given
         final int postId = 1;
-        given(userRepository.findById(1L)).willReturn(Optional.ofNullable(User.builder()
-            .id(1L)
-            .email(EMAIL)
-            .nickname(NICKNAME)
-            .profileImage(null)
-            .build()));
+        createMockUser();
 
         // when & then
         mockMvc.perform(put("/api/v1/post/" + postId + "/favoriteCancel"))
@@ -248,12 +242,7 @@ class PostControllerTest extends ControllerTestSupport {
         String editTitle = "테스트 수정 글의 제목";
         String editContent = "테스트 수정 글의 내용";
         PostUpdateRequestDto request = createPostUpdateRequest(editTitle, editContent);
-        given(userRepository.findById(1L)).willReturn(Optional.ofNullable(User.builder()
-            .id(1L)
-            .email(EMAIL)
-            .nickname(NICKNAME)
-            .profileImage(null)
-            .build()));
+        createMockUser();
 
         // when & then
         mockMvc.perform(put("/api/v1/post/{postId}", postId)
@@ -261,9 +250,9 @@ class PostControllerTest extends ControllerTestSupport {
                 .contentType(MediaType.APPLICATION_JSON))
             .andDo(print())
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.code").value(200))
-            .andExpect(jsonPath("$.status").value("OK"))
-            .andExpect(jsonPath("$.message").value("OK"))
+            .andExpect(jsonPath("$.code").value(201))
+            .andExpect(jsonPath("$.status").value("CREATED"))
+            .andExpect(jsonPath("$.message").value("CREATED"))
             .andExpect(jsonPath("$.field").isEmpty())
             .andExpect(jsonPath("$.data").isEmpty());
     }
@@ -274,12 +263,7 @@ class PostControllerTest extends ControllerTestSupport {
     void deletePost() throws Exception {
         // given
         final int postId = 1;
-        given(userRepository.findById(1L)).willReturn(Optional.ofNullable(User.builder()
-            .id(1L)
-            .email(EMAIL)
-            .nickname(NICKNAME)
-            .profileImage(null)
-            .build()));
+        createMockUser();
 
         // when & then
         mockMvc.perform(delete("/api/v1/post/{postId}", postId))

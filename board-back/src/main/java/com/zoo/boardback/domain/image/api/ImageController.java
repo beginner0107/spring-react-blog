@@ -1,4 +1,4 @@
-package com.zoo.boardback.domain.file.api;
+package com.zoo.boardback.domain.image.api;
 
 import com.zoo.boardback.domain.ApiResponse;
 import com.zoo.boardback.global.util.file.FileUtil;
@@ -15,13 +15,13 @@ import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/file")
-public class FileController {
+@RequestMapping("/image")
+public class ImageController {
 
     private final FileUtil fileUtil;
 
     @PostMapping("/upload")
-    public ApiResponse<String> upload(@RequestParam("file") MultipartFile file) {
+    public ApiResponse<String> imageUpload(@RequestParam("file") MultipartFile file) {
         return ApiResponse.ok(fileUtil.upload(file));
     }
 

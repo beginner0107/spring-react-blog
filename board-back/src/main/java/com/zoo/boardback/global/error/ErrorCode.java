@@ -33,7 +33,8 @@ public enum ErrorCode {
     DATABASE_ERROR("데이터베이스 에러가 발생했습니다.", HttpStatus.INTERNAL_SERVER_ERROR),
 
     // FAVORITE
-    FAVORITE_CANCEL("좋아요 취소를 할 수 없습니다.", HttpStatus.BAD_REQUEST);;
+    FAVORITE_ALREADY_EXISTS("좋아요가 이미 되어있습니다.", HttpStatus.BAD_REQUEST),
+    FAVORITE_CANCEL("좋아요 취소를 할 수 없습니다.", HttpStatus.BAD_REQUEST);
 
     private final String message;
     private final HttpStatus httpStatus;

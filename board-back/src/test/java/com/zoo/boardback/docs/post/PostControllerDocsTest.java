@@ -80,9 +80,9 @@ public class PostControllerDocsTest extends RestDocsSecuritySupport {
                         .description("게시글 제목"),
                     fieldWithPath("content").type(JsonFieldType.STRING)
                         .description("게시글 내용"),
-                    fieldWithPath("postTitleImage").type(JsonFieldType.STRING).optional()
+                    fieldWithPath("postTitleImageUrl").type(JsonFieldType.STRING).optional()
                         .description("게시글 대표 이미지"),
-                    fieldWithPath("postImageList").type(JsonFieldType.ARRAY)
+                    fieldWithPath("postImageUrls").type(JsonFieldType.ARRAY).optional()
                         .description("게시글 이미지 목록(URL 경로 리스트[String])")
                 )
             ));
@@ -104,7 +104,7 @@ public class PostControllerDocsTest extends RestDocsSecuritySupport {
                 .nickname(NICKNAME)
                 .profileImage("http://image.png")
                 .build()
-            );
+        );
 
         mockMvc.perform(RestDocumentationRequestBuilders.get("/api/v1/post/{postId}", postId))
             .andExpect(status().isOk())

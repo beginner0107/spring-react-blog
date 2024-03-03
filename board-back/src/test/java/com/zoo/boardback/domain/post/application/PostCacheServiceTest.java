@@ -49,7 +49,7 @@ class PostCacheServiceTest {
         postCacheService.addViewCntToRedis(postId);
 
         // then
-        verify(redisUtil).setData(eq(viewCntKey), eq("6"), eq(Duration.ofMinutes(3)));
+        verify(redisUtil).setDataExpire(eq(viewCntKey), eq("6"), eq(3L));
     }
 
     @Test

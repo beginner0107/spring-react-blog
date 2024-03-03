@@ -26,6 +26,11 @@ import org.springframework.data.support.PageableExecutionUtils;
 public class PostRepositoryImpl implements PostRepositoryCustom {
 
     private final JPAQueryFactory queryFactory;
+    private final String BOARD_TITLE_IMAGE = "boardTitleImage";
+    private final String WRITER_NICKNAME = "writerNickname";
+    private final String WRITER_CREATED_AT = "writerCreatedAt";
+    private final String WRITER_PROFILE_IMAGE = "writerProfileImage";
+    private final String PERCENTAGE_SIGN = "%";
 
     public PostRepositoryImpl(EntityManager em) {
         this.queryFactory = new JPAQueryFactory(em);
@@ -46,7 +51,7 @@ public class PostRepositoryImpl implements PostRepositoryCustom {
                         .from(image)
                         .where(image.titleImageYn.isTrue()
                             .and(image.post.id.eq(post.id))
-                        ), "boardTitleImage"
+                        ), BOARD_TITLE_IMAGE
                 )
             ))
             .from(post)
@@ -86,11 +91,11 @@ public class PostRepositoryImpl implements PostRepositoryCustom {
             .select(
                 constructor(PostRankItem.class,
                     post.id, post.title,
-                    post.content, image.imageUrl.as("boardTitleImage"),
+                    post.content, image.imageUrl.as(BOARD_TITLE_IMAGE),
                     post.favoriteCount, post.commentCount,
-                    post.viewCount, post.user.nickname.as("writerNickname"),
-                    post.createdAt.as("writerCreatedAt"),
-                    post.user.profileImage.as("writerProfileImage")
+                    post.viewCount, post.user.nickname.as(WRITER_NICKNAME),
+                    post.createdAt.as(WRITER_CREATED_AT),
+                    post.user.profileImage.as(WRITER_PROFILE_IMAGE)
                 )
             )
             .from(post)
@@ -133,8 +138,6 @@ public class PostRepositoryImpl implements PostRepositoryCustom {
     }
 
     private String likeQuery(String word) {
-        return "%" + word + "%";
+        return PERCENTAGE_SIGN + word + PERCENTAGE_SIGN;
     }
-
-
 }

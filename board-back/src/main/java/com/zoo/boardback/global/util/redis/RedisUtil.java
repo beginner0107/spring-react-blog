@@ -30,11 +30,6 @@ public class RedisUtil {
         }
     }
 
-    public void setData(String key, String value, Duration timeout) {
-        ValueOperations<String, String> valueOperations = stringRedisTemplate.opsForValue();
-        valueOperations.set(key, value, timeout);
-    }
-
     public void deleteData(String key) {
         stringRedisTemplate.delete(key);
     }

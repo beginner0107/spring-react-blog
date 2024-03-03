@@ -12,5 +12,5 @@ public interface PostRepositoryCustom {
 
     Page<PostSearchResponseDto> searchPosts(PostSearchCondition condition, Pageable pageable);
 
-    List<PostRankItem> getTop3Posts(LocalDateTime startDate, LocalDateTime endDate);
+    List<PostRankItem> getTop3PostsThisWeek(LocalDateTime startDate, LocalDateTime endDate);
 }

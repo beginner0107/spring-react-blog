@@ -86,7 +86,7 @@ public class PostRepositoryImpl implements PostRepositoryCustom {
     }
 
     @Override
-    public List<PostRankItem> getTop3Posts(LocalDateTime startDate, LocalDateTime endDate) {
+    public List<PostRankItem> getTop3PostsThisWeek(LocalDateTime startDate, LocalDateTime endDate) {
         return queryFactory
             .select(
                 constructor(PostRankItem.class,

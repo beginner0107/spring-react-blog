@@ -124,7 +124,7 @@ public class PostService {
         LocalDateTime currentDate = LocalDateTime.now();
         LocalDateTime weekStartDate = getStartOfWeek(currentDate);
         LocalDateTime weekEndDate = getEndOfWeek(currentDate);
-        List<PostRankItem> posts = postRepository.getTop3Posts(weekStartDate, weekEndDate);
+        List<PostRankItem> posts = postRepository.getTop3PostsThisWeek(weekStartDate, weekEndDate);
         return PostsTop3ResponseDto.create(posts);
     }
 

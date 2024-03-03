@@ -96,17 +96,13 @@ public class PostService {
 
     @Transactional
     public PostDetailResponseDto find(Long postId) {
-        Post post = postRepository.findById(postId).orElseThrow(() ->
-            new BusinessException(postId, "postId", POST_NOT_FOUND));
-
-        List<String> boardImageList = findBoardImages(post);
-        return PostDetailResponseDto.of(post, boardImageList);
+        Post post = findPostByPostId(postId);
+        return PostDetailResponseDto.of(post, findPostImages(post));
     }
 
     @Transactional
     public void update(Long postId, String email, PostUpdateRequestDto requestDto) {
-        Post post = postRepository.findById(postId).orElseThrow(() ->
-            new BusinessException(postId, "postId", POST_NOT_FOUND));
+        Post post = findPostByPostId(postId);
         checkPostAuthorMatching(email, post);
         post.editPost(requestDto.getTitle(), requestDto.getContent());
 
@@ -118,13 +114,17 @@ public class PostService {
 
     @Transactional
     public void delete(Long postId, String email) { // cascade 옵션 활용하기
-        Post post = postRepository.findById(postId).orElseThrow(() ->
-            new BusinessException(postId, "postId", POST_NOT_FOUND));
+        Post post = findPostByPostId(postId);
         checkPostAuthorMatching(email, post);
         imageRepository.deleteByBoard(post);
         commentRepository.deleteByPost(post);
         favoriteRepository.deleteByPost(post);
         postRepository.delete(post);
+    }
+
+    private Post findPostByPostId(Long postId) {
+        return postRepository.findById(postId).orElseThrow(() ->
+            new BusinessException(postId, "postId", POST_NOT_FOUND));
     }
 
     private void checkPostAuthorMatching(String email, Post post) {
@@ -133,14 +133,11 @@ public class PostService {
         }
     }
 
-    private List<String> findBoardImages(Post post) {
-        List<Image> imageList = imageRepository.findByPost(post);
-        List<String> boardImageList = new ArrayList<>();
-        for (Image image : imageList) {
-            String imageUrl = image.getImageUrl();
-            boardImageList.add(imageUrl);
-        }
-        return boardImageList;
+    private List<String> findPostImages(Post post) {
+        return imageRepository.findByPost(post)
+            .stream()
+            .map(Image::getImageUrl)
+            .collect(toList());
     }
 
     private void editImages(Post post, List<String> boardImageList, List<Image> imageEntities) {

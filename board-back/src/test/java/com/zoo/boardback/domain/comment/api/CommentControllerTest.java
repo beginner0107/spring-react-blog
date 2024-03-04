@@ -57,9 +57,9 @@ class CommentControllerTest extends ControllerTestSupport {
                 .content(objectMapper.writeValueAsString(request))
                 .contentType(MediaType.APPLICATION_JSON))
             .andDo(print())
-            .andExpect(jsonPath("$.code").value(200))
-            .andExpect(jsonPath("$.status").value("OK"))
-            .andExpect(jsonPath("$.message").value("OK"))
+            .andExpect(jsonPath("$.code").value(201))
+            .andExpect(jsonPath("$.status").value("CREATED"))
+            .andExpect(jsonPath("$.message").value("CREATED"))
             .andExpect(status().isOk());
         then(commentService).should(times(1)).create(any(), any());
     }
@@ -229,9 +229,9 @@ class CommentControllerTest extends ControllerTestSupport {
                 .contentType(MediaType.APPLICATION_JSON))
             .andDo(print())
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.code").value(200))
-            .andExpect(jsonPath("$.status").value("OK"))
-            .andExpect(jsonPath("$.message").value("OK"))
+            .andExpect(jsonPath("$.code").value(201))
+            .andExpect(jsonPath("$.status").value("CREATED"))
+            .andExpect(jsonPath("$.message").value("CREATED"))
             .andExpect(jsonPath("$.field").isEmpty())
             .andExpect(jsonPath("$.data").isEmpty());
         then(commentService).should(times(1)).update(anyString(), anyLong(), any());

@@ -19,7 +19,7 @@ class CommentTest {
         CommentUpdateRequestDto updateRequestDto = createUpdateRequestDto(updateContent);
 
         // when
-        comment.editComment(updateRequestDto);
+        comment.edit(updateRequestDto);
 
         // then
         assertThat(comment.getContent()).isEqualTo(updateContent);

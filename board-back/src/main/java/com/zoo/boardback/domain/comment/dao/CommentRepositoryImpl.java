@@ -20,6 +20,8 @@ import org.springframework.data.support.PageableExecutionUtils;
 public class CommentRepositoryImpl implements CommentRepositoryCustom {
 
     private final JPAQueryFactory queryFactory;
+    private final String SELF_COMMENT = "selfComment";
+    private final String CHILD_COUNT_COLUMN_NAME = "childCount";
 
     public CommentRepositoryImpl(EntityManager em) {
         this.queryFactory = new JPAQueryFactory(em);
@@ -27,7 +29,7 @@ public class CommentRepositoryImpl implements CommentRepositoryCustom {
 
     @Override
     public Page<CommentQueryDto> getComments(Post post, Pageable pageable) {
-        QComment selfComment = new QComment("selfComment");
+        QComment selfComment = new QComment(SELF_COMMENT);
 
         List<CommentQueryDto> comments = queryFactory
             .select(constructor(CommentQueryDto.class,
@@ -37,7 +39,7 @@ public class CommentRepositoryImpl implements CommentRepositoryCustom {
                     comment.content,
                     comment.createdAt,
                     comment.updatedAt,
-                    selfComment.parent.count().as("childCount"),
+                    selfComment.parent.count().as(CHILD_COUNT_COLUMN_NAME),
                     comment.delYn
                 )
             )
@@ -68,7 +70,7 @@ public class CommentRepositoryImpl implements CommentRepositoryCustom {
 
     @Override
     public List<ChildCommentQueryDto> getChildComments(Long postId, Long parentId) {
-        QComment selfComment = new QComment("selfComment");
+        QComment selfComment = new QComment(SELF_COMMENT);
         return queryFactory
             .select(constructor(ChildCommentQueryDto.class,
                     comment.id,
@@ -77,7 +79,7 @@ public class CommentRepositoryImpl implements CommentRepositoryCustom {
                     comment.content,
                     comment.createdAt,
                     comment.updatedAt,
-                    selfComment.parent.count().as("childCount"),
+                    selfComment.parent.count().as(CHILD_COUNT_COLUMN_NAME),
                     comment.delYn
                 )
             )

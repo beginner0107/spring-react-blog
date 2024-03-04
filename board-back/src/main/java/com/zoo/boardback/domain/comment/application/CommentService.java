@@ -61,7 +61,7 @@ public class CommentService {
         Comment comment = commentRepository.findById(commentId).orElseThrow(
             () -> new BusinessException(commentId, "commentId", COMMENT_NOT_FOUND));
         checkCommenterMatching(email, comment);
-        comment.editComment(requestDto);
+        comment.edit(requestDto);
     }
 
     @Transactional
@@ -69,7 +69,7 @@ public class CommentService {
         Comment comment = commentRepository.findById(commentId).orElseThrow(
             () -> new BusinessException(commentId, "commentId", COMMENT_NOT_FOUND));
         checkCommenterMatching(email, comment);
-        comment.deleteComment();
+        comment.delete();
     }
 
     public CommentListResponseDto getChildComments(Long postId, Long commentId) {

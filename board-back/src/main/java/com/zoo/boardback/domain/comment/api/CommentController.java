@@ -35,7 +35,7 @@ public class CommentController {
         @LoginUser User user
     ) {
         commentService.create(requestDto, user);
-        return ApiResponse.ok(null);
+        return ApiResponse.create();
     }
 
     @GetMapping("/post/{postId}")
@@ -55,7 +55,7 @@ public class CommentController {
         @LoginUser User user
     ) {
         commentService.update(user.getEmail(), commentId, commentUpdateRequestDto);
-        return ApiResponse.ok(null);
+        return ApiResponse.create();
     }
 
     @DeleteMapping("/{commentId}")
@@ -64,7 +64,7 @@ public class CommentController {
         @PathVariable Long commentId
     ) {
         commentService.delete(commentId, user.getEmail());
-        return ApiResponse.of(HttpStatus.NO_CONTENT, null);
+        return ApiResponse.noContent();
     }
 
     @GetMapping("/post/{postId}/parentId/{parentId}")

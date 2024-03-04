@@ -67,11 +67,11 @@ public class Comment extends BaseEntity {
         this.delYn = delYn;
     }
 
-    public void editComment(CommentUpdateRequestDto commentUpdateRequestDto) {
+    public void edit(CommentUpdateRequestDto commentUpdateRequestDto) {
         this.content = commentUpdateRequestDto.getContent();
     }
 
-    public void deleteComment() {
+    public void delete() {
         this.content = "[삭제된 댓글입니다]";
         this.delYn = true;
     }

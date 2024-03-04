@@ -34,7 +34,7 @@ public class CommentController {
         @RequestBody @Valid CommentCreateRequestDto requestDto,
         @LoginUser User user
     ) {
-        commentService.create(user, requestDto);
+        commentService.create(requestDto, user);
         return ApiResponse.ok(null);
     }
 

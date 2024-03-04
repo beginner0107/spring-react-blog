@@ -33,35 +33,25 @@ public class CommentService {
     private final PostRepository postRepository;
     private final CommentRepository commentRepository;
 
-    // 디미터 법칙
-    // findPostById
     @Transactional
-    public void create(User user, CommentCreateRequestDto requestDto) {
+    public void create(CommentCreateRequestDto requestDto, User user) {
         Long postId = requestDto.getPostId();
-        Post post = postRepository.findById(postId).orElseThrow(
-            () -> new BusinessException(postId, "postId", POST_NOT_FOUND));
-
-        // maybeParentComment
-        Optional<Comment> parent = findOrCreateParentComment(requestDto.getCommentId());
+        Post post = findPostByPostId(postId);
 
         Comment child = requestDto.toEntity(user, post);
-        linkParent(parent, child);
-        // Lock
-        // message queue
-        // 순차적으로 만든다.
-        //
+        requestDto.getCommentIdOptional().ifPresent(commentId -> linkParent(commentId, child));
+        commentRepository.save(child);
+
         post.increaseCommentCount();
     }
 
-    private void linkParent(Optional<Comment> parent, Comment child) {
-        parent.ifPresent(comment -> comment.addChild(child));
-
-        commentRepository.save(child);
+    private void linkParent(Long commentId, Comment child) {
+        findParentCommentOfChild(commentId)
+            .ifPresent(parent -> parent.addChild(child));
     }
 
     public CommentListResponseDto getComments(Long postId, Pageable pageable) {
-        Post post = postRepository.findById(postId).orElseThrow(
-            () -> new BusinessException(postId, "postId", POST_NOT_FOUND));
+        Post post = findPostByPostId(postId);
         Page<CommentQueryDto> comments = commentRepository.getComments(post, pageable);
         return CommentListResponseDto.from(comments);
     }
@@ -83,11 +73,15 @@ public class CommentService {
     }
 
     public CommentListResponseDto getChildComments(Long postId, Long commentId) {
-        postRepository.findById(postId).orElseThrow(
-            () -> new BusinessException(postId, "postId", POST_NOT_FOUND));
+        findPostByPostId(postId);
         List<ChildCommentQueryDto> comments = commentRepository.getChildComments(postId,
             commentId);
         return CommentListResponseDto.of(comments);
+    }
+
+    private Post findPostByPostId(Long postId) {
+        return postRepository.findById(postId).orElseThrow(
+            () -> new BusinessException(postId, "postId", POST_NOT_FOUND));
     }
 
     private void checkCommenterMatching(String email, Comment comment) {
@@ -96,7 +90,7 @@ public class CommentService {
         }
     }
 
-    private Optional<Comment> findOrCreateParentComment(Long parentId) {
+    private Optional<Comment> findParentCommentOfChild(Long parentId) {
         return Optional.ofNullable(commentRepository.findById(parentId)
             .orElseThrow(() -> new BusinessException(parentId, "commentId", COMMENT_NOT_FOUND)));
     }

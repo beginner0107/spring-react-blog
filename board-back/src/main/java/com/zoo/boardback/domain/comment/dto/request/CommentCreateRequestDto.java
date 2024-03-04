@@ -8,6 +8,8 @@ import com.zoo.boardback.domain.user.entity.User;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import java.util.Optional;
+import java.util.OptionalLong;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -32,6 +34,10 @@ public class CommentCreateRequestDto {
         this.postId = postId;
         this.content = content;
         this.commentId = commentId;
+    }
+
+    public Optional<Long> getCommentIdOptional() {
+        return Optional.ofNullable(commentId);
     }
 
     public Comment toEntity(User user, Post post) {

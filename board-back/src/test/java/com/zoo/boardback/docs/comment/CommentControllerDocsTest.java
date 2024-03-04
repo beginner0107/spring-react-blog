@@ -11,6 +11,7 @@ import static org.springframework.restdocs.operation.preprocess.Preprocessors.pr
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessResponse;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.relaxedRequestFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
@@ -62,10 +63,10 @@ public class CommentControllerDocsTest extends RestDocsSecuritySupport {
             .andDo(document("comments-create",
                 preprocessRequest(prettyPrint()),
                 preprocessResponse(prettyPrint()),
-                requestFields(
+                relaxedRequestFields(
                     fieldWithPath("postId").type(JsonFieldType.NUMBER)
                         .description("Post Id"),
-                    fieldWithPath("commentId").type(JsonFieldType.NUMBER)
+                    fieldWithPath("commentId").type(JsonFieldType.NUMBER).optional()
                         .description("Comment Id"),
                     fieldWithPath("content").type(JsonFieldType.STRING)
                         .description("게시글 내용")

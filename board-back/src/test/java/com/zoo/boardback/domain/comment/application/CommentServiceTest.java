@@ -5,20 +5,24 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.zoo.boardback.IntegrationTestSupport;
 import com.zoo.boardback.domain.auth.entity.Authority;
-import com.zoo.boardback.domain.comment.dto.query.ChildCommentQueryDto;
-import com.zoo.boardback.domain.post.dao.PostRepository;
-import com.zoo.boardback.domain.post.entity.Post;
 import com.zoo.boardback.domain.comment.dao.CommentRepository;
+import com.zoo.boardback.domain.comment.dto.query.ChildCommentQueryDto;
 import com.zoo.boardback.domain.comment.dto.request.CommentCreateRequestDto;
 import com.zoo.boardback.domain.comment.dto.request.CommentUpdateRequestDto;
 import com.zoo.boardback.domain.comment.dto.response.CommentListResponseDto;
 import com.zoo.boardback.domain.comment.dto.response.CommentResponse;
 import com.zoo.boardback.domain.comment.entity.Comment;
+import com.zoo.boardback.domain.post.dao.PostRepository;
+import com.zoo.boardback.domain.post.entity.Post;
 import com.zoo.boardback.domain.user.dao.UserRepository;
 import com.zoo.boardback.domain.user.entity.User;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,7 +64,7 @@ class CommentServiceTest extends IntegrationTestSupport {
             .build();
 
         // when
-        commentService.create(newUser, commentCreateRequestDto);
+        commentService.create(commentCreateRequestDto, newUser);
 
         // then
         List<Comment> comments = commentRepository.findAll();
@@ -89,7 +93,7 @@ class CommentServiceTest extends IntegrationTestSupport {
             .build();
 
         // when
-        commentService.create(newUser, commentCreateRequestDto);
+        commentService.create(commentCreateRequestDto, newUser);
 
         // then
         List<ChildCommentQueryDto> comments = commentRepository.getChildComments(newPost.getId(),
@@ -219,6 +223,44 @@ class CommentServiceTest extends IntegrationTestSupport {
         assertThat(comments).hasSize(1);
         assertThat(comments.get(0).getDelYn()).isTrue();
         assertThat(comments.get(0).getContent()).isEqualTo("[삭제된 댓글입니다]");
+    }
+
+    @Disabled
+    @DisplayName("동시에 여러 회원이 댓글 생성 및 카운트 증가를 수행하면 게시글의 댓글 갯수가 증가한다.")
+    @Test
+    void givenComments_whenCommentsCreate_thenCountIncrement() throws InterruptedException {
+        // given
+        User user = createUser("test12@naver.com", "testpassword123"
+            , "01022222222", "개구리왕눈이");
+        User newUser = userRepository.save(user);
+        Post post = createPost(newUser);
+        Post newPost = postRepository.save(post);
+        String content = "안녕하세요. 댓글을 작성하겠습니다.";
+
+        int threadCount = 100;
+        ExecutorService executorService = Executors.newFixedThreadPool(threadCount);
+        CountDownLatch countDownLatch = new CountDownLatch(threadCount);
+
+        CommentCreateRequestDto commentCreateRequestDto = CommentCreateRequestDto.builder()
+            .postId(newPost.getId())
+            .content(content)
+            .build();
+
+        // when
+        for (int i = 0; i < threadCount; i++) {
+            executorService.execute(() -> {
+                commentService.create(commentCreateRequestDto, newUser);
+
+                countDownLatch.countDown();
+            });
+        }
+        countDownLatch.await();
+
+        // then
+        List<Comment> comments = commentRepository.findAll();
+        List<Post> resultPosts = postRepository.findAll();
+        assertThat(comments).hasSize(100);
+        assertThat(resultPosts.get(0).getCommentCount()).isEqualTo(100);
     }
 
     private User createUser(String email, String password, String telNumber, String nickname) {

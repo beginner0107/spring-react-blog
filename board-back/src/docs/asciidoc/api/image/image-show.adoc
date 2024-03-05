@@ -1,0 +1,9 @@
+[[image-showImage]]
+=== 이미지 불러오기
+
+==== HTTP Request
+include::{snippets}/image-show/http-request.adoc[]
+include::{snippets}/image-show/path-parameters.adoc[]
+
+==== HTTP Response
+include::{snippets}/image-show/http-response.adoc[]

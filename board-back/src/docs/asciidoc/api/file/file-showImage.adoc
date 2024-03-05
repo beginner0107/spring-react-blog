@@ -1,9 +1,0 @@
-[[file-showImage]]
-=== 이미지 불러오기
-
-==== HTTP Request
-include::{snippets}/file-showImage/http-request.adoc[]
-include::{snippets}/file-showImage/path-parameters.adoc[]
-
-==== HTTP Response
-include::{snippets}/file-showImage/http-response.adoc[]

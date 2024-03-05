@@ -12,6 +12,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.zoo.boardback.ControllerTestSupport;
 import com.zoo.boardback.WithAuthUser;
+import com.zoo.boardback.domain.favorite.dto.response.FavoriteListResponseDto;
+import com.zoo.boardback.domain.favorite.dto.response.object.FavoriteListItem;
 import com.zoo.boardback.domain.post.dto.request.PostCreateRequestDto;
 import com.zoo.boardback.domain.post.dto.request.PostSearchCondition;
 import com.zoo.boardback.domain.post.dto.request.PostUpdateRequestDto;
@@ -19,8 +21,6 @@ import com.zoo.boardback.domain.post.dto.response.PostDetailResponseDto;
 import com.zoo.boardback.domain.post.dto.response.PostSearchResponseDto;
 import com.zoo.boardback.domain.post.dto.response.PostsTop3ResponseDto;
 import com.zoo.boardback.domain.post.dto.response.object.PostRankItem;
-import com.zoo.boardback.domain.favorite.dto.response.object.FavoriteListItem;
-import com.zoo.boardback.domain.favorite.dto.response.FavoriteListResponseDto;
 import com.zoo.boardback.domain.user.entity.User;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -333,7 +333,7 @@ class PostControllerTest extends ControllerTestSupport {
             .postId(postId)
             .title(title)
             .content(content)
-            .postImageList(imageUrls)
+            .postImageUrls(imageUrls)
             .writerEmail(email)
             .writerNickname(nickname)
             .build();

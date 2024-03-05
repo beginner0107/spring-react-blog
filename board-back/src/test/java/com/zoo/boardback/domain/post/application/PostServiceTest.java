@@ -134,8 +134,8 @@ class PostServiceTest extends IntegrationTestSupport {
         // then
         assertThat(response.getTitle()).isEqualTo(title);
         assertThat(response.getContent()).isEqualTo(content);
-        assertThat(response.getPostImageList()).hasSize(1);
-        assertThat(response.getPostImageList().get(0)).isEqualTo(imageUrl);
+        assertThat(response.getPostImageUrls()).hasSize(1);
+        assertThat(response.getPostImageUrls().get(0)).isEqualTo(imageUrl);
         assertThat(response.getWriterEmail()).isEqualTo(email);
         assertThat(response.getWriterNickname()).isEqualTo(nickname);
         assertThat(response.getWriterProfileImage()).isNull();

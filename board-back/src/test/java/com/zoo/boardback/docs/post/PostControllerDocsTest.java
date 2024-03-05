@@ -515,7 +515,7 @@ public class PostControllerDocsTest extends RestDocsSecuritySupport {
             .postId(boardNumber)
             .title(title)
             .content(content)
-            .postImageList(imageUrls)
+            .postImageUrls(imageUrls)
             .writerEmail(email)
             .writerNickname(nickname)
             .writerProfileImage("http://writerprofileImage.png")

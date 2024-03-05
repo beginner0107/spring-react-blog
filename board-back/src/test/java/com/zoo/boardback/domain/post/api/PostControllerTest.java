@@ -174,7 +174,7 @@ class PostControllerTest extends ControllerTestSupport {
             .andExpect(jsonPath("$.data.postId").value(postId))
             .andExpect(jsonPath("$.data.title").value("테스트1"))
             .andExpect(jsonPath("$.data.content").value("테스트내용1"))
-            .andExpect(jsonPath("$.data.postImageList[0]").value(imageUrl))
+            .andExpect(jsonPath("$.data.postImageUrls[0]").value(imageUrl))
             .andExpect(jsonPath("$.data.writerEmail").value("test123@naver.com"))
             .andExpect(jsonPath("$.data.writerNickname").value("개구리왕눈이"));
     }

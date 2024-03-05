@@ -129,8 +129,8 @@ public class PostControllerDocsTest extends RestDocsSecuritySupport {
                         .description("글 제목"),
                     fieldWithPath("data.content").type(JsonFieldType.STRING)
                         .description("글 내용"),
-                    fieldWithPath("data.postImageList").type(JsonFieldType.ARRAY)
-                        .description("이미지 경로 목록[String]"),
+                    fieldWithPath("data.postImageUrls").type(JsonFieldType.ARRAY)
+                        .description("글 이미지 경로"),
                     fieldWithPath("data.createdAt").type(JsonFieldType.STRING)
                         .description("글 작성일자"),
                     fieldWithPath("data.updatedAt").type(JsonFieldType.STRING)
@@ -140,7 +140,7 @@ public class PostControllerDocsTest extends RestDocsSecuritySupport {
                     fieldWithPath("data.writerNickname").type(JsonFieldType.STRING)
                         .description("작성자 닉네임"),
                     fieldWithPath("data.writerProfileImage").type(JsonFieldType.STRING)
-                        .description("작성자 프로필 이미지 경로[String]")
+                        .description("작성자 프로필 이미지 경로")
                 )
             ))
         ;

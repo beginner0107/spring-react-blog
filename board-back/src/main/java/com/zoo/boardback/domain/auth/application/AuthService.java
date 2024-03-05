@@ -50,8 +50,7 @@ public class AuthService {
     @Transactional
     public SignInResponseDto signIn(SignInRequestDto request
         , HttpServletRequest httpRequest, HttpServletResponse httpResponse) {
-        User user = userRepository.findByEmail(request.getEmail()).orElseThrow(() ->
-            new BusinessException(request.getEmail(), "email", USER_NOT_FOUND));
+        User user = findUserByEmail(request.getEmail());
 
         checkPasswordMatch(request.getPassword(), user.getPassword());
 
@@ -60,6 +59,11 @@ public class AuthService {
 
         List<String> userRoles = mapAuthoritiesToRoleNames(user.getRoles());
         return SignInResponseDto.of(user, userRoles);
+    }
+
+    private User findUserByEmail(String email) {
+        return userRepository.findByEmail(email).orElseThrow(() ->
+            new BusinessException(email, "email", USER_NOT_FOUND));
     }
 
     private void checkIsDuplicationTelNumber(String telNumber) {

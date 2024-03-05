@@ -19,21 +19,21 @@ public class PostDetailResponseDto {
     private Long postId;
     private String title;
     private String content;
-    private List<String> postImageList;
+    private List<String> postImageUrls;
     private String createdAt;
     private String updatedAt;
     private String writerEmail;
     private String writerNickname;
     private String writerProfileImage;
 
-    public static PostDetailResponseDto of(Post post, List<String> postImageList) {
+    public static PostDetailResponseDto of(Post post, List<String> postImageUrls) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
         return PostDetailResponseDto.builder()
             .postId(post.getId())
             .title(post.getTitle())
             .content(post.getContent())
-            .postImageList(postImageList)
+            .postImageUrls(postImageUrls)
             .createdAt(post.getCreatedAt().format(formatter))
             .updatedAt(post.getUpdatedAt().format(formatter))
             .writerEmail(post.getUser().getEmail())

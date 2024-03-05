@@ -1,6 +1,9 @@
 package com.zoo.boardback.global.util.file;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
@@ -56,4 +59,13 @@ public class FileUtil {
 
         return resource;
     }
+
+    public void deleteFile(String fileName) {
+        try {
+            Files.deleteIfExists(Paths.get(filePath + fileName));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 }

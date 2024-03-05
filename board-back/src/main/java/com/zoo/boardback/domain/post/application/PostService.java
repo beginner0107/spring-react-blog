@@ -23,6 +23,7 @@ import com.zoo.boardback.domain.searchLog.entity.type.SearchType;
 import com.zoo.boardback.domain.user.dao.UserRepository;
 import com.zoo.boardback.domain.user.entity.User;
 import com.zoo.boardback.global.error.BusinessException;
+import com.zoo.boardback.global.util.file.FileUtil;
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -46,6 +47,7 @@ public class PostService {
     private final ImageRepository imageRepository;
     private final SearchLogRepository searchLogRepository;
     private final PostDeleteService postDeleteService;
+    private final FileUtil fileUtil;
 
     @Transactional
     public void create(PostCreateRequestDto request, String email) {
@@ -59,12 +61,16 @@ public class PostService {
     }
 
     private void savePostTitleImage(PostCreateRequestDto request, Post post) {
-        if (!request.existsByPostTitleImageUrl()) return;
+        if (!request.existsByPostTitleImageUrl()) {
+            return;
+        }
         imageRepository.save(Image.createPostTitleImage(post, request.getPostTitleImageUrl()));
     }
 
     private void savePostImages(List<String> postImageUrls, Post post) {
-        if (postImageUrls == null) return;
+        if (postImageUrls == null) {
+            return;
+        }
         imageRepository.saveAll(createPostImages(postImageUrls, post));
     }
 
@@ -100,6 +106,9 @@ public class PostService {
         Post post = findPostByPostId(postId);
         validatePostAuthorMatching(post, email);
         postDeleteService.delete(post);
+        deleteImages(imageRepository.findByPost(post).stream()
+            .map(Image::getImageUrl)
+            .toList());
     }
 
     private Post findPostByPostId(Long postId) {
@@ -147,7 +156,9 @@ public class PostService {
             .map(imageUrl -> Image.createPostImage(post, imageUrl))
             .collect(toList());
     }
+
     private void editImages(Post post, List<String> postImageUrls) {
+        deleteImages(postImageUrls);
         imageRepository.deleteByPostId(post.getId());
         imageRepository.saveAll(
             postImageUrls.stream()
@@ -156,4 +167,14 @@ public class PostService {
         );
     }
 
+    private void deleteImages(List<String> imageUrls) {
+        for (String imageUrl : imageUrls) {
+            String fileName = extractFileNameFromUrl(imageUrl);
+            fileUtil.deleteFile(fileName);
+        }
+    }
+
+    private String extractFileNameFromUrl(String imageUrl) {
+        return imageUrl.substring(imageUrl.lastIndexOf("/") + 1);
+    }
 }

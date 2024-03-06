@@ -4,7 +4,6 @@ import static org.mockito.BDDMockito.given;
 import static org.springframework.http.MediaType.IMAGE_JPEG_VALUE;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -16,9 +15,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 class ImageControllerTest extends ControllerTestSupport {
 
@@ -33,7 +29,7 @@ class ImageControllerTest extends ControllerTestSupport {
         MockMultipartFile file = new MockMultipartFile("file", originalFileName, IMAGE_JPEG_VALUE,
             "test data".getBytes());
         String savePath = "http://localhost:8084/image" + saveFileName;
-        given(fileUtil.upload(file)).willReturn(savePath);
+        given(imageFileManager.upload(file)).willReturn(savePath);
 
         // when & then
         mockMvc.perform(multipart("/image/upload")
@@ -51,7 +47,7 @@ class ImageControllerTest extends ControllerTestSupport {
         // given
         String fileName = "test.jpg";
         ByteArrayResource imageResource = new ByteArrayResource(new byte[0]);
-        given(fileUtil.getImage(fileName)).willReturn(imageResource);
+        given(imageFileManager.getImage(fileName)).willReturn(imageResource);
 
         // when & then
         mockMvc.perform(get("/image/{fileName}", fileName))

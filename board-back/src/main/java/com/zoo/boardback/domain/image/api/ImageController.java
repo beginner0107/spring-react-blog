@@ -1,7 +1,7 @@
 package com.zoo.boardback.domain.image.api;
 
 import com.zoo.boardback.domain.ApiResponse;
-import com.zoo.boardback.global.util.file.FileUtil;
+import com.zoo.boardback.global.util.file.ImageFileManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
@@ -18,11 +18,11 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping("/image")
 public class ImageController {
 
-    private final FileUtil fileUtil;
+    private final ImageFileManager imageFileManager;
 
     @PostMapping("/upload")
     public ApiResponse<String> imageUpload(@RequestParam("file") MultipartFile file) {
-        return ApiResponse.ok(fileUtil.upload(file));
+        return ApiResponse.ok(imageFileManager.upload(file));
     }
 
     @GetMapping(value = "{fileName}", produces = {MediaType.IMAGE_JPEG_VALUE,
@@ -30,6 +30,6 @@ public class ImageController {
     public Resource getImage(
         @PathVariable("fileName") String fileName
     ) {
-        return fileUtil.getImage(fileName);
+        return imageFileManager.getImage(fileName);
     }
 }

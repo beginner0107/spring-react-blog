@@ -19,7 +19,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.zoo.boardback.docs.RestDocsSupport;
 import com.zoo.boardback.domain.image.api.ImageController;
-import com.zoo.boardback.global.util.file.FileUtil;
+import com.zoo.boardback.global.util.file.ImageFileManager;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.core.io.ByteArrayResource;
@@ -28,11 +28,11 @@ import org.springframework.restdocs.payload.JsonFieldType;
 
 public class ImageControllerDocsTest extends RestDocsSupport {
 
-    private final FileUtil fileUtil = mock(FileUtil.class);
+    private final ImageFileManager imageFileManager = mock(ImageFileManager.class);
 
     @Override
     protected Object initController() {
-        return new ImageController(fileUtil);
+        return new ImageController(imageFileManager);
     }
 
     @Test
@@ -44,7 +44,7 @@ public class ImageControllerDocsTest extends RestDocsSupport {
         MockMultipartFile file = new MockMultipartFile("file", originalFileName, IMAGE_JPEG_VALUE,
             "test data".getBytes());
         String savePath = "http://localhost:8084/image/" + saveFileName;
-        given(fileUtil.upload(file)).willReturn(savePath);
+        given(imageFileManager.upload(file)).willReturn(savePath);
 
         mockMvc.perform(multipart("/image/upload")
                 .file(file))
@@ -75,7 +75,7 @@ public class ImageControllerDocsTest extends RestDocsSupport {
     void getImage() throws Exception {
         String fileName = "test.jpg";
 
-        given(fileUtil.getImage(fileName)).willReturn(new ByteArrayResource(new byte[0]));
+        given(imageFileManager.getImage(fileName)).willReturn(new ByteArrayResource(new byte[0]));
 
         mockMvc.perform(get("/image/{fileName}", fileName))
             .andExpect(status().isOk())

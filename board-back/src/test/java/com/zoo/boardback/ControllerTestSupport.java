@@ -18,7 +18,7 @@ import com.zoo.boardback.domain.user.application.UserService;
 import com.zoo.boardback.domain.user.dao.UserRepository;
 import com.zoo.boardback.global.config.security.filter.token_condition.JwtTokenConditionFactory;
 import com.zoo.boardback.global.config.security.jwt.JwtProvider;
-import com.zoo.boardback.global.util.file.FileUtil;
+import com.zoo.boardback.global.util.file.ImageFileManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -51,7 +51,7 @@ public abstract class ControllerTestSupport {
     protected FavoriteService favoriteService;
 
     @MockBean
-    protected FileUtil fileUtil;
+    protected ImageFileManager imageFileManager;
 
     @MockBean
     protected UserService userService;

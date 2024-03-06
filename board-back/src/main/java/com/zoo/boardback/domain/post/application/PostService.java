@@ -23,7 +23,7 @@ import com.zoo.boardback.domain.searchLog.entity.type.SearchType;
 import com.zoo.boardback.domain.user.dao.UserRepository;
 import com.zoo.boardback.domain.user.entity.User;
 import com.zoo.boardback.global.error.BusinessException;
-import com.zoo.boardback.global.util.file.FileUtil;
+import com.zoo.boardback.global.util.file.ImageFileManager;
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -47,7 +47,7 @@ public class PostService {
     private final ImageRepository imageRepository;
     private final SearchLogRepository searchLogRepository;
     private final PostDeleteService postDeleteService;
-    private final FileUtil fileUtil;
+    private final ImageFileManager imageFileManager;
 
     @Transactional
     public void create(PostCreateRequestDto request, String email) {
@@ -158,7 +158,6 @@ public class PostService {
     }
 
     private void editImages(Post post, List<String> postImageUrls) {
-        deleteImages(postImageUrls);
         imageRepository.deleteByPostId(post.getId());
         imageRepository.saveAll(
             postImageUrls.stream()
@@ -170,7 +169,7 @@ public class PostService {
     private void deleteImages(List<String> imageUrls) {
         for (String imageUrl : imageUrls) {
             String fileName = extractFileNameFromUrl(imageUrl);
-            fileUtil.deleteFile(fileName);
+            imageFileManager.deleteFile(fileName);
         }
     }
 

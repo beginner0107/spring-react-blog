@@ -1,7 +1,7 @@
 package com.zoo.boardback.domain.image.api;
 
 import com.zoo.boardback.domain.ApiResponse;
-import com.zoo.boardback.global.util.file.ImageFileManager;
+import com.zoo.boardback.global.util.image.ImageFileManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;

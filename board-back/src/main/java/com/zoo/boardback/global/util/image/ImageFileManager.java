@@ -1,9 +1,14 @@
-package com.zoo.boardback.global.util.file;
+package com.zoo.boardback.global.util.image;
 
 import com.zoo.boardback.domain.image.dao.ImageRepository;
 import com.zoo.boardback.domain.image.entity.Image;
+import com.zoo.boardback.global.util.image.exception.ImageDeleteFailedException;
+import com.zoo.boardback.global.util.image.exception.ImageFindFailedException;
+import com.zoo.boardback.global.util.image.exception.ImageSavedFailedException;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -32,66 +37,66 @@ public class ImageFileManager {
     private final ImageRepository imageRepository;
 
     public String upload(MultipartFile file) {
-        if (file.isEmpty()) {
-            return null;
-        }
-
-        // 디렉토리가 존재하지 않으면 생성
-        File directory = new File(filePath);
-        if (!directory.exists()) {
-            directory.mkdirs(); // 디렉토리 생성
-        }
-
-        String originalFileName = file.getOriginalFilename();
-        String extension = originalFileName.substring(originalFileName.lastIndexOf("."));
-        String uuid = UUID.randomUUID().toString();
-        String saveFileName = uuid + extension;
-        String savePath = filePath + saveFileName;
-
         try {
-            file.transferTo(new File(savePath));
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
+            if (file.isEmpty()) {
+                return null;
+            }
 
-        String url = fileUrl + saveFileName;
-        return url;
+            File directory = new File(filePath);
+            if (!directory.exists()) {
+                directory.mkdirs();
+            }
+
+            String originalFileName = file.getOriginalFilename();
+            String extension = originalFileName.substring(originalFileName.lastIndexOf("."));
+            String uuid = UUID.randomUUID().toString();
+            String saveFileName = uuid + extension;
+            String savePath = filePath + saveFileName;
+            file.transferTo(new File(savePath));
+            return fileUrl + saveFileName;
+
+        } catch (IOException e) {
+            throw new ImageSavedFailedException(e);
+        }
     }
 
     public Resource getImage(String fileName) {
-        Resource resource = null;
-
         try {
+            Resource resource;
             resource = new UrlResource("file:" + filePath + fileName);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
+            if (!resource.exists()) {
+                throw new FileNotFoundException();
+            }
+            return resource;
+        } catch (RuntimeException | IOException e) {
+            throw new ImageFindFailedException(e);
         }
-
-        return resource;
     }
 
     public void deleteFile(String fileName) {
         try {
             Files.deleteIfExists(Paths.get(filePath + fileName));
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new ImageDeleteFailedException(e);
         }
     }
 
     @Scheduled(cron = "0 0 2 * * ?")
     public void cleanUpImages() {
-        List<String> usedImageUrls = imageRepository.findAll().stream()
-            .map(Image::getImageUrl)
-            .toList();
-        List<String> allUploadedImageUrls = getAllImageUrls();
+        try {
+            List<String> usedImageUrls = imageRepository.findAll().stream()
+                .map(Image::getImageUrl)
+                .toList();
+            List<String> allUploadedImageUrls = getAllImageUrls();
 
-        allUploadedImageUrls.removeAll(usedImageUrls);
-        deleteUnusedImageFiles(allUploadedImageUrls.stream()
-            .map(imageUrl -> imageUrl.substring(imageUrl.lastIndexOf("/")))
-            .collect(Collectors.toList())
-        );
+            allUploadedImageUrls.removeAll(usedImageUrls);
+            deleteUnusedImageFiles(allUploadedImageUrls.stream()
+                .map(imageUrl -> imageUrl.substring(imageUrl.lastIndexOf("/")))
+                .collect(Collectors.toList())
+            );
+        } catch (Exception e) {
+            throw new ImageDeleteFailedException(e);
+        }
     }
 
     private void deleteUnusedImageFiles(List<String> unusedImageFileNames) {
@@ -99,7 +104,7 @@ public class ImageFileManager {
             try {
                 Files.deleteIfExists(Paths.get(filePath + fileName));
             } catch (IOException e) {
-                e.printStackTrace();
+                throw new ImageDeleteFailedException(e);
             }
         }
     }

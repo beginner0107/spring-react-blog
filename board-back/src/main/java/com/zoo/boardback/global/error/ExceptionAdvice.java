@@ -14,6 +14,12 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class ExceptionAdvice {
 
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<ErrorResponse> runtimeException(RuntimeException e) {
+        return ResponseEntity.internalServerError()
+            .body(ErrorResponse.from("서버에 문제가 생겼습니다."));
+    }
+
     @ExceptionHandler(BindException.class)
     public ResponseEntity<ApiResponse<Object>> bindException(BindException e) {
         List<ApiResponse<Object>> errorMessage = getErrorMessage(e);

@@ -19,7 +19,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.zoo.boardback.docs.RestDocsSupport;
 import com.zoo.boardback.domain.image.api.ImageController;
-import com.zoo.boardback.global.util.file.ImageFileManager;
+import com.zoo.boardback.global.util.image.ImageFileManager;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.core.io.ByteArrayResource;

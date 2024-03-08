@@ -24,19 +24,31 @@ import lombok.NoArgsConstructor;
 @Table(name = "search_log")
 @EqualsAndHashCode(of = {"sequence"}, callSuper = false)
 public class SearchLog extends BaseEntity {
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long sequence;
-  @Convert(converter = SearchTypeConverter.class)
-  private SearchType searchType;
-  private String searchWord;
 
-  @Builder
-  public SearchLog(Long sequence, String searchWord, SearchType searchType
-  ) {
-    this.sequence = sequence;
-    this.searchWord = searchWord;
-    this.searchType = searchType;
-  }
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long sequence;
+    @Convert(converter = SearchTypeConverter.class)
+    private SearchType searchType;
+    private String searchWord;
+
+    @Builder
+    public SearchLog(Long sequence, String searchWord, SearchType searchType
+    ) {
+        this.sequence = sequence;
+        this.searchWord = searchWord;
+        this.searchType = searchType;
+    }
+
+    private SearchLog(SearchType searchType, String searchWord
+    ) {
+        this.searchType = searchType;
+        this.searchWord = searchWord;
+    }
+
+    public static SearchLog create(SearchType searchType, String searchWord
+    ) {
+        return new SearchLog(searchType, searchWord);
+    }
 }
 

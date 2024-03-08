@@ -40,97 +40,86 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/post")
 public class PostController {
 
-  private final PostService postService;
-  private final FavoriteService favoriteService;
-  private final PostCacheService postCacheService;
+    private final PostService postService;
+    private final FavoriteService favoriteService;
+    private final PostCacheService postCacheService;
 
-  @PostMapping
-  public ApiResponse<Void> createPost(
-      @RequestBody @Valid PostCreateRequestDto requestDto,
-      @LoginUser User user
-  ) {
-    String email = user.getEmail();
-    postService.create(requestDto, email);
-    return ApiResponse.ok(null);
-  }
+    @PostMapping
+    public ApiResponse<Void> createPost(
+        @RequestBody @Valid PostCreateRequestDto requestDto,
+        @LoginUser User user
+    ) {
+        String email = user.getEmail();
+        postService.create(requestDto, email);
+        return ApiResponse.create();
+    }
 
-  @GetMapping
-  public ApiResponse<Page<PostSearchResponseDto>> getPosts(
-      @PageableDefault(size = 5, sort = "createdAt", direction = Direction.DESC) Pageable pageable,
-      PostSearchCondition condition
-  ) {
-    Page<PostSearchResponseDto> posts = postService.getPosts(condition, pageable);
-    return ApiResponse.ok(posts);
-  }
+    @GetMapping
+    public ApiResponse<Page<PostSearchResponseDto>> getPosts(
+        @PageableDefault(size = 5, sort = "createdAt", direction = Direction.DESC) Pageable pageable,
+        PostSearchCondition condition
+    ) {
+        Page<PostSearchResponseDto> posts = postService.getPosts(condition, pageable);
+        return ApiResponse.ok(posts);
+    }
 
-  @GetMapping("/{postId}")
-  public ApiResponse<PostDetailResponseDto> getPost(
-      @PathVariable Long postId
-  ) {
-    postCacheService.addViewCntToRedis(postId);
-    PostDetailResponseDto postDetailResponseDto = postService.find(postId);
-    return ApiResponse.ok(postDetailResponseDto);
-  }
+    @GetMapping("/{postId}")
+    public ApiResponse<PostDetailResponseDto> getPost(
+        @PathVariable Long postId
+    ) {
+        postCacheService.addViewCntToRedis(postId);
+        PostDetailResponseDto postDetailResponseDto = postService.find(postId);
+        return ApiResponse.ok(postDetailResponseDto);
+    }
 
-  @PutMapping("/{postId}")
-  public ApiResponse<Void> updatePost(
-      @PathVariable Long postId,
-      @LoginUser User user,
-      @RequestBody @Valid PostUpdateRequestDto postUpdateRequestDto
-  ) {
-    String email = user.getEmail();
-    postService.update(postId, email, postUpdateRequestDto);
-    return ApiResponse.ok(null);
-  }
+    @PutMapping("/{postId}")
+    public ApiResponse<Void> updatePost(
+        @PathVariable Long postId,
+        @LoginUser User user,
+        @RequestBody @Valid PostUpdateRequestDto postUpdateRequestDto
+    ) {
+        String email = user.getEmail();
+        postService.update(postId, email, postUpdateRequestDto);
+        return ApiResponse.create();
+    }
 
-  @DeleteMapping("/{postId}")
-  public ApiResponse<Void> deletePost(
-      @PathVariable Long postId,
-      @LoginUser User user) {
-    String email = user.getEmail();
-    postService.delete(postId, email);
-    return ApiResponse.of(NO_CONTENT, null);
-  }
+    @DeleteMapping("/{postId}")
+    public ApiResponse<Void> deletePost(
+        @PathVariable Long postId,
+        @LoginUser User user) {
+        String email = user.getEmail();
+        postService.delete(postId, email);
+        return ApiResponse.noContent();
+    }
 
-  @PutMapping("/{postId}/favorite")
-  public ApiResponse<Void> likePost(
-      @PathVariable Long postId,
-      @LoginUser User user) {
-    String email = user.getEmail();
-    favoriteService.like(postId, email);
-    return ApiResponse.ok(null);
-  }
+    @PutMapping("/{postId}/favorite")
+    public ApiResponse<Void> likePost(
+        @PathVariable Long postId,
+        @LoginUser User user) {
+        String email = user.getEmail();
+        favoriteService.like(postId, email);
+        return ApiResponse.create();
+    }
 
-  @PutMapping("/{postId}/favoriteCancel")
-  public ApiResponse<Void> cancelPostLike(
-      @PathVariable Long postId,
-      @LoginUser User user) {
-    String email = user.getEmail();
-    favoriteService.cancelLike(postId, email);
-    return ApiResponse.ok(null);
-  }
+    @PutMapping("/{postId}/favoriteCancel")
+    public ApiResponse<Void> cancelPostLike(
+        @PathVariable Long postId,
+        @LoginUser User user) {
+        String email = user.getEmail();
+        favoriteService.cancelLike(postId, email);
+        return ApiResponse.noContent();
+    }
 
-  @GetMapping("/{postId}/favorite-list")
-  public ApiResponse<FavoriteListResponseDto> getFavoriteListForPost(
-      @PathVariable Long postId
-  ) {
-    return ApiResponse.ok(favoriteService.getFavorites(postId));
-  }
+    @GetMapping("/{postId}/favorite-list")
+    public ApiResponse<FavoriteListResponseDto> getFavoriteListForPost(
+        @PathVariable Long postId
+    ) {
+        return ApiResponse.ok(favoriteService.getFavorites(postId));
+    }
 
-  @GetMapping("/top3")
-  public ApiResponse<PostsTop3ResponseDto> getTop3PostsOfWeek() {
-    LocalDateTime currentDate = LocalDateTime.now();
-    LocalDateTime weekStartDate = getStartOfWeek(currentDate);
-    LocalDateTime weekEndDate = getEndOfWeek(currentDate);
-    PostsTop3ResponseDto posts = postService.getTop3Posts(weekStartDate, weekEndDate);
-    return ApiResponse.ok(posts);
-  }
-
-  private LocalDateTime getStartOfWeek(LocalDateTime dateTime) {
-    return dateTime.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)).truncatedTo(ChronoUnit.DAYS);
-  }
-
-  private LocalDateTime getEndOfWeek(LocalDateTime dateTime) {
-    return dateTime.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY)).with(LocalTime.MAX);
-  }
+    @GetMapping("/top3")
+    public ApiResponse<PostsTop3ResponseDto> getTop3PostsThisWeek() {
+        PostsTop3ResponseDto posts = postService.getTop3PostsThisWeek();
+        return ApiResponse.ok(posts);
+    }
 }

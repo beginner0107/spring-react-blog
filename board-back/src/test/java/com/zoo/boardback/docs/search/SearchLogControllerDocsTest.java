@@ -26,61 +26,58 @@ import org.springframework.restdocs.payload.JsonFieldType;
 
 public class SearchLogControllerDocsTest extends RestDocsSupport {
 
-  private final SearchLogService searchLogService = mock(SearchLogService.class);
+    private final SearchLogService searchLogService = mock(SearchLogService.class);
 
-  @Override
-  protected Object initController() {
-    return new SearchLogController(searchLogService);
-  }
+    @Override
+    protected Object initController() {
+        return new SearchLogController(searchLogService);
+    }
 
-  @DisplayName("검색 타입을 받아 인기 검색어 10개 목록을 조회할 수 있다.")
-  @Test
-  void getPopularSearchWords() throws Exception {
-    // given
-    PopularSearchWordResponseDto response = PopularSearchWordResponseDto.builder()
-        .searchWords(List.of(
-            createPopularSearchWordDto()
-        )).build();
-    given(searchLogService.getPopularSearchWords(any(SearchType.class)))
-        .willReturn(response);
+    @DisplayName("검색 타입을 받아 인기 검색어 10개 목록을 조회할 수 있다.")
+    @Test
+    void getPopularSearchWords() throws Exception {
+        // given
+        PopularSearchWordResponseDto response = PopularSearchWordResponseDto.withSearchWords(
+            List.of(
+                createPopularSearchWordDto()
+            ));
+        given(searchLogService.getPopularSearchWords(any(SearchType.class)))
+            .willReturn(response);
 
-    // when & then
-    mockMvc.perform(get("/api/v1/search")
-            .param("searchType", "PT")
-        )
-        .andExpect(status().isOk())
-        .andDo(document("search-popularWords",
-            preprocessResponse(prettyPrint()),
-            queryParameters(
-                parameterWithName("searchType").description("검색 타입")
-            ),
-            responseFields(
-                fieldWithPath("code").type(JsonFieldType.NUMBER)
-                    .description("코드"),
-                fieldWithPath("status").type(JsonFieldType.STRING)
-                    .description("상태"),
-                fieldWithPath("message").type(JsonFieldType.STRING)
-                    .description("메시지"),
-                fieldWithPath("field").type(JsonFieldType.STRING)
-                    .optional()
-                    .description("에러 발생 필드명"),
-                fieldWithPath("data.searchWords").type(JsonFieldType.ARRAY)
-                    .optional()
-                    .description("인기 검색어 목록"),
-                fieldWithPath("data.searchWords[].searchWord").type(JsonFieldType.STRING)
-                    .optional()
-                    .description("인기 검색어 이름"),
-                fieldWithPath("data.searchWords[].count").type(JsonFieldType.NUMBER)
-                    .optional()
-                    .description("검색 회수")
+        // when & then
+        mockMvc.perform(get("/api/v1/search")
+                .param("searchType", "PT")
             )
-        ));
-  }
+            .andExpect(status().isOk())
+            .andDo(document("search-popularWords",
+                preprocessResponse(prettyPrint()),
+                queryParameters(
+                    parameterWithName("searchType").description("검색 타입")
+                ),
+                responseFields(
+                    fieldWithPath("code").type(JsonFieldType.NUMBER)
+                        .description("코드"),
+                    fieldWithPath("status").type(JsonFieldType.STRING)
+                        .description("상태"),
+                    fieldWithPath("message").type(JsonFieldType.STRING)
+                        .description("메시지"),
+                    fieldWithPath("field").type(JsonFieldType.STRING)
+                        .optional()
+                        .description("에러 발생 필드명"),
+                    fieldWithPath("data.searchWords").type(JsonFieldType.ARRAY)
+                        .optional()
+                        .description("인기 검색어 목록"),
+                    fieldWithPath("data.searchWords[].searchWord").type(JsonFieldType.STRING)
+                        .optional()
+                        .description("인기 검색어 이름"),
+                    fieldWithPath("data.searchWords[].count").type(JsonFieldType.NUMBER)
+                        .optional()
+                        .description("검색 회수")
+                )
+            ));
+    }
 
-  private PopularSearchWordDto createPopularSearchWordDto() {
-    return PopularSearchWordDto.builder()
-        .searchWord("검색")
-        .count(3L)
-        .build();
-  }
+    private PopularSearchWordDto createPopularSearchWordDto() {
+        return new PopularSearchWordDto("검색", 3L);
+    }
 }

@@ -15,28 +15,28 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = PRIVATE)
 public class PostUpdateRequestDto {
 
-  @NotBlank(message = "게시글 제목을 입력해주세요.")
-  private String title;
-  @NotBlank
-  private String content;
-  @NotNull
-  private List<String> boardImageList;
+    @NotBlank(message = "게시글 제목을 입력해주세요.")
+    private String title;
+    @NotBlank
+    private String content;
+    @NotNull
+    private List<String> postImageUrls;
 
-  @Builder
-  public PostUpdateRequestDto(String title, String content, List<String> boardImageList) {
-    this.title = title;
-    this.content = content;
-    this.boardImageList = boardImageList;
-  }
+    @Builder
+    public PostUpdateRequestDto(String title, String content, List<String> postImageUrls) {
+        this.title = title;
+        this.content = content;
+        this.postImageUrls = postImageUrls;
+    }
 
-  public Post toEntity(User user) {
-    return Post.builder()
-        .user(user)
-        .title(title)
-        .content(content)
-        .favoriteCount(0)
-        .commentCount(0)
-        .viewCount(0)
-        .build();
-  }
+    public Post toEntity(User user) {
+        return Post.builder()
+            .user(user)
+            .title(title)
+            .content(content)
+            .favoriteCount(0)
+            .commentCount(0)
+            .viewCount(0)
+            .build();
+    }
 }

@@ -18,33 +18,36 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class AccessTokenReissueCondition implements JwtTokenCondition {
 
-  private final AuthCookieService authCookieService;
-  private final JwtProvider jwtTokenProvider;
-  private final RedisUtil redisUtil;
+    private final AuthCookieService authCookieService;
+    private final JwtProvider jwtTokenProvider;
+    private final RedisUtil redisUtil;
 
-  @Override
-  public boolean isSatisfiedBy(TokenValidationResultDto accessTokenDto,
-      TokenValidationResultDto refreshTokenDto,
-      HttpServletRequest httpRequest) {
-    return isTokenExpired(accessTokenDto) &&
-        isTokenValid(refreshTokenDto) &&
-        isTokenInRedis(refreshTokenDto, httpRequest.getHeader(USER_AGENT));
-  }
+    @Override
+    public boolean isSatisfiedBy(TokenValidationResultDto accessTokenDto,
+        TokenValidationResultDto refreshTokenDto,
+        HttpServletRequest httpRequest) {
+        return isTokenExpired(accessTokenDto) &&
+            isTokenValid(refreshTokenDto) &&
+            isTokenInRedis(refreshTokenDto, httpRequest.getHeader(USER_AGENT));
+    }
 
-  @Override
-  public void setJwtToken(TokenValidationResultDto accessTokenDto, TokenValidationResultDto refreshTokenDto,
-      HttpServletRequest httpRequest, HttpServletResponse httpResponse) {
-    setAuthentication(jwtTokenProvider, refreshTokenDto);
+    @Override
+    public void setJwtToken(TokenValidationResultDto accessTokenDto,
+        TokenValidationResultDto refreshTokenDto,
+        HttpServletRequest httpRequest, HttpServletResponse httpResponse) {
+        setAuthentication(jwtTokenProvider, refreshTokenDto);
 
-    String userId = String.valueOf(jwtTokenProvider.getUserId(refreshTokenDto.getToken()));
-    List<Authority> roles = jwtTokenProvider.getRoles(refreshTokenDto.getToken());
-    authCookieService.setNewCookieInResponse(userId, roles, httpRequest.getHeader(USER_AGENT), httpResponse);
-  }
+        String userId = String.valueOf(jwtTokenProvider.getUserId(refreshTokenDto.getToken()));
+        List<Authority> roles = jwtTokenProvider.getRoles(refreshTokenDto.getToken());
+        authCookieService.setNewCookieInResponse(userId, roles, httpRequest.getHeader(USER_AGENT),
+            httpResponse);
+    }
 
-  private boolean isTokenInRedis(TokenValidationResultDto refreshTokenDto, String userAgent) {
-    long userId = jwtTokenProvider.getUserId(refreshTokenDto.getToken());
-    String refreshTokenKey = JwtProvider.getRefreshTokenKeyForRedis(String.valueOf(userId), userAgent);
-    Optional<String> tokenInRedis = redisUtil.getData(refreshTokenKey, String.class);
-    return tokenInRedis.isPresent() && tokenInRedis.get().equals(refreshTokenDto.getToken());
-  }
+    private boolean isTokenInRedis(TokenValidationResultDto refreshTokenDto, String userAgent) {
+        long userId = jwtTokenProvider.getUserId(refreshTokenDto.getToken());
+        String refreshTokenKey = JwtProvider.getRefreshTokenKeyForRedis(String.valueOf(userId),
+            userAgent);
+        Optional<String> tokenInRedis = redisUtil.getData(refreshTokenKey, String.class);
+        return tokenInRedis.isPresent() && tokenInRedis.get().equals(refreshTokenDto.getToken());
+    }
 }

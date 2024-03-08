@@ -20,22 +20,23 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/auth")
 public class AuthController {
 
-  private final AuthService authService;
+    private final AuthService authService;
 
-  @PostMapping(value = "/sign-up")
-  public ApiResponse<Void> signUp(@RequestBody @Valid SignUpRequestDto request) {
-    authService.signUp(request);
-    return ApiResponse.of(HttpStatus.CREATED, null);
-  }
+    @PostMapping(value = "/sign-up")
+    public ApiResponse<Void> signUp(@RequestBody @Valid SignUpRequestDto request) {
+        authService.signUp(request);
+        return ApiResponse.of(HttpStatus.CREATED, null);
+    }
 
-  @PostMapping(value = "/sign-in")
-  public ApiResponse<SignInResponseDto> signIn(@RequestBody @Valid SignInRequestDto request,
-      HttpServletRequest httpRequest, HttpServletResponse httpResponse
-      ) {
-    SignInResponseDto signInResponseDto = authService.signIn(request, httpRequest, httpResponse);
-    return ApiResponse.ok(signInResponseDto);
-  }
+    @PostMapping(value = "/sign-in")
+    public ApiResponse<SignInResponseDto> signIn(@RequestBody @Valid SignInRequestDto request,
+        HttpServletRequest httpRequest, HttpServletResponse httpResponse
+    ) {
+        SignInResponseDto signInResponseDto = authService.signIn(request, httpRequest,
+            httpResponse);
+        return ApiResponse.ok(signInResponseDto);
+    }
 
-  // TODO: 로그아웃 빠짐
+    // TODO: 로그아웃 빠짐
 }
 

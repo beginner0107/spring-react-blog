@@ -22,143 +22,146 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 class FavoriteServiceTest extends IntegrationTestSupport {
-  @Autowired
-  private FavoriteRepository favoriteRepository;
-  @Autowired
-  private PostRepository postRepository;
-  @Autowired
-  private UserRepository userRepository;
-  @Autowired
-  private AuthRepository authRepository;
-  @Autowired
-  private FavoriteService favoriteService;
 
-  @AfterEach
-  void tearDown() {
-    favoriteRepository.deleteAllInBatch();
-    postRepository.deleteAllInBatch();
-    authRepository.deleteAllInBatch();
-    userRepository.deleteAllInBatch();
-  }
+    @Autowired
+    private FavoriteRepository favoriteRepository;
+    @Autowired
+    private PostRepository postRepository;
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private AuthRepository authRepository;
+    @Autowired
+    private FavoriteService favoriteService;
 
-  @DisplayName("회원은 게시물 좋아요 버튼을 ON 할 수 있다.")
-  @Test
-  void putFavoriteOn() {
-    // given
-    User user = createUser("test12@naver.com", "testpassword123"
-        , "01022222222", "개구리왕눈이1");
-    userRepository.save(user);
+    @AfterEach
+    void tearDown() {
+        favoriteRepository.deleteAllInBatch();
+        postRepository.deleteAllInBatch();
+        authRepository.deleteAllInBatch();
+        userRepository.deleteAllInBatch();
+    }
 
-    Post post = createBoard("제목1", "내용입니다.1", user);
-    postRepository.save(post);
-    List<Post> postList = postRepository.findAll();
-    Long boardNumber = postList.get(0).getId();
+    @DisplayName("회원은 게시물 좋아요 버튼을 ON 할 수 있다.")
+    @Test
+    void putFavoriteOn() {
+        // given
+        User user = createUser("test12@naver.com", "testpassword123"
+            , "01022222222", "개구리왕눈이1");
+        userRepository.save(user);
 
-    // when
-    favoriteService.like(boardNumber, "test12@naver.com");
+        Post post = createBoard("제목1", "내용입니다.1", user);
+        postRepository.save(post);
+        List<Post> postList = postRepository.findAll();
+        Long boardNumber = postList.get(0).getId();
 
-    // then
-    List<Favorite> favoriteList = favoriteRepository.findAll();
-    assertThat(favoriteList).hasSize(1);
-    assertThat(favoriteList.get(0).getFavoritePk().getUser()).isNotNull();
-    assertThat(favoriteList.get(0).getFavoritePk().getPost()).isNotNull();
+        // when
+        favoriteService.like(boardNumber, "test12@naver.com");
 
-    List<Post> postList1 = postRepository.findAll();
-    assertThat(postList1.get(0).getFavoriteCount()).isEqualTo(1);
-  }
+        // then
+        List<Favorite> favoriteList = favoriteRepository.findAll();
+        assertThat(favoriteList).hasSize(1);
+        assertThat(favoriteList.get(0).getFavoritePk().getUser()).isNotNull();
+        assertThat(favoriteList.get(0).getFavoritePk().getPost()).isNotNull();
 
-  @DisplayName("회원은 게시물 좋아요 버튼을 OFF 할 수 있다.")
-  @Test
-  void putFavoriteOff() {
-    // given
-    User user = createUser("test12@naver.com", "testpassword123"
-        , "01022222222", "개구리왕눈이1");
-    userRepository.save(user);
+        List<Post> postList1 = postRepository.findAll();
+        assertThat(postList1.get(0).getFavoriteCount()).isEqualTo(1);
+    }
 
-    Post post = createBoard("제목1", "내용입니다.1", user);
-    post.increaseFavoriteCount();
-    postRepository.save(post);
-    List<Post> postList = postRepository.findAll();
-    Long boardNumber = postList.get(0).getId();
+    @DisplayName("회원은 게시물 좋아요 버튼을 OFF 할 수 있다.")
+    @Test
+    void putFavoriteOff() {
+        // given
+        User user = createUser("test12@naver.com", "testpassword123"
+            , "01022222222", "개구리왕눈이1");
+        userRepository.save(user);
 
-    FavoritePk favoritePk = new FavoritePk(post, user);
-    Favorite saveFavorite = createFavorite(favoritePk);
-    favoriteRepository.save(saveFavorite);
+        Post post = createBoard("제목1", "내용입니다.1", user);
+        post.increaseFavoriteCount();
+        postRepository.save(post);
+        List<Post> postList = postRepository.findAll();
+        Long boardNumber = postList.get(0).getId();
 
-    // when
-    favoriteService.cancelLike(boardNumber, "test12@naver.com");
+        FavoritePk favoritePk = new FavoritePk(post, user);
+        Favorite saveFavorite = createFavorite(favoritePk);
+        favoriteRepository.save(saveFavorite);
 
-    // then
-    List<Favorite> favoriteList = favoriteRepository.findAll();
-    assertThat(favoriteList).hasSize(0);
+        // when
+        favoriteService.cancelLike(boardNumber, "test12@naver.com");
 
-    List<Post> postList1 = postRepository.findAll();
-    assertThat(postList1.get(0).getFavoriteCount()).isEqualTo(0);
-  }
+        // then
+        List<Favorite> favoriteList = favoriteRepository.findAll();
+        assertThat(favoriteList).hasSize(0);
 
-  @DisplayName("게시글에 좋아요를 누른 회원들의 목록을 조회한다.")
-  @Test
-  void getFavoriteList() {
-    // given
-    User user1 = createUser("test12@naver.com", "testpassword123"
-        , "01022222222", "개구리왕눈이1");
-    User user2 = createUser("test13@naver.com", "testpassword123"
-        , "01022222221", "개구리왕눈이2");
-    userRepository.saveAll(List.of(user1, user2));
+        List<Post> postList1 = postRepository.findAll();
+        assertThat(postList1.get(0).getFavoriteCount()).isEqualTo(0);
+    }
 
-    Post post = createBoard("제목1", "내용입니다.1", user1);
-    postRepository.save(post);
+    @DisplayName("게시글에 좋아요를 누른 회원들의 목록을 조회한다.")
+    @Test
+    void getFavoriteList() {
+        // given
+        User user1 = createUser("test12@naver.com", "testpassword123"
+            , "01022222222", "개구리왕눈이1");
+        User user2 = createUser("test13@naver.com", "testpassword123"
+            , "01022222221", "개구리왕눈이2");
+        userRepository.saveAll(List.of(user1, user2));
 
-    FavoritePk favoritePk1 = new FavoritePk(post, user1);
-    Favorite saveFavorite1 = createFavorite(favoritePk1);
-    FavoritePk favoritePk2 = new FavoritePk(post, user2);
-    Favorite saveFavorite2 = createFavorite(favoritePk2);
-    favoriteRepository.saveAll(List.of(saveFavorite1, saveFavorite2));
+        Post post = createBoard("제목1", "내용입니다.1", user1);
+        postRepository.save(post);
 
-    List<Post> postList = postRepository.findAll();
-    Long boardNumber = postList.get(0).getId();
+        FavoritePk favoritePk1 = new FavoritePk(post, user1);
+        Favorite saveFavorite1 = createFavorite(favoritePk1);
+        FavoritePk favoritePk2 = new FavoritePk(post, user2);
+        Favorite saveFavorite2 = createFavorite(favoritePk2);
+        favoriteRepository.saveAll(List.of(saveFavorite1, saveFavorite2));
 
-    // when
-    FavoriteListResponseDto favoriteList = favoriteService.getFavorites(boardNumber);
+        List<Post> postList = postRepository.findAll();
+        Long boardNumber = postList.get(0).getId();
 
-    // then
-    assertThat(favoriteList.getFavoriteList()).hasSize(2);
-    assertThat(favoriteList.getFavoriteList().get(0).getEmail()).isEqualTo("test13@naver.com");
-    assertThat(favoriteList.getFavoriteList().get(0).getNickname()).isEqualTo("개구리왕눈이2");
-    assertThat(favoriteList.getFavoriteList().get(0).getProfileImage()).isEqualTo("http://profileImage.png");
-    assertThat(favoriteList.getFavoriteList().get(1).getEmail()).isEqualTo("test12@naver.com");
-    assertThat(favoriteList.getFavoriteList().get(1).getNickname()).isEqualTo("개구리왕눈이1");
-    assertThat(favoriteList.getFavoriteList().get(1).getProfileImage()).isEqualTo("http://profileImage.png");
-  }
+        // when
+        FavoriteListResponseDto favoriteList = favoriteService.getFavorites(boardNumber);
 
-  private User createUser(String email, String password, String telNumber, String nickname) {
-    return User.builder()
-        .email(email)
-        .password(password)
-        .telNumber(telNumber)
-        .nickname(nickname)
-        .profileImage("http://profileImage.png")
-        .address("용인시 기흥구 보정로")
-        .roles(initRole())
-        .build();
-  }
+        // then
+        assertThat(favoriteList.getFavoriteList()).hasSize(2);
+        assertThat(favoriteList.getFavoriteList().get(0).getEmail()).isEqualTo("test13@naver.com");
+        assertThat(favoriteList.getFavoriteList().get(0).getNickname()).isEqualTo("개구리왕눈이2");
+        assertThat(favoriteList.getFavoriteList().get(0).getProfileImage()).isEqualTo(
+            "http://profileImage.png");
+        assertThat(favoriteList.getFavoriteList().get(1).getEmail()).isEqualTo("test12@naver.com");
+        assertThat(favoriteList.getFavoriteList().get(1).getNickname()).isEqualTo("개구리왕눈이1");
+        assertThat(favoriteList.getFavoriteList().get(1).getProfileImage()).isEqualTo(
+            "http://profileImage.png");
+    }
 
-  private List<Authority> initRole() {
-    return Collections.singletonList(Authority.builder().role(GENERAL_USER).build());
-  }
+    private User createUser(String email, String password, String telNumber, String nickname) {
+        return User.builder()
+            .email(email)
+            .password(password)
+            .telNumber(telNumber)
+            .nickname(nickname)
+            .profileImage("http://profileImage.png")
+            .address("용인시 기흥구 보정로")
+            .roles(initRole())
+            .build();
+    }
 
-  private static Post createBoard(String title, String content, User user) {
-    return Post.builder()
-        .title(title)
-        .content(content)
-        .favoriteCount(0)
-        .viewCount(0)
-        .user(user)
-        .build();
-  }
+    private List<Authority> initRole() {
+        return Collections.singletonList(Authority.builder().role(GENERAL_USER).build());
+    }
 
-  private static Favorite createFavorite(FavoritePk favoritePk) {
-    return Favorite.builder()
-        .favoritePk(favoritePk).build();
-  }
+    private static Post createBoard(String title, String content, User user) {
+        return Post.builder()
+            .title(title)
+            .content(content)
+            .favoriteCount(0)
+            .viewCount(0)
+            .user(user)
+            .build();
+    }
+
+    private static Favorite createFavorite(FavoritePk favoritePk) {
+        return Favorite.builder()
+            .favoritePk(favoritePk).build();
+    }
 }

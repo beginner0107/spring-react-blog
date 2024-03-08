@@ -10,5 +10,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = PRIVATE)
 @AllArgsConstructor
 public class UserProfileUpdateRequestDto {
-  private String profileImage;
+
+    private String profileImage;
 }

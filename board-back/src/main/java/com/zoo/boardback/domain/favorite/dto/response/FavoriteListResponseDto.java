@@ -13,28 +13,29 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = PRIVATE)
 public class FavoriteListResponseDto {
-  private List<FavoriteListItem> favoriteList;
-  private boolean isEmpty;
 
-  @Builder
-  public FavoriteListResponseDto(List<FavoriteListItem> favoriteList, boolean isEmpty) {
-    this.favoriteList = favoriteList;
-    this.isEmpty = isEmpty;
-  }
+    private List<FavoriteListItem> favoriteList;
+    private boolean isEmpty;
 
-  public static FavoriteListResponseDto from(List<FavoriteQueryDto> favorites) {
-    List<FavoriteListItem> favoriteList = null;
-    boolean isEmpty = true;
-    if (!favorites.isEmpty()) {
-      isEmpty = false;
-      favoriteList = favorites.stream().map(favorite ->
-          FavoriteListItem.builder()
-              .email(favorite.getEmail())
-              .nickname(favorite.getNickname())
-              .profileImage(favorite.getProfileImage())
-              .build()
-      ).collect(toList());
+    @Builder
+    public FavoriteListResponseDto(List<FavoriteListItem> favoriteList, boolean isEmpty) {
+        this.favoriteList = favoriteList;
+        this.isEmpty = isEmpty;
     }
-    return new FavoriteListResponseDto(favoriteList, isEmpty);
-  }
+
+    public static FavoriteListResponseDto from(List<FavoriteQueryDto> favorites) {
+        List<FavoriteListItem> favoriteList = null;
+        boolean isEmpty = true;
+        if (!favorites.isEmpty()) {
+            isEmpty = false;
+            favoriteList = favorites.stream().map(favorite ->
+                FavoriteListItem.builder()
+                    .email(favorite.getEmail())
+                    .nickname(favorite.getNickname())
+                    .profileImage(favorite.getProfileImage())
+                    .build()
+            ).collect(toList());
+        }
+        return new FavoriteListResponseDto(favoriteList, isEmpty);
+    }
 }

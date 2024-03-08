@@ -29,65 +29,70 @@ import org.springframework.stereotype.Service;
 @Transactional
 @RequiredArgsConstructor
 public class AuthService {
-  private final UserRepository userRepository;
-  private final PasswordEncoder passwordEncoder;
-  private final AuthCookieService authCookieService;
 
-  @Transactional
-  public void signUp(SignUpRequestDto request) {
-    
-    checkIsDuplicationEmail(request.getEmail());
-    checkIsDuplicationNickname(request.getNickname());
-    checkIsDuplicationTelNumber(request.getTelNumber());
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final AuthCookieService authCookieService;
 
-    User user = request.toEntity(passwordEncoder);
-    user.addRoles(Collections.singletonList(Authority.builder().role(GENERAL_USER).build()));
+    @Transactional
+    public void signUp(SignUpRequestDto request) {
 
-    userRepository.save(user);
-  }
+        checkIsDuplicationEmail(request.getEmail());
+        checkIsDuplicationNickname(request.getNickname());
+        checkIsDuplicationTelNumber(request.getTelNumber());
 
-  @Transactional
-  public SignInResponseDto signIn(SignInRequestDto request
-      , HttpServletRequest httpRequest, HttpServletResponse httpResponse) {
-    User user = userRepository.findByEmail(request.getEmail()).orElseThrow(() ->
-        new BusinessException(request.getEmail(), "email", USER_NOT_FOUND));
+        User user = request.toEntity(passwordEncoder);
+        user.addRoles(Collections.singletonList(Authority.builder().role(GENERAL_USER).build()));
 
-    checkPasswordMatch(request.getPassword(), user.getPassword());
-
-    authCookieService.setNewCookieInResponse(String.valueOf(user.getId()), user.getRoles(),
-        httpRequest.getHeader(HttpHeaders.USER_AGENT), httpResponse);
-
-    List<String> userRoles = mapAuthoritiesToRoleNames(user.getRoles());
-    return SignInResponseDto.of(user, userRoles);
-  }
-
-  private void checkIsDuplicationTelNumber(String telNumber) {
-    if (userRepository.existsByTelNumber(telNumber)) {
-      throw new BusinessException(telNumber, "telNumber", USER_LOGIN_TEL_NUMBER_DUPLICATE);
+        userRepository.save(user);
     }
-  }
 
-  private void checkIsDuplicationNickname(String nickname) {
-    if (userRepository.existsByNickname(nickname)) {
-      throw new BusinessException(nickname, "nickname", USER_LOGIN_ID_DUPLICATE);
+    @Transactional
+    public SignInResponseDto signIn(SignInRequestDto request
+        , HttpServletRequest httpRequest, HttpServletResponse httpResponse) {
+        User user = findUserByEmail(request.getEmail());
+
+        checkPasswordMatch(request.getPassword(), user.getPassword());
+
+        authCookieService.setNewCookieInResponse(String.valueOf(user.getId()), user.getRoles(),
+            httpRequest.getHeader(HttpHeaders.USER_AGENT), httpResponse);
+
+        List<String> userRoles = mapAuthoritiesToRoleNames(user.getRoles());
+        return SignInResponseDto.of(user, userRoles);
     }
-  }
 
-  private void checkIsDuplicationEmail(String email) {
-    if (userRepository.existsByEmail(email)) {
-      throw new BusinessException(email, "email", USER_EMAIL_DUPLICATE);
+    private User findUserByEmail(String email) {
+        return userRepository.findByEmail(email).orElseThrow(() ->
+            new BusinessException(email, "email", USER_NOT_FOUND));
     }
-  }
 
-  private void checkPasswordMatch(String enteredPassword, String storedPassword) {
-    if (!passwordEncoder.matches(enteredPassword, storedPassword)) {
-      throw new BusinessException(null, "password", USER_WRONG_PASSWORD);
+    private void checkIsDuplicationTelNumber(String telNumber) {
+        if (userRepository.existsByTelNumber(telNumber)) {
+            throw new BusinessException(telNumber, "telNumber", USER_LOGIN_TEL_NUMBER_DUPLICATE);
+        }
     }
-  }
 
-  private List<String> mapAuthoritiesToRoleNames(List<Authority> authorities) {
-    return authorities.stream()
-        .map(Authority::getRoleName)
-        .collect(Collectors.toList());
-  }
+    private void checkIsDuplicationNickname(String nickname) {
+        if (userRepository.existsByNickname(nickname)) {
+            throw new BusinessException(nickname, "nickname", USER_LOGIN_ID_DUPLICATE);
+        }
+    }
+
+    private void checkIsDuplicationEmail(String email) {
+        if (userRepository.existsByEmail(email)) {
+            throw new BusinessException(email, "email", USER_EMAIL_DUPLICATE);
+        }
+    }
+
+    private void checkPasswordMatch(String enteredPassword, String storedPassword) {
+        if (!passwordEncoder.matches(enteredPassword, storedPassword)) {
+            throw new BusinessException(null, "password", USER_WRONG_PASSWORD);
+        }
+    }
+
+    private List<String> mapAuthoritiesToRoleNames(List<Authority> authorities) {
+        return authorities.stream()
+            .map(Authority::getRoleName)
+            .collect(Collectors.toList());
+    }
 }

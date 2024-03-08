@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = PRIVATE)
 @AllArgsConstructor
 public class NicknameUpdateRequestDto {
-  @Size(max = 20, message = "닉네임은 20자 이하입니다.")
-  private String nickname;
+
+    @Size(max = 20, message = "닉네임은 20자 이하입니다.")
+    private String nickname;
 }

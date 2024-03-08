@@ -19,30 +19,31 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/user")
 public class UserController {
-  private final UserService userService;
 
-  @GetMapping
-  public ApiResponse<SignUserResponseDto> getUser(
-      @LoginUser User user
-  ) {
-    return ApiResponse.ok(userService.getUser(user.getEmail()));
-  }
+    private final UserService userService;
 
-  @PatchMapping("/nickname")
-  public ApiResponse<Void> updateNickname(
-      @RequestBody @Valid NicknameUpdateRequestDto nicknameUpdateRequestDto,
-      @LoginUser User user
-  ) {
-    userService.updateNickname(user.getEmail(), nicknameUpdateRequestDto.getNickname());
-    return ApiResponse.ok(null);
-  }
+    @GetMapping
+    public ApiResponse<SignUserResponseDto> getUser(
+        @LoginUser User user
+    ) {
+        return ApiResponse.ok(userService.getUser(user.getEmail()));
+    }
 
-  @PatchMapping("/profileImage")
-  public ApiResponse<Void> updateProfileImage(
-      @RequestBody @Valid UserProfileUpdateRequestDto userProfileUpdateDto,
-      @LoginUser User user
-  ) {
-    userService.updateProfileImage(user.getEmail(), userProfileUpdateDto.getProfileImage());
-    return ApiResponse.ok(null);
-  }
+    @PatchMapping("/nickname")
+    public ApiResponse<Void> updateNickname(
+        @RequestBody @Valid NicknameUpdateRequestDto nicknameUpdateRequestDto,
+        @LoginUser User user
+    ) {
+        userService.updateNickname(user.getEmail(), nicknameUpdateRequestDto.getNickname());
+        return ApiResponse.noContent();
+    }
+
+    @PatchMapping("/profileImage")
+    public ApiResponse<Void> updateProfileImage(
+        @RequestBody @Valid UserProfileUpdateRequestDto userProfileUpdateDto,
+        @LoginUser User user
+    ) {
+        userService.updateProfileImage(user.getEmail(), userProfileUpdateDto.getProfileImage());
+        return ApiResponse.noContent();
+    }
 }

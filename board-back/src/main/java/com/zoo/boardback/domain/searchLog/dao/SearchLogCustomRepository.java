@@ -5,5 +5,6 @@ import com.zoo.boardback.domain.searchLog.entity.type.SearchType;
 import java.util.List;
 
 public interface SearchLogCustomRepository {
-  List<PopularSearchWordDto> getPopularSearchWords(SearchType searchType);
+
+    List<PopularSearchWordDto> getPopularSearchWords(SearchType searchType);
 }

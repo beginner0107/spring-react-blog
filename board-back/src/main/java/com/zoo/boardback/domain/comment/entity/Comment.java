@@ -30,58 +30,59 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(of = {"id"}, callSuper = false)
 @Table(name = "Comment")
 public class Comment extends BaseEntity {
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
 
-  @Column(name = "content", nullable = false, columnDefinition = "TEXT")
-  private String content;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-  @ManyToOne(fetch = LAZY)
-  @JoinColumn(name = "postId")
-  private Post post;
+    @Column(name = "content", nullable = false, columnDefinition = "TEXT")
+    private String content;
 
-  @ManyToOne(fetch = LAZY)
-  @JoinColumn(name = "userId")
-  private User user;
+    @ManyToOne(fetch = LAZY)
+    @JoinColumn(name = "postId")
+    private Post post;
 
-  @ManyToOne(fetch = LAZY)
-  @JoinColumn(name = "parentId")
-  private Comment parent;
+    @ManyToOne(fetch = LAZY)
+    @JoinColumn(name = "userId")
+    private User user;
 
-  @OneToMany(mappedBy = "parent", fetch = LAZY, cascade = CascadeType.ALL)
-  private List<Comment> children = new ArrayList<>();
+    @ManyToOne(fetch = LAZY)
+    @JoinColumn(name = "parentId")
+    private Comment parent;
 
-  @Column(name = "delYn", nullable = false)
-  private Boolean delYn;
+    @OneToMany(mappedBy = "parent", fetch = LAZY, cascade = CascadeType.ALL)
+    private List<Comment> children = new ArrayList<>();
 
-  @Builder
-  public Comment(Long id, String content, Post post, User user, Comment parent,
-      Boolean delYn) {
-    this.id = id;
-    this.content = content;
-    this.post = post;
-    this.user = user;
-    this.parent = parent;
-    this.delYn = delYn;
-  }
+    @Column(name = "delYn", nullable = false)
+    private Boolean delYn;
 
-  public void editComment(CommentUpdateRequestDto commentUpdateRequestDto) {
-    this.content = commentUpdateRequestDto.getContent();
-  }
+    @Builder
+    public Comment(Long id, String content, Post post, User user, Comment parent,
+        Boolean delYn) {
+        this.id = id;
+        this.content = content;
+        this.post = post;
+        this.user = user;
+        this.parent = parent;
+        this.delYn = delYn;
+    }
 
-  public void deleteComment() {
-    this.content = "[삭제된 댓글입니다]";
-    this.delYn = true;
-  }
+    public void edit(CommentUpdateRequestDto commentUpdateRequestDto) {
+        this.content = commentUpdateRequestDto.getContent();
+    }
 
-  public Comment addChild(Comment child) {
-    this.children.add(child);
-    child.addParent(this);
-    return this;
-  }
+    public void delete() {
+        this.content = "[삭제된 댓글입니다]";
+        this.delYn = true;
+    }
 
-  private void addParent(Comment comment) {
-    this.parent = comment;
-  }
+    public Comment addChild(Comment child) {
+        this.children.add(child);
+        child.addParent(this);
+        return this;
+    }
+
+    private void addParent(Comment comment) {
+        this.parent = comment;
+    }
 }

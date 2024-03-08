@@ -17,11 +17,15 @@ import lombok.NoArgsConstructor;
 @Table(name = "Favorite")
 public class Favorite extends BaseEntity {
 
-  @EmbeddedId
-  private FavoritePk favoritePk;
+    @EmbeddedId
+    private FavoritePk favoritePk;
 
-  @Builder
-  public Favorite(FavoritePk favoritePk) {
-    this.favoritePk = favoritePk;
-  }
+    @Builder
+    public Favorite(FavoritePk favoritePk) {
+        this.favoritePk = favoritePk;
+    }
+
+    public static Favorite create(FavoritePk favoritePk) {
+        return new Favorite(favoritePk);
+    }
 }

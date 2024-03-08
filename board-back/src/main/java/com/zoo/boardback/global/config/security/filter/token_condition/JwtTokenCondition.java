@@ -11,25 +11,26 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 public interface JwtTokenCondition {
 
-  boolean isSatisfiedBy(TokenValidationResultDto accessTokenDto,
-      TokenValidationResultDto refreshTokenDto,
-      HttpServletRequest httpRequest);
+    boolean isSatisfiedBy(TokenValidationResultDto accessTokenDto,
+        TokenValidationResultDto refreshTokenDto,
+        HttpServletRequest httpRequest);
 
-  void setJwtToken(TokenValidationResultDto accessTokenDto, TokenValidationResultDto refreshTokenDto,
-      HttpServletRequest request, HttpServletResponse response);
+    void setJwtToken(TokenValidationResultDto accessTokenDto,
+        TokenValidationResultDto refreshTokenDto,
+        HttpServletRequest request, HttpServletResponse response);
 
-  default void setAuthentication(JwtProvider jwtTokenProvider,
-      TokenValidationResultDto jwtTokenDto) {
-    SecurityContextHolder.getContext()
-        .setAuthentication(jwtTokenProvider.getAuthentication(jwtTokenDto.getToken()));
-  }
+    default void setAuthentication(JwtProvider jwtTokenProvider,
+        TokenValidationResultDto jwtTokenDto) {
+        SecurityContextHolder.getContext()
+            .setAuthentication(jwtTokenProvider.getAuthentication(jwtTokenDto.getToken()));
+    }
 
-  default boolean isTokenValid(TokenValidationResultDto jwtTokenDto) {
-    return jwtTokenDto.getResultType() == VALID;
-  }
+    default boolean isTokenValid(TokenValidationResultDto jwtTokenDto) {
+        return jwtTokenDto.getResultType() == VALID;
+    }
 
-  default boolean isTokenExpired(TokenValidationResultDto jwtTokenDto) {
-    return jwtTokenDto.getResultType() == EXPIRED;
-  }
+    default boolean isTokenExpired(TokenValidationResultDto jwtTokenDto) {
+        return jwtTokenDto.getResultType() == EXPIRED;
+    }
 
 }

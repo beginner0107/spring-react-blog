@@ -11,45 +11,45 @@ import org.springframework.security.core.userdetails.UserDetails;
 @RequiredArgsConstructor
 public class JwtUserDetails implements UserDetails {
 
-  private final String id;
-  private final List<String> userRoles;
+    private final String id;
+    private final List<String> userRoles;
 
-  @Override
-  public Collection<? extends GrantedAuthority> getAuthorities() {
-    List<SimpleGrantedAuthority> authorities = new ArrayList<>();
-    for (String role : userRoles) {
-      authorities.add(new SimpleGrantedAuthority(role));
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        List<SimpleGrantedAuthority> authorities = new ArrayList<>();
+        for (String role : userRoles) {
+            authorities.add(new SimpleGrantedAuthority(role));
+        }
+        return authorities;
     }
-    return authorities;
-  }
 
-  @Override
-  public String getPassword() {
-    return "";
-  }
+    @Override
+    public String getPassword() {
+        return "";
+    }
 
-  @Override
-  public String getUsername() {
-    return id;
-  }
+    @Override
+    public String getUsername() {
+        return id;
+    }
 
-  @Override
-  public boolean isAccountNonExpired() {
-    return true;
-  }
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
 
-  @Override
-  public boolean isAccountNonLocked() {
-    return true;
-  }
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
 
-  @Override
-  public boolean isCredentialsNonExpired() {
-    return true;
-  }
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
 
-  @Override
-  public boolean isEnabled() {
-    return true;
-  }
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
 }

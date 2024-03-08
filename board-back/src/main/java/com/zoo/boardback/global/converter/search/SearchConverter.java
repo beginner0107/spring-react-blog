@@ -6,8 +6,8 @@ import org.springframework.core.convert.converter.Converter;
 public class SearchConverter implements Converter<String, SearchType> {
 
 
-  @Override
-  public SearchType convert(String source) {
-    return SearchType.fromCode(source.toUpperCase());
-  }
+    @Override
+    public SearchType convert(String source) {
+        return SearchType.fromCode(source.toUpperCase());
+    }
 }

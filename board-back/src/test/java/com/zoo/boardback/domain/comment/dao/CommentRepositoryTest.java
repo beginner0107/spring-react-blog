@@ -23,68 +23,70 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 class CommentRepositoryTest extends IntegrationTestSupport {
 
-  @Autowired
-  private UserRepository userRepository;
-  @Autowired
-  private PostRepository postRepository;
-  @Autowired
-  private CommentRepository commentRepository;
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private PostRepository postRepository;
+    @Autowired
+    private CommentRepository commentRepository;
 
-  @DisplayName("게시글의 댓글 목록을 조회하면서, 댓글 작성자의 정보도 조회한다.")
-  @Test
-  void getCommentsList() {
-    // given
-    User user = createUser("test12@naver.com", "testpassword123"
-        , "01022222222", "개구리왕눈이");
-    User newUser = userRepository.save(user);
-    Post post = createPost(newUser);
-    Post newPost = postRepository.save(post);
-    Comment comment1 = createComment("댓글을 답니다1.!", newPost, newUser);
-    commentRepository.save(comment1);
+    @DisplayName("게시글의 댓글 목록을 조회하면서, 댓글 작성자의 정보도 조회한다.")
+    @Test
+    void getCommentsList() {
+        // given
+        User user = createUser("test12@naver.com", "testpassword123"
+            , "01022222222", "개구리왕눈이");
+        User newUser = userRepository.save(user);
+        Post post = createPost(newUser);
+        Post newPost = postRepository.save(post);
+        Comment comment1 = createComment("댓글을 답니다1.!", newPost, newUser);
+        commentRepository.save(comment1);
 
-    // when
-    Page<CommentQueryDto> comments = commentRepository.getComments(newPost, PageRequest.of(0, 5));
+        // when
+        Page<CommentQueryDto> comments = commentRepository.getComments(newPost,
+            PageRequest.of(0, 5));
 
-    // then
-    assertThat(comments).hasSize(1);
-    assertThat(comments.getContent().get(0).getNickname()).isEqualTo("개구리왕눈이");
-    assertThat(comments.getContent().get(0).getProfileImage()).isEqualTo("http://localhost:8080/profileImage.png");
-    assertThat(comments.getContent().get(0).getContent()).isEqualTo("댓글을 답니다1.!");
-  }
+        // then
+        assertThat(comments).hasSize(1);
+        assertThat(comments.getContent().get(0).getNickname()).isEqualTo("개구리왕눈이");
+        assertThat(comments.getContent().get(0).getProfileImage()).isEqualTo(
+            "http://localhost:8080/profileImage.png");
+        assertThat(comments.getContent().get(0).getContent()).isEqualTo("댓글을 답니다1.!");
+    }
 
-  private Post createPost(User user) {
-    return Post.builder()
-        .user(user)
-        .title("글의 제목")
-        .content("글의 컨텐츠")
-        .favoriteCount(0)
-        .viewCount(0)
-        .build();
-  }
+    private Post createPost(User user) {
+        return Post.builder()
+            .user(user)
+            .title("글의 제목")
+            .content("글의 컨텐츠")
+            .favoriteCount(0)
+            .viewCount(0)
+            .build();
+    }
 
-  private Comment createComment(String content, Post post, User user) {
-    return Comment.builder()
-        .content(content)
-        .post(post)
-        .user(user)
-        .parent(null)
-        .delYn(false)
-        .build();
-  }
+    private Comment createComment(String content, Post post, User user) {
+        return Comment.builder()
+            .content(content)
+            .post(post)
+            .user(user)
+            .parent(null)
+            .delYn(false)
+            .build();
+    }
 
-  private User createUser(String email, String password, String telNumber, String nickname) {
-    return User.builder()
-        .email(email)
-        .password(password)
-        .telNumber(telNumber)
-        .nickname(nickname)
-        .address("용인시 기흥구 보정로")
-        .profileImage("http://localhost:8080/profileImage.png")
-        .roles(initRole())
-        .build();
-  }
+    private User createUser(String email, String password, String telNumber, String nickname) {
+        return User.builder()
+            .email(email)
+            .password(password)
+            .telNumber(telNumber)
+            .nickname(nickname)
+            .address("용인시 기흥구 보정로")
+            .profileImage("http://localhost:8080/profileImage.png")
+            .roles(initRole())
+            .build();
+    }
 
-  private List<Authority> initRole() {
-    return Collections.singletonList(Authority.builder().role(GENERAL_USER).build());
-  }
+    private List<Authority> initRole() {
+        return Collections.singletonList(Authority.builder().role(GENERAL_USER).build());
+    }
 }

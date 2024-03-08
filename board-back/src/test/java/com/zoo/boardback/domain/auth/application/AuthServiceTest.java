@@ -31,132 +31,132 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 class AuthServiceTest extends IntegrationTestSupport {
 
-  @Autowired
-  private AuthService authService;
-  @Autowired
-  private UserRepository userRepository;
-  @Autowired
-  private PasswordEncoder passwordEncoder;
-  @Autowired
-  private AuthRepository authRepository;
+    @Autowired
+    private AuthService authService;
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+    @Autowired
+    private AuthRepository authRepository;
 
-  @AfterEach
-  void tearDown() {
-    authRepository.deleteAllInBatch();
-    userRepository.deleteAllInBatch();
-  }
+    @AfterEach
+    void tearDown() {
+        authRepository.deleteAllInBatch();
+        userRepository.deleteAllInBatch();
+    }
 
 
-  @DisplayName("회원가입 화면에서 필요한 정보를 입력하면 회원가입이 성공한다.")
-  @Test
-  void signUp() {
-    // given
-    SignUpRequestDto signUpRequestDto = createSignUpRequest("test18@naver.com", "password123"
-    , "nickname12", "01022222222");
+    @DisplayName("회원가입 화면에서 필요한 정보를 입력하면 회원가입이 성공한다.")
+    @Test
+    void signUp() {
+        // given
+        SignUpRequestDto signUpRequestDto = createSignUpRequest("test18@naver.com", "password123"
+            , "nickname12", "01022222222");
 
-    // when
-    authService.signUp(signUpRequestDto);
+        // when
+        authService.signUp(signUpRequestDto);
 
-    // then
-    List<User> users = userRepository.findAll();
+        // then
+        List<User> users = userRepository.findAll();
 
-    assertThat(users).hasSize(1)
-        .extracting("email", "nickname", "telNumber", "address")
-        .containsExactlyInAnyOrder(
-            tuple(signUpRequestDto.getEmail(),
-                signUpRequestDto.getNickname(),
-                signUpRequestDto.getTelNumber(),
-                signUpRequestDto.getAddress())
-        );
-  }
+        assertThat(users).hasSize(1)
+            .extracting("email", "nickname", "telNumber", "address")
+            .containsExactlyInAnyOrder(
+                tuple(signUpRequestDto.getEmail(),
+                    signUpRequestDto.getNickname(),
+                    signUpRequestDto.getTelNumber(),
+                    signUpRequestDto.getAddress())
+            );
+    }
 
-  @DisplayName("회원가입을 수행할 때 이메일이 중복되면 예외가 발생한다.")
-  @Test
-  void signUpDuplicatedEmail() {
-    // given
-    User user = createUser("test18@naver.com", "nickname13", "01022222222");
-    userRepository.save(user);
-    SignUpRequestDto signUpRequestDto = createSignUpRequest("test18@naver.com", "password123"
-        , "nickname14", "01022222222");
+    @DisplayName("회원가입을 수행할 때 이메일이 중복되면 예외가 발생한다.")
+    @Test
+    void signUpDuplicatedEmail() {
+        // given
+        User user = createUser("test18@naver.com", "nickname13", "01022222222");
+        userRepository.save(user);
+        SignUpRequestDto signUpRequestDto = createSignUpRequest("test18@naver.com", "password123"
+            , "nickname14", "01022222222");
 
-    // when & then
-    assertThatThrownBy(() -> authService.signUp(signUpRequestDto))
-        .isInstanceOf(BusinessException.class)
-        .hasMessageContaining(USER_EMAIL_DUPLICATE.getMessage());
-  }
+        // when & then
+        assertThatThrownBy(() -> authService.signUp(signUpRequestDto))
+            .isInstanceOf(BusinessException.class)
+            .hasMessageContaining(USER_EMAIL_DUPLICATE.getMessage());
+    }
 
-  @DisplayName("회원가입을 수행할 때 닉네임이 중복되면 예외가 발생한다.")
-  @Test
-  void signUpDuplicatedNickname() {
-    // given
-    User user = createUser("test1@naver.com", "nickname13", "01022222222");
-    userRepository.save(user);
-    SignUpRequestDto signUpRequestDto = createSignUpRequest("test2@naver.com", "password123"
-        , "nickname13", "01022222222");
+    @DisplayName("회원가입을 수행할 때 닉네임이 중복되면 예외가 발생한다.")
+    @Test
+    void signUpDuplicatedNickname() {
+        // given
+        User user = createUser("test1@naver.com", "nickname13", "01022222222");
+        userRepository.save(user);
+        SignUpRequestDto signUpRequestDto = createSignUpRequest("test2@naver.com", "password123"
+            , "nickname13", "01022222222");
 
-    // when & then
-    assertThatThrownBy(() -> authService.signUp(signUpRequestDto))
-        .isInstanceOf(BusinessException.class)
-        .hasMessageContaining(USER_LOGIN_ID_DUPLICATE.getMessage());
-  }
+        // when & then
+        assertThatThrownBy(() -> authService.signUp(signUpRequestDto))
+            .isInstanceOf(BusinessException.class)
+            .hasMessageContaining(USER_LOGIN_ID_DUPLICATE.getMessage());
+    }
 
-  @DisplayName("회원가입을 수행할 때 전화번호가 중복되면 예외가 발생한다.")
-  @Test
-  void signUpDuplicatedTelNumber() {
-    // given
-    User user = createUser("test1@naver.com", "nickname13", "01022222222");
-    userRepository.save(user);
-    SignUpRequestDto signUpRequestDto = createSignUpRequest("test2@naver.com", "password123"
-        , "nickname14", "01022222222");
+    @DisplayName("회원가입을 수행할 때 전화번호가 중복되면 예외가 발생한다.")
+    @Test
+    void signUpDuplicatedTelNumber() {
+        // given
+        User user = createUser("test1@naver.com", "nickname13", "01022222222");
+        userRepository.save(user);
+        SignUpRequestDto signUpRequestDto = createSignUpRequest("test2@naver.com", "password123"
+            , "nickname14", "01022222222");
 
-    // when & then
-    assertThatThrownBy(() -> authService.signUp(signUpRequestDto))
-        .isInstanceOf(BusinessException.class)
-        .hasMessageContaining(USER_LOGIN_TEL_NUMBER_DUPLICATE.getMessage());
-  }
+        // when & then
+        assertThatThrownBy(() -> authService.signUp(signUpRequestDto))
+            .isInstanceOf(BusinessException.class)
+            .hasMessageContaining(USER_LOGIN_TEL_NUMBER_DUPLICATE.getMessage());
+    }
 
-  @DisplayName("이메일과 비밀번호를 입력하면 로그인에 성공한다.")
-  @Test
-  void signIn() {
-    // given
-    User user = createUser("test1@naver.com", "nickname13", "01022222222");
-    user.addRoles(Collections.singletonList(Authority.builder().role(GENERAL_USER).build()));
-    User savedUser = userRepository.save(user);
-    List<String> userRoles = List.of(GENERAL_USER.getRoleName());
-    SignInRequestDto signInRequestDto = SignInRequestDto.builder()
-        .email("test1@naver.com")
-        .password("testpassword123").build();
-    HttpServletRequest request = new MockHttpServletRequest();
-    HttpServletResponse response = new MockHttpServletResponse();
+    @DisplayName("이메일과 비밀번호를 입력하면 로그인에 성공한다.")
+    @Test
+    void signIn() {
+        // given
+        User user = createUser("test1@naver.com", "nickname13", "01022222222");
+        user.addRoles(Collections.singletonList(Authority.builder().role(GENERAL_USER).build()));
+        User savedUser = userRepository.save(user);
+        List<String> userRoles = List.of(GENERAL_USER.getRoleName());
+        SignInRequestDto signInRequestDto = SignInRequestDto.builder()
+            .email("test1@naver.com")
+            .password("testpassword123").build();
+        HttpServletRequest request = new MockHttpServletRequest();
+        HttpServletResponse response = new MockHttpServletResponse();
 
-    // when
-    SignInResponseDto responseDto = authService.signIn(signInRequestDto, request, response);
+        // when
+        SignInResponseDto responseDto = authService.signIn(signInRequestDto, request, response);
 
-    // then
-    assertThat(responseDto.getUserId()).isEqualTo(savedUser.getId());
-    assertThat(responseDto.getNickname()).isEqualTo(savedUser.getNickname());
-    assertThat(responseDto.getEmail()).isEqualTo(savedUser.getEmail());
-    assertThat(responseDto.getRoles()).isEqualTo(userRoles);
-  }
+        // then
+        assertThat(responseDto.getUserId()).isEqualTo(savedUser.getId());
+        assertThat(responseDto.getNickname()).isEqualTo(savedUser.getNickname());
+        assertThat(responseDto.getEmail()).isEqualTo(savedUser.getEmail());
+        assertThat(responseDto.getRoles()).isEqualTo(userRoles);
+    }
 
-  private SignUpRequestDto createSignUpRequest(String email, String password
-  , String nickname, String telNumber) {
-    return SignUpRequestDto.builder()
-        .email(email)
-        .password(password)
-        .nickname(nickname)
-        .telNumber(telNumber)
-        .address("경기도 용인시 기흥구")
-        .build();
-  }
+    private SignUpRequestDto createSignUpRequest(String email, String password
+        , String nickname, String telNumber) {
+        return SignUpRequestDto.builder()
+            .email(email)
+            .password(password)
+            .nickname(nickname)
+            .telNumber(telNumber)
+            .address("경기도 용인시 기흥구")
+            .build();
+    }
 
-  private User createUser(String userEmail, String nickname, String telNumber) {
-    return User.builder()
-        .email(userEmail)
-        .password(passwordEncoder.encode("testpassword123"))
-        .nickname(nickname)
-        .telNumber(telNumber)
-        .address("경기도 용인시 기흥구")
-        .build();
-  }
+    private User createUser(String userEmail, String nickname, String telNumber) {
+        return User.builder()
+            .email(userEmail)
+            .password(passwordEncoder.encode("testpassword123"))
+            .nickname(nickname)
+            .telNumber(telNumber)
+            .address("경기도 용인시 기흥구")
+            .build();
+    }
 }

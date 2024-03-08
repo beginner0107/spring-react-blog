@@ -32,9 +32,9 @@ include::api/comments/comments-getChildComments.adoc[]
 include::api/comments/comments-editComment.adoc[]
 include::api/comments/comments-delete.adoc[]
 
-== FILE API
-include::api/file/file-upload.adoc[]
-include::api/file/file-showImage.adoc[]
+== IMAGE API
+include::api/image/image-upload.adoc[]
+include::api/image/image-show.adoc[]
 
 == SEARCH API
 include::api/search/search-getSearchWords.adoc[]

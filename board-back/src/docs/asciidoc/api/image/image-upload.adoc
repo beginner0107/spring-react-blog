@@ -1,0 +1,10 @@
+[[image-upload]]
+=== 이미지 업로드
+
+==== HTTP Request
+include::{snippets}/image-upload/http-request.adoc[]
+include::{snippets}/image-upload/request-parts.adoc[]
+
+==== HTTP Response
+include::{snippets}/image-upload/http-response.adoc[]
+include::{snippets}/image-upload/response-fields.adoc[]

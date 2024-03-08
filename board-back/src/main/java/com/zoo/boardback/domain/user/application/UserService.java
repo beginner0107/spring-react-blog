@@ -16,35 +16,34 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class UserService {
 
-  private final UserRepository userRepository;
+    private final UserRepository userRepository;
 
-  public SignUserResponseDto getUser(String email) {
-    User user = userRepository.findByEmail(email)
-        .orElseThrow(() -> new BusinessException(email, "email", USER_NOT_FOUND));
-    return SignUserResponseDto.from(user);
-  }
-
-  @Transactional
-  public void updateNickname(String email, String nickname) {
-    User user = userRepository.findByEmail(email)
-        .orElseThrow(() -> new BusinessException(email, "email", USER_NOT_FOUND));
-
-    checkIsDuplicationNickname(nickname);
-
-    user.changeNickname(nickname);
-  }
-
-  private void checkIsDuplicationNickname(String nickname) {
-    if (userRepository.existsByNickname(nickname)) {
-      throw new BusinessException(nickname, "nickname", USER_LOGIN_ID_DUPLICATE);
+    public SignUserResponseDto getUser(String email) {
+        User user = findUserByEmail(email);
+        return SignUserResponseDto.from(user);
     }
-  }
 
-  @Transactional
-  public void updateProfileImage(String email, String profileImage) {
-    User user = userRepository.findByEmail(email)
-        .orElseThrow(() -> new BusinessException(email, "email", USER_NOT_FOUND));
+    @Transactional
+    public void updateNickname(String email, String nickname) {
+        User user = findUserByEmail(email);
+        checkIsDuplicationNickname(nickname);
+        user.changeNickname(nickname);
+    }
 
-    user.changeProfileImage(profileImage);
-  }
+    private void checkIsDuplicationNickname(String nickname) {
+        if (userRepository.existsByNickname(nickname)) {
+            throw new BusinessException(nickname, "nickname", USER_LOGIN_ID_DUPLICATE);
+        }
+    }
+
+    @Transactional
+    public void updateProfileImage(String email, String profileImage) {
+        User user = findUserByEmail(email);
+        user.changeProfileImage(profileImage);
+    }
+
+    private User findUserByEmail(String email) {
+        return userRepository.findByEmail(email)
+            .orElseThrow(() -> new BusinessException(email, "email", USER_NOT_FOUND));
+    }
 }

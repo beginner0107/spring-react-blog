@@ -14,24 +14,30 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class ExceptionAdvice {
 
-  @ExceptionHandler(BindException.class)
-  public ResponseEntity<ApiResponse<Object>> bindException(BindException e) {
-    List<ApiResponse<Object>> errorMessage = getErrorMessage(e);
-    return ResponseEntity.status(BAD_REQUEST).body(errorMessage.get(0));
-  }
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<ErrorResponse> runtimeException(RuntimeException e) {
+        return ResponseEntity.internalServerError()
+            .body(ErrorResponse.from("서버에 문제가 생겼습니다."));
+    }
 
-  @ExceptionHandler(BusinessException.class)
-  public ResponseEntity<ApiResponse<Void>> businessException(BusinessException e) {
-    return ResponseEntity.status(e.getHttpStatus())
-        .body(ApiResponse.of(e.getHttpStatus(), e.getMessage(), e.getFieldName()));
-  }
+    @ExceptionHandler(BindException.class)
+    public ResponseEntity<ApiResponse<Object>> bindException(BindException e) {
+        List<ApiResponse<Object>> errorMessage = getErrorMessage(e);
+        return ResponseEntity.status(BAD_REQUEST).body(errorMessage.get(0));
+    }
 
-  private static List<ApiResponse<Object>> getErrorMessage(BindException e) {
-    BindingResult bindingResult = e.getBindingResult();
+    @ExceptionHandler(BusinessException.class)
+    public ResponseEntity<ApiResponse<Void>> businessException(BusinessException e) {
+        return ResponseEntity.status(e.getHttpStatus())
+            .body(ApiResponse.of(e.getHttpStatus(), e.getMessage(), e.getFieldName()));
+    }
 
-    return bindingResult.getFieldErrors()
-        .stream()
-        .map(error -> ApiResponse.of(BAD_REQUEST, error.getDefaultMessage(), error.getField()))
-        .collect(Collectors.toList());
-  }
+    private static List<ApiResponse<Object>> getErrorMessage(BindException e) {
+        BindingResult bindingResult = e.getBindingResult();
+
+        return bindingResult.getFieldErrors()
+            .stream()
+            .map(error -> ApiResponse.of(BAD_REQUEST, error.getDefaultMessage(), error.getField()))
+            .collect(Collectors.toList());
+    }
 }

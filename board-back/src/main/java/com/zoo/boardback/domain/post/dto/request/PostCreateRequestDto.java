@@ -6,6 +6,7 @@ import com.zoo.boardback.domain.post.entity.Post;
 import com.zoo.boardback.domain.user.entity.User;
 import jakarta.validation.constraints.NotBlank;
 import java.util.List;
+import java.util.Optional;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,34 +15,42 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = PRIVATE)
 public class PostCreateRequestDto {
 
-  @NotBlank(message = "게시글 제목을 입력해주세요.")
-  private String title;
-  @NotBlank
-  private String content;
-  private List<String> postImageList;
-  private String postTitleImage;
+    @NotBlank(message = "게시글 제목을 입력해주세요.")
+    private String title;
+    @NotBlank
+    private String content;
+    private List<String> postImageUrls;
+    private String postTitleImageUrl;
 
-  @Builder
-  public PostCreateRequestDto(
-      String title,
-      String content,
-      List<String> postImageList,
-      String postTitleImage
-      ) {
-    this.title = title;
-    this.content = content;
-    this.postImageList = postImageList;
-    this.postTitleImage = postTitleImage;
-  }
+    @Builder
+    public PostCreateRequestDto(
+        String title,
+        String content,
+        List<String> postImageUrls,
+        String postTitleImageUrl
+    ) {
+        this.title = title;
+        this.content = content;
+        this.postImageUrls = postImageUrls;
+        this.postTitleImageUrl = postTitleImageUrl;
+    }
 
-  public Post toEntity(User user) {
-    return Post.builder()
-        .user(user)
-        .title(title)
-        .content(content)
-        .favoriteCount(0)
-        .commentCount(0)
-        .viewCount(0)
-        .build();
-  }
+    public boolean existsByPostTitleImageUrl() {
+        return postTitleImageUrl != null;
+    }
+
+    public boolean existsByPostImageUrls() {
+        return postImageUrls != null;
+    }
+
+    public Post toEntity(User user) {
+        return Post.builder()
+            .user(user)
+            .title(title)
+            .content(content)
+            .favoriteCount(0)
+            .commentCount(0)
+            .viewCount(0)
+            .build();
+    }
 }

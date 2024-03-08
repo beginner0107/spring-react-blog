@@ -8,10 +8,10 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class JwtTokenConditionFactory {
 
-  private final JwtTokenValidCondition jwtTokenValidCondition;
-  private final AccessTokenReissueCondition accessTokenReissueCondition;
+    private final JwtTokenValidCondition jwtTokenValidCondition;
+    private final AccessTokenReissueCondition accessTokenReissueCondition;
 
-  public List<JwtTokenCondition> createJwtTokenConditions() {
-    return List.of(jwtTokenValidCondition, accessTokenReissueCondition);
-  }
+    public List<JwtTokenCondition> createJwtTokenConditions() {
+        return List.of(jwtTokenValidCondition, accessTokenReissueCondition);
+    }
 }

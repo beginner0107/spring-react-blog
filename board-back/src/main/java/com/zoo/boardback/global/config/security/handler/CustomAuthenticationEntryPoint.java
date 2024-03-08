@@ -15,13 +15,13 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
-  private final ObjectMapper objectMapper;
+    private final ObjectMapper objectMapper;
 
-  @Override
-  public void commence(HttpServletRequest request, HttpServletResponse response,
-      AuthenticationException exception) throws IOException {
-    val errorResponse = ErrorResponse.from("로그인이 필요합니다.");
-    response.getWriter().write(objectMapper.writeValueAsString(errorResponse));
-    response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
-  }
+    @Override
+    public void commence(HttpServletRequest request, HttpServletResponse response,
+        AuthenticationException exception) throws IOException {
+        val errorResponse = ErrorResponse.from("로그인이 필요합니다.");
+        response.getWriter().write(objectMapper.writeValueAsString(errorResponse));
+        response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+    }
 }

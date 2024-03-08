@@ -1,15 +1,11 @@
 package com.zoo.boardback.domain.post.application;
 
-import static com.zoo.boardback.domain.searchLog.entity.type.SearchType.NOT_EXIST_SEARCH_WORD;
 import static com.zoo.boardback.domain.searchLog.entity.type.SearchType.findSearchWord;
 import static com.zoo.boardback.global.error.ErrorCode.POST_NOT_CUD_MATCHING_USER;
 import static com.zoo.boardback.global.error.ErrorCode.POST_NOT_FOUND;
 import static com.zoo.boardback.global.error.ErrorCode.USER_NOT_FOUND;
 import static java.util.stream.Collectors.toList;
-import static org.springframework.util.StringUtils.hasText;
 
-import com.zoo.boardback.domain.comment.dao.CommentRepository;
-import com.zoo.boardback.domain.favorite.dao.FavoriteRepository;
 import com.zoo.boardback.domain.image.dao.ImageRepository;
 import com.zoo.boardback.domain.image.entity.Image;
 import com.zoo.boardback.domain.post.dao.PostRepository;
@@ -27,13 +23,18 @@ import com.zoo.boardback.domain.searchLog.entity.type.SearchType;
 import com.zoo.boardback.domain.user.dao.UserRepository;
 import com.zoo.boardback.domain.user.entity.User;
 import com.zoo.boardback.global.error.BusinessException;
+import com.zoo.boardback.global.util.image.ImageFileManager;
+import java.time.DayOfWeek;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
+import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalAdjusters;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
@@ -41,131 +42,138 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class PostService {
 
-  private final PostRepository postRepository;
-  private final UserRepository userRepository;
-  private final ImageRepository imageRepository;
-  private final CommentRepository commentRepository;
-  private final FavoriteRepository favoriteRepository;
-  private final SearchLogRepository searchLogRepository;
+    private final PostRepository postRepository;
+    private final UserRepository userRepository;
+    private final ImageRepository imageRepository;
+    private final SearchLogRepository searchLogRepository;
+    private final PostDeleteService postDeleteService;
+    private final ImageFileManager imageFileManager;
 
-  @Transactional
-  public void create(PostCreateRequestDto request, String email) {
-    User user = userRepository.findByEmail(email).orElseThrow(() ->
-        new BusinessException(email, "email", USER_NOT_FOUND));
+    @Transactional
+    public void create(PostCreateRequestDto request, String email) {
+        User user = findUserByEmail(email);
+        Post post = request.toEntity(user);
+        postRepository.save(post);
 
-    Post post = request.toEntity(user);
-    postRepository.save(post);
+        savePostTitleImage(request, post);
 
-    String boardTitleImage = request.getPostTitleImage();
-    if (hasText(boardTitleImage)) {
-      imageRepository.save(Image.builder()
-          .imageUrl(boardTitleImage)
-          .post(post)
-          .titleImageYn(true)
-          .build()
-      );
+        savePostImages(request.getPostImageUrls(), post);
     }
-    List<String> postImageList = request.getPostImageList();
-    if (!postImageList.isEmpty()) {
-      saveImages(postImageList, post);
+
+    private void savePostTitleImage(PostCreateRequestDto request, Post post) {
+        if (!request.existsByPostTitleImageUrl()) {
+            return;
+        }
+        imageRepository.save(Image.createPostTitleImage(post, request.getPostTitleImageUrl()));
     }
-  }
 
-  public Page<PostSearchResponseDto> getPosts(PostSearchCondition condition, Pageable pageable) {
-    this.saveSearchLog(condition);
-    return postRepository.searchPosts(condition, pageable);
-  }
-
-  @Transactional
-  private void saveSearchLog(PostSearchCondition condition) {
-    SearchType searchType = SearchType.findSearchType(condition);
-    if (searchType != NOT_EXIST_SEARCH_WORD) {
-      String searchWord = findSearchWord(searchType, condition);
-      searchLogRepository.save(createdSearchLog(searchType, searchWord));
+    private void savePostImages(List<String> postImageUrls, Post post) {
+        if (postImageUrls == null) {
+            return;
+        }
+        imageRepository.saveAll(createPostImages(postImageUrls, post));
     }
-  }
 
-  private SearchLog createdSearchLog(SearchType searchType, String searchWord) {
-    return SearchLog.builder()
-        .searchType(searchType)
-        .searchWord(searchWord)
-        .build();
-  }
-
-  @Transactional
-  public PostDetailResponseDto find(Long postId) {
-    Post post = postRepository.findById(postId).orElseThrow(() ->
-        new BusinessException(postId, "postId", POST_NOT_FOUND));
-
-    List<String> boardImageList = findBoardImages(post);
-    return PostDetailResponseDto.of(post, boardImageList);
-  }
-
-  @Transactional
-  public void update(Long postId, String email, PostUpdateRequestDto requestDto) {
-    Post post = postRepository.findById(postId).orElseThrow(() ->
-        new BusinessException(postId, "postId", POST_NOT_FOUND));
-    checkPostAuthorMatching(email, post);
-    post.editPost(requestDto.getTitle(), requestDto.getContent());
-
-    List<String> boardImageList = requestDto.getBoardImageList();
-    List<Image> imageEntities = new ArrayList<>();
-
-    editImages(post, boardImageList, imageEntities);
-  }
-
-  @Transactional
-  public void delete(Long postId, String email) {
-    Post post = postRepository.findById(postId).orElseThrow(() ->
-        new BusinessException(postId, "postId", POST_NOT_FOUND));
-    checkPostAuthorMatching(email, post);
-    imageRepository.deleteByBoard(post);
-    commentRepository.deleteByPost(post);
-    favoriteRepository.deleteByPost(post);
-    postRepository.delete(post);
-  }
-
-  private void saveImages(List<String> boardImageList, Post post) {
-    List<Image> images = boardImageList.stream()
-        .map(image -> Image.builder()
-            .post(post)
-            .imageUrl(image)
-            .titleImageYn(false)
-            .build())
-        .collect(toList());
-    imageRepository.saveAll(images);
-  }
-
-  private void checkPostAuthorMatching(String email, Post post) {
-    if (!post.getUser().getEmail().equals(email)) {
-      throw new BusinessException(email, "email", POST_NOT_CUD_MATCHING_USER);
+    @Transactional
+    public Page<PostSearchResponseDto> getPosts(PostSearchCondition condition, Pageable pageable) {
+        this.saveSearchLog(condition);
+        return postRepository.searchPosts(condition, pageable);
     }
-  }
 
-  private List<String> findBoardImages(Post post) {
-    List<Image> imageList = imageRepository.findByPost(post);
-    List<String> boardImageList = new ArrayList<>();
-    for (Image image : imageList) {
-      String imageUrl = image.getImageUrl();
-      boardImageList.add(imageUrl);
+    private void saveSearchLog(PostSearchCondition condition) {
+        SearchType.findSearchType(condition).ifPresent(searchType ->
+            findSearchWord(searchType, condition).ifPresent(searchWord ->
+                searchLogRepository.save(SearchLog.create(searchType, searchWord))));
     }
-    return boardImageList;
-  }
 
-  private void editImages(Post post, List<String> boardImageList, List<Image> imageEntities) {
-    imageRepository.deleteByBoard(post);
-    for (String image : boardImageList) {
-      Image imageEntity = Image.builder()
-          .post(post)
-          .imageUrl(image)
-          .build();
-      imageEntities.add(imageEntity);
+    @Transactional
+    public PostDetailResponseDto find(Long postId) {
+        Post post = findPostByPostId(postId);
+        return PostDetailResponseDto.of(post, findPostImages(post));
     }
-    imageRepository.saveAll(imageEntities);
-  }
 
-  public PostsTop3ResponseDto getTop3Posts(LocalDateTime startDate, LocalDateTime endDate) {
-    List<PostRankItem> posts = postRepository.getTop3Posts(startDate, endDate);
-    return PostsTop3ResponseDto.builder().top3List(posts).build();
-  }
+    @Transactional
+    public void update(Long postId, String email, PostUpdateRequestDto requestDto) {
+        Post post = findPostByPostId(postId);
+        validatePostAuthorMatching(post, email);
+        post.edit(requestDto.getTitle(), requestDto.getContent());
+
+        editImages(post, requestDto.getPostImageUrls());
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED)
+    public void delete(Long postId, String email) {
+        Post post = findPostByPostId(postId);
+        validatePostAuthorMatching(post, email);
+        postDeleteService.delete(post);
+        deleteImages(imageRepository.findByPost(post).stream()
+            .map(Image::getImageUrl)
+            .toList());
+    }
+
+    private Post findPostByPostId(Long postId) {
+        return postRepository.findById(postId).orElseThrow(() ->
+            new BusinessException(postId, "postId", POST_NOT_FOUND));
+    }
+
+    private void validatePostAuthorMatching(Post post, String email) {
+        if (!post.isPostAuthorMatching(email)) {
+            throw new BusinessException(email, "email", POST_NOT_CUD_MATCHING_USER);
+        }
+    }
+
+    private List<String> findPostImages(Post post) {
+        return imageRepository.findByPost(post)
+            .stream()
+            .map(Image::getImageUrl)
+            .collect(toList());
+    }
+
+    public PostsTop3ResponseDto getTop3PostsThisWeek() {
+        LocalDateTime currentDate = LocalDateTime.now();
+        LocalDateTime weekStartDate = getStartOfWeek(currentDate);
+        LocalDateTime weekEndDate = getEndOfWeek(currentDate);
+        List<PostRankItem> posts = postRepository.getTop3PostsThisWeek(weekStartDate, weekEndDate);
+        return PostsTop3ResponseDto.create(posts);
+    }
+
+    private LocalDateTime getStartOfWeek(LocalDateTime dateTime) {
+        return dateTime.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
+            .truncatedTo(ChronoUnit.DAYS);
+    }
+
+    private LocalDateTime getEndOfWeek(LocalDateTime dateTime) {
+        return dateTime.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY)).with(LocalTime.MAX);
+    }
+
+    private User findUserByEmail(String email) {
+        return userRepository.findByEmail(email).orElseThrow(() ->
+            new BusinessException(email, "email", USER_NOT_FOUND));
+    }
+
+    private List<Image> createPostImages(List<String> postImageUrls, Post post) {
+        return postImageUrls.stream()
+            .map(imageUrl -> Image.createPostImage(post, imageUrl))
+            .collect(toList());
+    }
+
+    private void editImages(Post post, List<String> postImageUrls) {
+        imageRepository.deleteByPostId(post.getId());
+        imageRepository.saveAll(
+            postImageUrls.stream()
+                .map(imageUrl -> Image.createPostImage(post, imageUrl))
+                .collect(toList())
+        );
+    }
+
+    private void deleteImages(List<String> imageUrls) {
+        for (String imageUrl : imageUrls) {
+            String fileName = extractFileNameFromUrl(imageUrl);
+            imageFileManager.deleteFile(fileName);
+        }
+    }
+
+    private String extractFileNameFromUrl(String imageUrl) {
+        return imageUrl.substring(imageUrl.lastIndexOf("/") + 1);
+    }
 }

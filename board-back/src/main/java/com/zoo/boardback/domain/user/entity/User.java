@@ -27,58 +27,59 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(of = {"id"}, callSuper = false)
 public class User extends BaseEntity {
 
-  @Id @GeneratedValue(strategy = IDENTITY)
-  private Long id;
+    @Id
+    @GeneratedValue(strategy = IDENTITY)
+    private Long id;
 
-  @Column(name = "email", length = 50)
-  private String email;
+    @Column(name = "email", length = 50)
+    private String email;
 
-  @Column(name = "password", length = 100)
-  private String password;
+    @Column(name = "password", length = 100)
+    private String password;
 
-  @Column(name = "nickname", length = 20)
-  private String nickname;
+    @Column(name = "nickname", length = 20)
+    private String nickname;
 
-  @Column(name = "telNumber", length = 15)
-  private String telNumber;
+    @Column(name = "telNumber", length = 15)
+    private String telNumber;
 
-  @Column(name = "address")
-  private String address;
+    @Column(name = "address")
+    private String address;
 
-  @Column(name = "addressDetail")
-  private String addressDetail;
+    @Column(name = "addressDetail")
+    private String addressDetail;
 
-  @Column(name = "profileImage")
-  private String profileImage;
+    @Column(name = "profileImage")
+    private String profileImage;
 
-  @OneToMany(mappedBy = "users", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-  private List<Authority> roles = new ArrayList<>();
+    @OneToMany(mappedBy = "users", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    private List<Authority> roles = new ArrayList<>();
 
-  @Builder
-  public User(Long id, String email, String password, String nickname, String telNumber, String address,
-      String addressDetail, String profileImage, List<Authority> roles)
-  {
-    this.id = id;
-    this.email = email;
-    this.password = password;
-    this.nickname = nickname;
-    this.telNumber = telNumber;
-    this.address = address;
-    this.addressDetail = addressDetail;
-    this.profileImage = profileImage;
-    this.roles = roles;
-  }
+    @Builder
+    public User(Long id, String email, String password, String nickname, String telNumber,
+        String address,
+        String addressDetail, String profileImage, List<Authority> roles) {
+        this.id = id;
+        this.email = email;
+        this.password = password;
+        this.nickname = nickname;
+        this.telNumber = telNumber;
+        this.address = address;
+        this.addressDetail = addressDetail;
+        this.profileImage = profileImage;
+        this.roles = roles;
+    }
 
-  public void addRoles(List<Authority> role) {
-    this.roles = role;
-    role.forEach(o -> o.setUser(this));
-  }
+    public void addRoles(List<Authority> role) {
+        this.roles = role;
+        role.forEach(o -> o.setUser(this));
+    }
 
-  public void changeNickname(String nickname) {
-    this.nickname = nickname;
-  }
+    public void changeNickname(String nickname) {
+        this.nickname = nickname;
+    }
 
-  public void changeProfileImage(String profileImage) {
-    this.profileImage = profileImage;
-  }
+    public void changeProfileImage(String profileImage) {
+        this.profileImage = profileImage;
+    }
 }

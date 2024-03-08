@@ -15,13 +15,13 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class CustomAccessDeniedHandler implements AccessDeniedHandler {
 
-  private final ObjectMapper objectMapper;
+    private final ObjectMapper objectMapper;
 
-  @Override
-  public void handle(HttpServletRequest request, HttpServletResponse response,
-      AccessDeniedException exception) throws IOException {
-    val errorResponse = ErrorResponse.from("권한이 없습니다.");
-    response.getWriter().write(objectMapper.writeValueAsString(errorResponse));
-    response.sendError(HttpServletResponse.SC_FORBIDDEN);
-  }
+    @Override
+    public void handle(HttpServletRequest request, HttpServletResponse response,
+        AccessDeniedException exception) throws IOException {
+        val errorResponse = ErrorResponse.from("권한이 없습니다.");
+        response.getWriter().write(objectMapper.writeValueAsString(errorResponse));
+        response.sendError(HttpServletResponse.SC_FORBIDDEN);
+    }
 }

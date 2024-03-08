@@ -11,22 +11,23 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class FavoriteQueryDto {
-  private String email;
-  private String nickname;
-  private String profileImage;
 
-  @Builder
-  public FavoriteQueryDto(String email, String nickname, String profileImage) {
-    this.email = email;
-    this.nickname = nickname;
-    this.profileImage = profileImage;
-  }
+    private String email;
+    private String nickname;
+    private String profileImage;
 
-  public static FavoriteQueryDto from(Favorite favorite) {
-    return FavoriteQueryDto.builder()
-        .email(favorite.getFavoritePk().getUser().getEmail())
-        .nickname(favorite.getFavoritePk().getUser().getNickname())
-        .profileImage(favorite.getFavoritePk().getUser().getProfileImage())
-        .build();
-  }
+    @Builder
+    public FavoriteQueryDto(String email, String nickname, String profileImage) {
+        this.email = email;
+        this.nickname = nickname;
+        this.profileImage = profileImage;
+    }
+
+    public static FavoriteQueryDto from(Favorite favorite) {
+        return FavoriteQueryDto.builder()
+            .email(favorite.getFavoritePk().getUser().getEmail())
+            .nickname(favorite.getFavoritePk().getUser().getNickname())
+            .profileImage(favorite.getFavoritePk().getUser().getProfileImage())
+            .build();
+    }
 }
